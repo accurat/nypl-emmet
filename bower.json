@@ -1,0 +1,8 @@
+{
+  "name": "emmet",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "~1.2.10",
+    "d3": "~3.4.1"
+  }
+}

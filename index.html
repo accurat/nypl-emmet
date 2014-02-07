@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="emmet">
+	<head>
+		<title>Visualizing the Emmet collection</title>
+		<link rel="stylesheet" href="style.css"/>
+		<link href='http://fonts.googleapis.com/css?family=Gentium+Basic' rel='stylesheet' type='text/css'>
+		
+		<script type="text/javascript" src="libs/d3/d3.min.js"></script>
+		<script type="text/javascript" src="libs/angular/angular.js"></script>
+		<script type="text/javascript" src="libs/angular/angular-route.js"></script>
+		
+		<script type="text/javascript" src="app/app.js"></script>
+		<script type="text/javascript" src="app/controllers/AppController.js"></script>
+		<script type="text/javascript" src="app/controllers/WhenController.js"></script>
+		<script type="text/javascript" src="app/controllers/WhoController.js"></script>
+		<script type="text/javascript" src="app/controllers/TimelineCollectionController.js"></script>
+		<script type="text/javascript" src="app/controllers/TimelinePersonController.js"></script>
+		<script type="text/javascript" src="app/controllers/PersonSelectionController.js"></script>
+		
+		<script type="text/javascript" src="app/directives/WhenDirective.js"></script>
+		<script type="text/javascript" src="app/directives/WhoDirective.js"></script>
+		<script type="text/javascript" src="app/directives/TimelineCollectionDirective.js"></script>
+		<script type="text/javascript" src="app/directives/TimelinePersonDirective.js"></script>
+		
+		<script type="text/javascript" src="app/directives/DataSelectionDirective.js"></script>
+		<script type="text/javascript" src="app/directives/ViewDirective.js"></script>
+		<script type="text/javascript" src="app/directives/OrderByDirective.js"></script>
+		<script type="text/javascript" src="app/directives/PersonSelectionDirective.js"></script>
+		
+		<script type="text/javascript" src="app/filters/PersonFilter.js"></script>
+		
+		<script type="text/javascript" src="app/services/BackendService.js"></script>
+		<script type="text/javascript" src="app/services/DataService.js"></script>
+		<script type="text/javascript" src="app/services/TimeService.js"></script>
+		<script type="text/javascript" src="app/services/CanvasService.js"></script>
+		<script type="text/javascript" src="app/services/ColorService.js"></script>
+		<script type="text/javascript" src="app/services/SymbolsService.js"></script>
+		<script type="text/javascript" src="app/services/LocationService.js"></script>
+		<script type="text/javascript" src="app/services/HighlightService.js"></script>
+	</head>
+	<body ng-controller="AppController">
+		<img src="img/loading.gif" id="loading"/>
+		<div ng-view>Your browser does not support this awesome technology!</div>
+	</body>
+</html>
