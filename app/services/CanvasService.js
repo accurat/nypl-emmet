@@ -12,6 +12,10 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 	var xScale = null;
 	var yScale = null;
 	
+	var monthScale = null;
+	var dayScale = null;
+	var dayScale = null;
+	
 	return {
 		
 		init: function(desiredWidth, desiredHeight)
@@ -45,6 +49,13 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 			yScale = d3.scale.linear()
 		    	.range([0, height]);
 			
+			monthScale = d3.scale.ordinal()
+	    		.rangeBands([0, width*2/3], 0)
+	    		.domain(TimeService.getMonths());
+			
+			dayScale = d3.scale.ordinal()
+				.rangeBands([0, width*2/3], 0)
+	    		.domain(TimeService.getDays());
 			
 		},
 		
@@ -91,6 +102,16 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 		getYscale: function()
 		{
 			return yScale;
+		},
+		
+		getMonthScale: function()
+		{
+			return monthScale;
+		},
+		
+		getDayScale: function()
+		{
+			return dayScale;
 		}
 	};
 }]);
