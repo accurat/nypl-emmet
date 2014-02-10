@@ -1,6 +1,16 @@
+/* ELEMENTS */
+/* ============================================================ */
 body {
     background-color: #F5EEDF;
     font-family: 'Gentium Basic', serif;
+}
+
+a {
+	font-family: 'Gentium Basic', serif;
+	text-decoration: none;
+	cursor: pointer;
+	font-size:13px;
+	color: #000000;
 }
 
 #loading {
@@ -11,6 +21,9 @@ body {
     margin-top: 20%;
 }
 
+/* COMMON COMPONENTS */
+/* ============================================================ */
+
 .xAxis path {
 	display: none;
 }
@@ -20,6 +33,73 @@ body {
 	fill: none;
     stroke: #000;
 }
+
+.visible {
+	visibility: visible;
+}
+
+.hidden {
+	visibility: hidden;
+}
+
+/* VIEW ELEMENTS */
+/* ============================================================ */
+
+.author-name {
+	font-family: 'Gentium Basic', serif;
+	font-weight: 700;
+	font-size: 24px;
+}
+
+.bezier-curve {
+	fill: none;
+	stroke: rgb(168,164,155);
+}
+
+.bezier-curve.highlighted {
+	stroke: rgb(0,0,0);
+}
+
+.vertical-line {
+	fill: none;
+	stroke: rgb(168,164,155);
+	stroke-width: 1px;
+}
+
+.vertical-line.highlighted {
+	stroke: rgb(0,0,0);
+}
+
+.horizontal-line {
+	fill: none;
+	stroke: rgb(168,164,155);
+	stroke-width: 1px;
+}
+
+.horizontal-line.highlighted {
+	stroke: rgb(0,0,0);
+}
+
+.corresponding-person-container {
+	font-family: 'Gentium Basic', serif;
+	font-weight: 500;
+	font-size: 11px;
+}
+
+.person-name-token {
+	fill: rgb(168,164,155);
+	cursor: pointer;
+}
+
+.person-name-token.highlighted {
+	fill: rgb(0,0,0);
+	cursor: pointer;
+}
+
+
+
+/* CONTAINERS */
+/* ============================================================ */
 
 .data-selection-container {
 	position: fixed;
@@ -85,10 +165,3 @@ body {
 	color: #000000;
 }
 
-a {
-	font-family: 'Gentium Basic', serif;
-	text-decoration: none;
-	cursor: pointer;
-	font-size:13px;
-	color: #000000;
-}

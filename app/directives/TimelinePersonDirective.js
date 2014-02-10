@@ -27,35 +27,12 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES = 20;
 			scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER = 20;
 			
-			scope.AUTHOR_NAME_FONT_FAMILY = "'Gentium Basic', serif";
-			scope.AUTHOR_NAME_FONT_WEIGHT = "700";
-			scope.AUTHOR_NAME_FONT_SIZE = "24px";
- 			
-			scope.PERSON_NAME_FONT_FAMILY = "'Gentium Basic', serif";
-			scope.PERSON_NAME_FONT_WEIGHT = "500";
-			scope.PERSON_NAME_FONT_SIZE = "11px";
-			scope.PERSON_NAME_COLOR_DEFAULT = "rgb(168,164,155)";
-			scope.PERSON_NAME_COLOR_HOVER = "rgb(0,0,0)";
-			
-			scope.BEZIER_CURVES_COLOR = "rgb(168,164,155)";
-			scope.BEZIER_CURVES_COLOR_HIGHLIGHT = "rgb(0,0,0)";
-			
-			scope.VERTICAL_LINES_COLOR = "rgb(168,164,155)";
-			scope.VERTICAL_LINES_COLOR_HIGHLIGHT = "rgb(0,0,0)";
-			scope.VERTICAL_LINES_WIDTH = "1px";
 			scope.VERTICAL_LINES_DASHARRAY_AUTHOR = "";
 			scope.VERTICAL_LINES_DASHARRAY_RECIPIENT = "3,2";
-			scope.VERTICAL_LINES_VISIBILITY_YES = "visible";
-			scope.VERTICAL_LINES_VISIBILITY_NO = "hidden";
 			scope.VERTICAL_LINES_OFFSET_AUTHOR = -2;
 			scope.VERTICAL_LINES_OFFSET_RECIPIENT = 6;
 			scope.VERTICAL_LINES_OFFSET_VERTICAL = -3;
 				
-			scope.HORIZONTAL_LINES_COLOR = "rgb(168,164,155)";
-			scope.HORIZONTAL_LINES_COLOR_HIGHLIGHT = "rgb(0,0,0)";
-			scope.HORIZONTAL_LINES_WIDTH = "1 px";
-			scope.HORIZONTAL_LINES_VISIBILITY_YES = "visible";
-			scope.HORIZONTAL_LINES_VISIBILITY_NO = "hidden";
 			scope.HORIZONTAL_LINES_OFFSET_AUTHOR = -3;
 			scope.HORIZONTAL_LINES_OFFSET_RECIPIENT = 3;
 			scope.HORIZONTAL_LINES_OFFSET_VERTICAL = -5;
@@ -93,7 +70,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.drawnHorizontalLinesByRecipient = new Array();
 		    
 		    // *************************************************************************
-			// LISTENERS
+			// WATCH LISTENERS
 			// *************************************************************************
 			
 		    scope.$watch(
@@ -113,21 +90,19 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
-							
-							d3.selectAll(".person-name-token").filter(".p" + newValue).style("fill", scope.PERSON_NAME_COLOR_HIGHLIGHT);
-	                        d3.selectAll(".horizontal-line").filter(".p" + newValue).style("stroke", scope.HORIZONTAL_LINES_COLOR_HIGHLIGHT).style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-	                        d3.selectAll(".vertical-line").filter(".p" + newValue).style("stroke", scope.VERTICAL_LINES_COLOR_HIGHLIGHT).style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-	                        d3.selectAll(".bezier-curve").filter(".p" + newValue).style("stroke", scope.BEZIER_CURVES_COLOR_HIGHLIGHT);
+							d3.selectAll(".person-name-token").filter(".p" + newValue).classed("highlighted", true);
+							d3.selectAll(".bezier-curve").filter(".p" + newValue).classed("highlighted", true);
+							d3.selectAll(".horizontal-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
+	                        d3.selectAll(".vertical-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
 						}
 						else
 						{
-							d3.selectAll(".person-name-token").style("fill", scope.PERSON_NAME_COLOR_DEFAULT);
-							d3.selectAll(".horizontal-line").filter(".p" + oldValue).style("stroke", scope.HORIZONTAL_LINES_COLOR).style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
-							d3.selectAll(".horizontal-line").filter("#static").style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-							d3.selectAll(".vertical-line").filter(".p" + oldValue).style("stroke", scope.VERTICAL_LINES_COLOR).style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
-							d3.selectAll(".vertical-line").filter("#static").style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-							
-							d3.selectAll(".bezier-curve").filter(".p" + oldValue).style("stroke", scope.BEZIER_CURVES_COLOR);
+							d3.selectAll(".person-name-token").classed("highlighted", false);
+							d3.selectAll(".bezier-curve").classed("highlighted", false);
+							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
+							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
+							d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
+							d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
 						}
 					}, true);
 			
@@ -137,19 +112,19 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
-							d3.selectAll(".person-name-token").filter(".l" + newValue).style("fill", scope.PERSON_NAME_COLOR_HIGHLIGHT);
-							d3.selectAll(".horizontal-line").filter(".l" + newValue).style("stroke", scope.VERTICAL_LINES_COLOR_HIGHLIGHT).style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-							d3.selectAll(".vertical-line").filter(".l" + newValue).style("stroke", scope.VERTICAL_LINES_COLOR_HIGHLIGHT).style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-							d3.selectAll(".bezier-curve").filter(".l" + newValue).style("stroke", scope.BEZIER_CURVES_COLOR_HIGHLIGHT);
+							d3.selectAll(".person-name-token").filter(".l" + newValue).classed("highlighted", true);
+							d3.selectAll(".horizontal-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
+							d3.selectAll(".vertical-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
+							d3.selectAll(".bezier-curve").filter(".l" + newValue).classed("highlighted", true);
 						}	
 						else
 						{
-							d3.selectAll(".person-name-token").style("fill", scope.PERSON_NAME_COLOR_DEFAULT);
-							d3.selectAll(".horizontal-line").filter(".l" + oldValue).style("stroke", scope.VERTICAL_LINES_COLOR).style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
-							d3.selectAll(".horizontal-line").filter("#static").style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-							d3.selectAll(".vertical-line").filter(".l" + oldValue).style("stroke", scope.VERTICAL_LINES_COLOR).style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
-							d3.selectAll(".vertical-line").filter("#static").style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
-							d3.selectAll(".bezier-curve").filter(".l" + oldValue).style("stroke", scope.BEZIER_CURVES_COLOR);
+							d3.selectAll(".person-name-token").classed("highlighted", false);
+							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
+							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
+							d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
+							d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
+							d3.selectAll(".bezier-curve").classed("highlighted", false);
 							
 						}
 					}, true);
@@ -203,19 +178,14 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    
 			    svg.append("text")
 			    	.text(DataService.getPersonById($routeParams.dataType, personId).name)
+			    	.attr("class", "author-name")
 			    	.attr("text-anchor", "middle")
-			    	.attr("transform", "translate(" + (CanvasService.getWidth()/2 + CanvasService.getMargin().left)  + "," + (CanvasService.getHeight()/6) + ")")
-			        .style("font-size", scope.AUTHOR_NAME_FONT_SIZE)
-			        .style("font-weight", scope.AUTHOR_NAME_FONT_WEIGHT)
-			        .style("font-family", scope.AUTHOR_NAME_FONT_FAMILY);
+			    	.attr("transform", "translate(" + (CanvasService.getWidth()/2 + CanvasService.getMargin().left)  + "," + (CanvasService.getHeight()/6) + ")");
 			    
-			    // itera sugli anni della timeline
 			    var years = TimeService.getYears();
 			    for (var yearIndex = 0; yearIndex < years.length; yearIndex++)
 			    {
 			    	var year = years[yearIndex];
-			    	
-			    	// itera sulle persone che hanno scambiato lettere
 			    	for (var sliceIndex = 0; sliceIndex < dataTimelinePerson.lettersByRecipientArray.length; sliceIndex++)
 			    	{
 			    		var sliceLetters = dataTimelinePerson.lettersByRecipientArray[sliceIndex];
@@ -228,7 +198,6 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    		scope.processedRecipientIds.push(sliceIndex);
 				    		scope.drawHorizontalLine(horizontalLinesContainer, sliceOffset, personId, sliceLetters, sliceIndex, sliceClass);
 			    			
-					    	// itera sulle lettere della persona
 				    		for (var letterIndex = 0; letterIndex < sliceLetters.length; letterIndex++)
 				    		{
 				    			var letter = sliceLetters[letterIndex];
@@ -369,13 +338,11 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
         	   		.on("mouseover", function(d)
 	                {
 						var element = d3.select(this);
-						//scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
 						scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
 	                })
 	                .on("mouseout", function(d)
 	                {
 	                	var element = d3.select(this);
-	                	//scope.$apply(function() {HighlightService.setLetterHoverId(null);});
 	                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
 	                });
         	};
@@ -393,10 +360,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 	    			var label = recipientContainer.append("text")
 						.attr("class", "corresponding-person-container")
 						.attr("text-anchor", "end")
-						.attr("transform", "translate(" + (CanvasService.getXoffset(letter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + ",0)")
-						.style("font-size", scope.PERSON_NAME_FONT_SIZE)
-						.style("font-family", scope.PERSON_NAME_FONT_FAMILY)
-						.style("font-weight", scope.PERSON_NAME_FONT_WEIGHT);
+						.attr("transform", "translate(" + (CanvasService.getXoffset(letter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + ",0)");
 					
 					var peopleCollection;
 					if (isAuthor) peopleCollection = letter.recipients;
@@ -415,8 +379,6 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		        			.text(nameToken)
 		        			.attr("class", "person-name-token p" + peopleCollection[i].id + composedClassLetters)
 		        			.attr("person-id", peopleCollection[i].id)
-		        			.attr("cursor", "pointer")
-		        			.style("fill", scope.PERSON_NAME_COLOR_DEFAULT)
 		        			.on("click", function(d) 
 			                {
 		        				HighlightService.setPersonHoverId(null);
@@ -531,10 +493,10 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    var existingBezierCurve = drawnBezierCurvesByYear[letter.accuratYear];
 				if (existingBezierCurve == null)
 				{
-					// non esistevano ancora linee per l'anno
-					// disegna la curva
-					// rendila visibile
-					// impostala come già disegnata
+					// no existing beziers in year
+					// draw the curve
+					// make it visible
+					// set it as drawn
 					
 					var xBezierCurveEnd = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
 		        	var yBezierCurveEnd = CanvasService.getHeight()/6 - scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES - scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE;			            	
@@ -547,18 +509,14 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		        		.attr("class", "bezier-curve " + composedClass)
 		        		.attr("id", "static")
 		        		.attr("d", d)
-		        		.style("fill", "none")
-		        		.style("stroke", scope.VERTICAL_LINES_COLOR)
-		                .style("stroke-width", scope.VERTICAL_LINES_WIDTH)
-		                .style("stroke-dasharray", verticalLineDasharray)
-		                .style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
+		        		.style("stroke-dasharray", verticalLineDasharray);
 					
 					drawnBezierCurvesByYear[letter.accuratYear] = bezierCurve;
 				}
 				else
 				{
-					// esiste già curva
-					// update della classe della curva
+					// curve is already existing
+					// just update curve class attributes
 					var existingBezierCurveClass = existingBezierCurve.attr("class");
 					existingBezierCurveClass += " " + composedClass;
 					existingBezierCurve.attr("class", existingBezierCurveClass);
@@ -578,12 +536,12 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		            else x1offset = scope.HORIZONTAL_LINES_OFFSET_RECIPIENT;
 		            var x1 = x1base + x1offset;
 					
-		            // salto la firstletter
+		            // skip first letter
 					for (var i = 1; i < sliceLetters.length; i++)
 					{
 		        		var letter = sliceLetters[i];
 						
-		        		// ignoro il caso di lettere multiple corrispondenti alla prima
+		        		// ignore multiple first letters 
 		        		if (letter.accuratYear != firstLetter.accuratYear)
 		        		{
 			        		var x2base = CanvasService.getXoffset(letter.accuratYear); 
@@ -601,33 +559,31 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				                .attr("y1", scope.HORIZONTAL_LINES_OFFSET_VERTICAL)
 				                .attr("x2", x2)
 				                .attr("y2", scope.HORIZONTAL_LINES_OFFSET_VERTICAL)
-				                .attr("transform", "translate(0," + (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset) + ")")
-				                .style("stroke", scope.HORIZONTAL_LINES_COLOR)
-				                .style("stroke-width", scope.HORIZONTAL_LINES_WIDTH);
+				                .attr("transform", "translate(0," + (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset) + ")");
+				                //.style("stroke", scope.HORIZONTAL_LINES_COLOR)
+				                //.style("stroke-width", scope.HORIZONTAL_LINES_WIDTH);
 							
 			        		var existingHorizontalLine = scope.drawnHorizontalLinesByRecipient[sliceIndex];
 							if (existingHorizontalLine == null)
 							{
-								// non esistevano ancora linee per l'anno
-								// rendi visibile quella che hai disegnato e impostala
-								horizontalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
+								// no existing lines in year
+								// make visible the one just drawn
 								horizontalLine.attr("id", "static");
 								scope.drawnHorizontalLinesByRecipient[sliceIndex] = horizontalLine;
 							}
 							else
 							{
-								// esistevano già linee orizzontali
+								// there exist already drawn lines
 								if (parseFloat(horizontalLine.attr("length")) >= parseFloat(existingHorizontalLine.attr("length")))
 								{
-									existingHorizontalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
-									existingHorizontalLine.attr("id", "dynamic");
-									horizontalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
+									existingHorizontalLine.classed("hidden", true);
+									existingHorizontalLine.attr("id", "dynamic");									
 									horizontalLine.attr("id", "static");
 									scope.drawnHorizontalLinesByRecipient[sliceIndex] = horizontalLine;
 								}
 								else
 								{
-									horizontalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
+									horizontalLine.classed("hidden", true);
 									horizontalLine.attr("id", "dynamic");
 								}
 							}
@@ -662,9 +618,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				var verticalLine = verticalLinesContainer.insert("line", ":first-child")
 					.attr("class", "vertical-line " + composedClass + " l" + letter.id)
 					.attr("length", sliceOffset)
-	    			.style("stroke", scope.VERTICAL_LINES_COLOR)
 	                .style("stroke-dasharray", verticalLineDasharray)
-	                .style("stroke-width", scope.VERTICAL_LINES_WIDTH)
 	                .attr("transform", "translate(0," + (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset) + ")")
                 	.attr("x1", CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual)
 	                .attr("y1", -(sliceOffset + scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES))
@@ -674,26 +628,25 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				var existingVerticalLine = drawnVerticalLinesByYear[letter.accuratYear];
 				if (existingVerticalLine == null)
 				{
-					// non esistevano ancora linee per l'anno
-					// rendi visibile quella che hai disegnato e impostala
-					verticalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
+					// no existing lines in year
+					// make visible the one just drawn
 					verticalLine.attr("id", "static");
 					drawnVerticalLinesByYear[letter.accuratYear] = verticalLine;
 				}
 				else
 				{
-					// esistevano già linee verticali
+					// there exist already drawn lines
 					if (parseFloat(verticalLine.attr("length")) > parseFloat(existingVerticalLine.attr("length")))
 					{
-						existingVerticalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
+						// new one is longer than existing one
+						existingVerticalLine.classed("hidden", true);
 						existingVerticalLine.attr("id", "dynamic");
-						verticalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_YES);
 						verticalLine.attr("id", "static");
 						drawnVerticalLinesByYear[letter.accuratYear] = verticalLine;
 					}
 					else
 					{
-						verticalLine.style("visibility", scope.VERTICAL_LINES_VISIBILITY_NO);
+						verticalLine.classed("hidden", true);
 						verticalLine.attr("id", "dynamic");
 					}
 				}
