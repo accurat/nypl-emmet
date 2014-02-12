@@ -1,64 +1,50 @@
-emmetApp.directive('popup', ['DataService', 'TimeService', 'CanvasService', 'ColorService', 'SymbolsService', 'LocationService', '$routeParams', 'HighlightService', function(DataService, TimeService, CanvasService, ColorService, SymbolsService, LocationService, $routeParams, HighlightService) 
-{
+emmetApp.directive('popup', ['HighlightService', '$window', function (HighlightService, $window) {
 	return {
 		restrict: 'E',
 		replace: true,
-		transclude: false,
-		scope: 
-		{
-			
-		},
+		scope: false,
 		controller: 'PopupController',
-		template: function()
-		{
-			var directiveTemplate = '<div class="popup-container">';
-				directiveTemplate += '<div class="popup-contents">';
-					directiveTemplate += 'From: {{letter.authors[0].name}}<br/><br/>';
-					directiveTemplate += 'To: {{letter.recipients[0].name}}<br/><br/>';
-					directiveTemplate += '{{letter.place.name}}<br/>';
-					directiveTemplate += '{{formattedLetterDate}}<br/><br/>';					
-					directiveTemplate += '{{letter.emmetContent}}.<br/>';
-				directiveTemplate += '</div>';
-			directiveTemplate += '</div>';
-			
-			return directiveTemplate;
-		},
-		link: function (scope, element) 
-		{
+		templateUrl: 'app/templates/PopupTemplate.html',
+		link: function (scope, element) {
+
+			//TODO fix when fixed the final css for popup
+			var popupWidth = 258,
+				popupHeight = 356,
+				margin = 10;
+
 			scope.$watch(
-					function() {return HighlightService.getLetterId();}, 
-					function (newValue, oldValue) 
-					{
-						if (newValue) 
-						{
-							scope.display(newValue);
-						}	
-						else
-						{
-							scope.hide();
-						}
-					}, true);
-			
-			
-			scope.display = function(letterId)
-			{
-				
-				var coordinates = [0, 0];
-				coordinates = d3.mouse(d3.select("document.body"));
-				var x = coordinates[0];
-				var y = coordinates[1];
-				
+				function () {
+					return HighlightService.getLetterId();
+				},
+				function (newValue, oldValue) {
+					if (newValue) {
+						scope.show();
+					}
+					else {
+						scope.hide();
+					}
+				}, true);
+
+
+			scope.show = function () {
+				var body = angular.element('body')[0],
+					windowWidth = $window.outerWidth,
+					windowHeight = $window.outerHeight,
+					coordinates = d3.mouse(body),
+					x = coordinates[0] > windowWidth - popupWidth ? coordinates[0] - popupWidth + margin : coordinates[0] + margin,
+					y = coordinates[1] > windowHeight - popupHeight ? coordinates[1] - popupHeight + margin : coordinates[1] + margin;
+
+
 				d3.select(".popup-container")
 					.style("visibility", "visible")
-					.style("top", y)
-					.style("left", x);
+					.style("top", y + "px")
+					.style("left", x + "px");
 			};
-			
-			scope.hide = function()
-			{
+
+			scope.hide = function () {
 				d3.select(".popup-container").style("visibility", "hidden");
 			};
-			
+
 		}
 	};
 }]);
