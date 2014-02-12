@@ -11,109 +11,23 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		init: function(receivedData)
 		{
 			data = receivedData;
-			this.processLetters();
 			this.processPeople();
-			
-			//this.analyzeLetterDates();
+			this.processPlaces();
+			this.processLetters();
 			
 			hasData = true;
 		},
-		
-		analyzeLetterDates: function()
-		{
-			var dataDates = {};
-			dataDates.lettersPerMonthYear = new Array();
-			
-
-			for (var letterId in data.accuratLetters)
-			{
-				var date = new Date(data.accuratLetters[letterId].date);
-				
-				var year = date.getFullYear();
-				var month = date.getMonth();
-				
-				var id = "" + year + "-" + month;
-				
-				if (!dataDates.lettersPerMonthYear[id]) dataDates.lettersPerMonthYear[id] = 0;
-				dataDates.lettersPerMonthYear[id] += 1;
-			}
-			
-			console.log(dataDates.lettersPerMonthYear);
-			
-			
-		},
-		
-		prepareDataMap: function(dataType)
-		{
-			var dataMap = {};
-			dataMap.lettersByPlaceCatId = new Array();
-			dataMap.lettersByStateSymbol = new Array();
-			dataMap.lettersByCountry = new Array();
-			
-			for (var letterId in data.accuratLetters)
-			{
-				var place = data.accuratLetters[letterId].place;
-				
-				if (!dataMap.lettersByPlaceCatId[place.categoryId]) dataMap.lettersByPlaceCatId[place.categoryId] = new Array();
-				dataMap.lettersByPlaceCatId[place.categoryId].push(place);
-				
-				if (place.hasState == 1)
-				{
-					if (!dataMap.lettersByStateSymbol[place.state]) dataMap.lettersByStateSymbol[place.state] = new Array();
-					dataMap.lettersByStateSymbol[place.state].push(place);
-				}
-				
-				if (place.hasCountry == 1)
-				{
-					if (!dataMap.lettersByCountry[place.country]) dataMap.lettersByCountry[place.country] = new Array();
-					dataMap.lettersByCountry[place.country].push(place);
-				}
-				
-			}
-			
-			
-			
-			/*var collection = null;
-			if (dataType == SymbolsService.dataAccurat)
-			{
-				console.log("USING ACCURAT");
-				collection = data.accuratLetters;
-				
-			}
-			else
-			{
-				console.log("USING EMMET");
-				collection = data.emmetLetters;
-			}
-			
-			collection.forEach(function(letter)
-			{
-				//if (TimeService.isLetterInTimeline(letter))
-				{
-					if (!dataMap.lettersByPlace[letter.place.name]) dataMap.lettersByPlace[letter.place.name] = new Array();
-					dataMap.lettersByPlace[letter.place.name].push(letter);
-				}
-			});
-			
-			for (var place in dataMap.lettersByPlace)
-			{
-				dataMap.lettersByPlaceArray.push(dataMap.lettersByPlace[place]);
-			}
-			
-			dataMap.lettersByPlaceArray.sort(function(a,b)
-					{return b.length - a.length;});*/
-			
-			
-			
-			
-			return dataMap;
-		},
-		
 		
 		processPeople: function()
 		{
 			data.accuratPeople = this.processAccuratPeopleByEnumeration(data.peopleByAccuratId);
 			data.emmetPeople = this.processEmmetPeopleByEnumeration(data.peopleByEmmetId);
+		},
+		
+		processPlaces: function()
+		{
+			data.accuratPlaces = this.processAccuratPlacesByEnumeration(data.placeByAccuratId);
+			data.emmetPlaces = this.processEmmetPlacesByEnumeration(data.placeByEmmetId);
 		},
 		
 		processLetters: function()
@@ -133,25 +47,27 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		{
 			var accuratLetter = {};
 			// varying fields
-			accuratLetter.authorTotal = letter.accuratAuthorTotal;
-			accuratLetter.authorTotalInYear = letter.accuratAuthorTotalInYear;
-			accuratLetter.authors = this.processAccuratPeopleByIndex(letter.accuratAuthors);
-			accuratLetter.chapterId = letter.accuratChapterId;
-			accuratLetter.chapterName = letter.accuratChapterName;
-			accuratLetter.date = letter.accuratDate;
-			accuratLetter.id = letter.accuratId;
-			accuratLetter.place = this.processAccuratPlace(letter.accuratPlace);
-			accuratLetter.recipients = this.processAccuratPeopleByIndex(letter.accuratRecipients);
+			accuratLetter.authorTotal = letter.aAutTot;
+			accuratLetter.authorTotalInYear = letter.aAutTotInYear;
+			accuratLetter.authors = this.processAccuratPeopleByIndex(letter.aAut);
+			accuratLetter.chapterId = letter.aChapId;
+			accuratLetter.chapterName = letter.aChapName;
+			accuratLetter.date = letter.aDate;
+			accuratLetter.id = letter.aId;
+			accuratLetter.place = this.getPlaceById(SymbolsService.dataAccurat, letter.aPl);
+			accuratLetter.recipients = this.processAccuratPeopleByIndex(letter.aRec);
 			// common fields
-			accuratLetter.accuratPlaceAssignment = letter.accuratPlaceAssignment;
-			accuratLetter.accuratYear = letter.accuratYear;
-			accuratLetter.emmetAuthorString = letter.emmetAuthorString;
-			accuratLetter.emmetContent = letter.emmetContent;
-			accuratLetter.emmetPhysDesc = letter.emmetPhysDesc;
-			accuratLetter.emmetPlaceString = letter.emmetPlaceString;
-			accuratLetter.emmetRecipientString = letter.emmetRecipientString;
-			accuratLetter.emmetSubChapter = letter.emmetSubChapter;
-			accuratLetter.emmetText = letter.emmetText;
+			accuratLetter.accuratYear = letter.aYear;
+			accuratLetter.accuratChapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
+			accuratLetter.emmetAuthorString = letter.eAutSt;
+			accuratLetter.emmetContent = letter.eContent;
+			accuratLetter.emmetPhysDesc = letter.ePhysDesc;
+			accuratLetter.emmetRecipientString = letter.eRecSt;
+			accuratLetter.emmetChapter = this.getChapterById(SymbolsService.dataEmmet, letter.eChapId);
+			accuratLetter.emmetText = letter.eText;
+			
+			
+			console.log(accuratLetter);
 			
 			return accuratLetter;
 		},
@@ -160,25 +76,24 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		{
 			var emmetLetter = {};
 			// varying fields
-			emmetLetter.authorTotal = letter.emmetAuthorTotal;
-			emmetLetter.authorTotalInYear = letter.emmetAuthorTotalInYear;
-			emmetLetter.authors = this.processEmmetPeopleByIndex(letter.emmetAuthors);
-			emmetLetter.chapterId = letter.emmetChapterId;
-			emmetLetter.chapterName = letter.emmetChapterName;
-			emmetLetter.date = letter.emmetDate;
-			emmetLetter.id = letter.emmetId;
-			emmetLetter.place = this.processEmmetPlace(letter.emmetPlace);
-			emmetLetter.recipients = this.processEmmetPeopleByIndex(letter.emmetRecipients);
+			emmetLetter.authorTotal = letter.eAutTot;
+			emmetLetter.authorTotalInYear = letter.eAutTotInYear;
+			emmetLetter.authors = this.processEmmetPeopleByIndex(letter.eAut);
+			emmetLetter.chapterId = letter.eChapId;
+			emmetLetter.chapterName = letter.eChapName;
+			emmetLetter.date = letter.eDate;
+			emmetLetter.id = letter.eId;
+			emmetLetter.place = this.getPlaceById(SymbolsService.dataEmmet, letter.ePl);
+			emmetLetter.recipients = this.processEmmetPeopleByIndex(letter.eRec);
 			// common fields
-			emmetLetter.accuratPlaceAssignment = letter.accuratPlaceAssignment;
-			emmetLetter.accuratYear = letter.accuratYear;
-			emmetLetter.emmetAuthorString = letter.emmetAuthorString;
-			emmetLetter.emmetContent = letter.emmetContent;
-			emmetLetter.emmetPhysDesc = letter.emmetPhysDesc;
-			emmetLetter.emmetPlaceString = letter.emmetPlaceString;
-			emmetLetter.emmetRecipientString = letter.emmetRecipientString;
-			emmetLetter.emmetSubChapter = letter.emmetSubChapter;
-			emmetLetter.emmetText = letter.emmetText;
+			emmetLetter.accuratYear = letter.aYear;
+			emmetLetter.accuratChapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
+			emmetLetter.emmetAuthorString = letter.eAutSt;
+			emmetLetter.emmetContent = letter.eContent;
+			emmetLetter.emmetPhysDesc = letter.ePhysDesc;
+			emmetLetter.emmetRecipientString = letter.eRecSt;
+			emmetLetter.emmetChapter = this.getChapterById(SymbolsService.dataEmmet, letter.eChapId);
+			emmetLetter.emmetText = letter.eText;
 			
 			return emmetLetter;
 		},
@@ -186,19 +101,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		processAccuratPeopleByIndex: function(accuratPeople)
 		{
 			var people = new Array();
-			
-			for (var i = 0; i < accuratPeople.length; i++)
-			{
-				var accuratPerson = accuratPeople[i];
-				var person = {};
-				
-				person.id = accuratPerson.accuratId;
-				person.name = accuratPerson.accuratName;
-				person.isPerson = accuratPerson.isPerson;
-				person.isCorporation = accuratPerson.isCorporation;
-				
-				people.push(person);
-			}
+			for (var i = 0; i < accuratPeople.length; i++) people.push(this.getPersonById(SymbolsService.dataAccurat, accuratPeople[i]));
 			
 			return people;
 		},
@@ -206,19 +109,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		processEmmetPeopleByIndex: function(emmetPeople)
 		{
 			var people = new Array();
-			
-			for (var i = 0; i < emmetPeople.length; i++)
-			{
-				var emmetPerson = emmetPeople[i];
-				var person = {};
-				
-				person.id = emmetPerson.emmetId;
-				person.name = emmetPerson.emmetName;
-				person.isPerson = emmetPerson.isPerson;
-				person.isCorporation = emmetPerson.isCorporation;
-				
-				people.push(person);
-			}
+			for (var i = 0; i < emmetPeople.length; i++) people.push(this.getPersonById(SymbolsService.dataEmmet, emmetPeople[i]));
 			
 			return people;
 		},
@@ -232,10 +123,8 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				var accuratPerson = accuratPeople[accuratPersonId];
 				var person = {};
 				
-				person.id = accuratPerson.accuratId;
-				person.name = accuratPerson.accuratName;
-				person.isPerson = accuratPerson.isPerson;
-				person.isCorporation = accuratPerson.isCorporation;
+				person.id = accuratPerson.aId;
+				person.name = accuratPerson.aName;
 				
 				people.push(person);
 			}
@@ -252,10 +141,8 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				var emmetPerson = emmetPeople[emmetPersonId];
 				var person = {};
 				
-				person.id = emmetPerson.emmetId;
-				person.name = emmetPerson.emmetName;
-				person.isPerson = emmetPerson.isPerson;
-				person.isCorporation = emmetPerson.isCorporation;
+				person.id = emmetPerson.eId;
+				person.name = emmetPerson.eName;
 				
 				people.push(person);
 			}
@@ -263,31 +150,44 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			return people;
 		},
 		
-		processAccuratPlace: function(accuratPlace)
+		processAccuratPlacesByEnumeration: function(accuratPlaces)
 		{
-			var place = {};
+			var places = new Array();
 			
-			place.id = accuratPlace.accuratId;
-			place.name = accuratPlace.accuratName;
-			place.categoryId = accuratPlace.accuratCategoryId;
-			place.categoryName = accuratPlace.accratCategoryName;
-			place.hasState = accuratPlace.accuratHasState;
-			place.state = accuratPlace.accuratState;
-			place.hasCountry = accuratPlace.accuratHasCountry;
-			place.country = accuratPlace.accuratCountry;
+			for (var accuratPlaceId in accuratPlaces)
+			{
+				var accuratPlace = accuratPlaces[accuratPlaceId];
+				var place = {};
+				
+				place.id = accuratPlace.aId;
+				place.name = accuratPlace.aName;
+				place.country = accuratPlace.aCountry;
+				place.state = accuratPlace.aState;
+				
+				places.push(place);
+			}
 			
-			return place;
+			return places;
 		},
 		
-		processEmmetPlace: function(emmetPlace)
+		processEmmetPlacesByEnumeration: function(emmetPlaces)
 		{
-			var place = {};
+			var places = new Array();
 			
-			place.id = emmetPlace.emmetId;
-			place.name = emmetPlace.emmetName;
+			for (var emmetPlaceId in emmetPlaces)
+			{
+				var emmetPlace = emmetPlaces[emmetPlaceId];
+				var place = {};
+				
+				place.id = emmetPlace.eId;
+				place.name = emmetPlace.eName;
+				
+				places.push(place);
+			}
 			
-			return place;
+			return places;
 		},
+		
 		
 		hasData: function()
 		{
@@ -398,7 +298,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 					{
 						if (letter.recipients[j].id == personId)
 						{
-							// la lettera è stata scritta all'autore selezionato per la timeline; la aggiungo a quelle da visualizzare
+							// la lettera ï¿½ stata scritta all'autore selezionato per la timeline; la aggiungo a quelle da visualizzare
 							if (dataTimelinePerson.lettersByRecipient[composedAuthorId] == null || dataTimelinePerson.lettersByRecipient[composedAuthorId] == undefined) dataTimelinePerson.lettersByRecipient[composedAuthorId] = new Array();
 							dataTimelinePerson.lettersByRecipient[composedAuthorId].push(letter);
 						}
@@ -423,7 +323,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		        });
 		    }
 			
-			// ordino i destinatari sulla base della prima lettera scritta in ordine temporale; a parità di anno, ordine alfabetico
+			// ordino i destinatari sulla base della prima lettera scritta in ordine temporale; a paritï¿½ di anno, ordine alfabetico
 			for (var recipient in dataTimelinePerson.lettersByRecipient) dataTimelinePerson.lettersByRecipientArray.push(dataTimelinePerson.lettersByRecipient[recipient]);
 
 			dataTimelinePerson.lettersByRecipientArray.sort(function(a, b)
@@ -459,6 +359,9 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		        }
 		        else return a[0].accuratYear - b[0].accuratYear;
 		    });
+			
+			
+			
 			
 			return dataTimelinePerson;
 		},
@@ -726,22 +629,66 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			{
 				var accuratPerson = data.peopleByAccuratId[personId];
 				
-				person.id = accuratPerson.accuratId;
-				person.name = accuratPerson.accuratName;
-				person.isPerson = accuratPerson.isPerson;
-				person.isCorporation = accuratPerson.isCorporation;
+				person.id = accuratPerson.aId;
+				person.name = accuratPerson.aName;
+				//person.isPerson = accuratPerson.isPerson;
+				//person.isCorporation = accuratPerson.isCorporation;
 			}
 			else
 			{
 				var emmetPerson = data.peopleByEmmetId[personId];
 				
-				person.id = emmetPerson.emmetId;
-				person.name = emmetPerson.emmetName;
-				person.isPerson = emmetPerson.isPerson;
-				person.isCorporation = emmetPerson.isCorporation;
+				person.id = emmetPerson.eId;
+				person.name = emmetPerson.eName;
+				//person.isPerson = emmetPerson.isPerson;
+				//person.isCorporation = emmetPerson.isCorporation;
 			}
 			
 			return person;
+		},
+		
+		getPlaceById: function(dataType, placeId)
+		{
+			var place = {};
+			if (dataType == SymbolsService.dataAccurat)
+			{
+				var accuratPlace = data.placeByAccuratId[placeId];
+				
+				place.id = accuratPlace.aId;
+				place.name = accuratPlace.aName;
+				place.country = accuratPlace.aCountry;
+				place.state = accuratPlace.aState;
+			}
+			else
+			{
+				var emmetPlace = data.placeByEmmetId[placeId];
+				
+				place.id = emmetPlace.emmetId;
+				place.name = emmetPlace.emmetName;
+			}
+			
+			return place;
+		},
+		
+		getChapterById: function(dataType, chapterId)
+		{
+			var chapter = {};
+			if (dataType == SymbolsService.dataAccurat)
+			{
+				var accuratChapter = data.chapterByAccuratId[chapterId];
+				
+				chapter.id = accuratChapter.aId;
+				chapter.name = accuratChapter.aName;
+			}
+			else
+			{
+				var emmetChapter = data.chapterByEmmetId[chapterId];
+				
+				chapter.id = emmetChapter.eId;
+				chapter.name = emmetChapter.eName;
+			}
+			
+			return chapter;
 		}
 	};
 }]);

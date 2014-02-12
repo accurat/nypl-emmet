@@ -80,6 +80,17 @@ emmetApp.factory('TimeService', function()
 			
 			if (year >= timelineStart && year < timelineEnd) return true;
 			else return false;
-		}
+		},
+		
+		getTimelineStartYear: function()
+		{
+			return timelineStart;
+		},
+		
+		getTimelineEndYear: function()
+		{
+			return timelineEnd;
+		},
+		
 	};
 });

@@ -96,6 +96,23 @@ a {
 	cursor: pointer;
 }
 
+.expansion-text {
+	fill: rgb(168,164,155);
+	font-family: 'Gentium Basic', serif;
+	font-weight: 500;
+	font-size: 11px;
+}
+
+.expansion-text.highlighted {
+	fill: rgb(0,0,0);
+}
+
+.placemark {
+	fill: #FFFFFF;
+	stroke: #000000;
+	stroke-width: 1px;
+	cursor: pointer;
+}
 
 
 /* CONTAINERS */

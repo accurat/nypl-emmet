@@ -53,7 +53,9 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.PLACEMARK_OFFSET_RECIPIENT = scope.RECT_OFFSET_RECIPIENT;
 			scope.PLACEMARK_OFFSET_VERTICAL = scope.RECT_OFFSET_VERTICAL;
 			
-			scope.TIMELINE_EXTENSION_HEIGHT = 150;
+			scope.TIMELINE_EXTENSION_HEIGHT = 30;
+			scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK = 5; // -2 is collapsed to placemark
+			scope.TIMELINE_EXTENSION_CURVES_HEIGHT = 20;
 			
 			
 			// *************************************************************************
@@ -99,6 +101,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
+							d3.selectAll(".expansion-text").filter(".p" + newValue).classed("highlighted", true);
 							d3.selectAll(".person-name-token").filter(".p" + newValue).classed("highlighted", true);
 							d3.selectAll(".bezier-curve").filter(".p" + newValue).classed("highlighted", true);
 							d3.selectAll(".horizontal-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
@@ -106,6 +109,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 						}
 						else
 						{
+							d3.selectAll(".expansion-text").classed("highlighted", false);
 							d3.selectAll(".person-name-token").classed("highlighted", false);
 							d3.selectAll(".bezier-curve").classed("highlighted", false);
 							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
@@ -121,6 +125,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
+							d3.selectAll(".expansion-text").filter(".l" + newValue).classed("highlighted", true);
 							d3.selectAll(".person-name-token").filter(".l" + newValue).classed("highlighted", true);
 							d3.selectAll(".horizontal-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
 							d3.selectAll(".vertical-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
@@ -128,6 +133,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 						}	
 						else
 						{
+							d3.selectAll(".expansion-text").classed("highlighted", false);
 							d3.selectAll(".person-name-token").classed("highlighted", false);
 							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
 							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
@@ -321,6 +327,8 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					placemarkWidthActual = scope.PLACEMARK_WIDTH_MULTI;
 				}
 				
+				var xOffset = (CanvasService.getXoffset(yearLetters[0].accuratYear) + placemarkOffsetActual);
+				
 				recipientContainer.append("rect")
                    	.attr("class", "placemark")
                    	.attr("recipient-container-id", sliceIndex)
@@ -328,180 +336,108 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
             	   	.style("stroke", scope.PLACEMARK_STROKE_COLOR)
             	   	.style("stroke-width", scope.PLACEMARK_STROKE_WIDTH)
         	   		.attr("cursor", "pointer")
-            	   	.attr("transform", "translate(" + (CanvasService.getXoffset(yearLetters[0].accuratYear) + placemarkOffsetActual)  + "," + scope.PLACEMARK_OFFSET_VERTICAL + ")")
+            	   	.attr("transform", "translate(" + xOffset  + "," + scope.PLACEMARK_OFFSET_VERTICAL + ")")
         	   		.attr("width", placemarkWidthActual)
         	   		.attr("height", scope.PLACEMARK_HEIGHT)
         	   		.on("click", function(d)
 	                {
-						scope.displayNestedTimeline(parseInt(d3.select(this).attr("recipient-container-id")), sliceOffset, yearLetters, personId, placemarkType);
+						scope.displayNestedTimeline(parseInt(d3.select(this).attr("recipient-container-id")), sliceOffset, yearLetters, personId, placemarkType, xOffset);
 	                });
             	
 			};
 			
-			scope.displayNestedTimeline = function(selectedSliceIndex, sliceOffset, yearLetters, personId, placemarkType)
+			scope.displayNestedTimeline = function(selectedSliceIndex, sliceOffset, yearLetters, personId, placemarkType, xPlacemark)
 			{
 				if (!scope.isTimelineExpandedForRecipient[selectedSliceIndex])
 				{
 					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = true;
 					scope.expandTimeline(selectedSliceIndex);
 					
-					var xPlacemark = CanvasService.getXoffset(yearLetters[0].accuratYear);
-				    var width = CanvasService.getWidth();
-				    
-				    var leftOfTimelineExpansion = 0;
-				    var centerOfTimelineExpansion = 0;
-					var topOfTimelineExpansion = (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset);
-					for (var i = 0; i < selectedSliceIndex; i++)
-					{
-						if (scope.isTimelineExpandedForRecipient[i]) topOfTimelineExpansion += scope.TIMELINE_EXTENSION_HEIGHT; 
-					}
+					var letterWidth = 15; // width for each letter
+					var canvasWidth = CanvasService.getWidth();
+				    var widthOfTimelineExpansion = letterWidth * yearLetters.length;
+				    var topOfTimelineExpansion = (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset);
+					for (var i = 0; i < selectedSliceIndex; i++) if (scope.isTimelineExpandedForRecipient[i]) topOfTimelineExpansion += scope.TIMELINE_EXTENSION_HEIGHT;
 					
-					var expansionContainer = d3.select(".chartArea").insert("g", "g.rc" + (selectedSliceIndex))
+					var leftOfTimelineExpansion = 0;
+				    if (xPlacemark < widthOfTimelineExpansion/2) leftOfTimelineExpansion = 0;
+				    else if (xPlacemark > (canvasWidth - widthOfTimelineExpansion/2)) leftOfTimelineExpansion = canvasWidth - widthOfTimelineExpansion;
+				    else leftOfTimelineExpansion = xPlacemark - widthOfTimelineExpansion/2;
+				    
+				    var expansionContainer = d3.select(".chartArea").insert("g", "g.rc" + (selectedSliceIndex))
 						.attr("class", "recipient-container expansion rce" + selectedSliceIndex + " rc" + selectedSliceIndex)
 						.attr("baseX", 0)
 		            	.attr("baseY", topOfTimelineExpansion)
 		            	.attr("transform", "translate(0, " + topOfTimelineExpansion + ")");
-						
+					
+					var timelineExpansionScaleDomain = new Array();
+					for (var i = 0; i < yearLetters.length; i++) timelineExpansionScaleDomain.push(i);
+					
+					var timelineExpansionScale = d3.scale.ordinal()
+		    			.rangePoints([0, widthOfTimelineExpansion], 0)
+		    			.domain(timelineExpansionScaleDomain);
+					
 					expansionContainer.append("rect")
-						.attr("width", CanvasService.getWidth())
-						.attr("height", scope.TIMELINE_EXTENSION_HEIGHT)
-						.style("fill", "#F5EEDF")
-						.style("fill-opacity", "0.60");
-					
-					
-				    
-				    
-				    if (xPlacemark < width/3)
-				    {
-				    	leftOfTimelineExpansion = 0;
-				    	centerOfTimelineExpansion = xPlacemark;
-				    }
-				    else if (xPlacemark > (2/3*width)) 
-				    {
-				    	leftOfTimelineExpansion = 1/3*width;
-				    	centerOfTimelineExpansion = xPlacemark - leftOfTimelineExpansion;
-				    }
-				    else
-				    {
-				    	leftOfTimelineExpansion = xPlacemark - (width/3);
-				    	centerOfTimelineExpansion = 0.5*(width*2/3);
-				    }
-					
-					var monthAxis = d3.svg.axis()
-			        	.scale(CanvasService.getMonthScale())
-			        	.orient("bottom");
-					
-				    var expansionChartArea = expansionContainer.append("g")
-			    		.attr("class", "LettersContainer")
-			    		.attr("transform", "translate(" + CanvasService.getMargin().left + "," + CanvasService.getMargin().top + ")");
-			    
-				    expansionContainer.append("rect")
-						.attr("width", CanvasService.getWidth()*2/3)
-						.attr("height", 143)
+						.attr("width", widthOfTimelineExpansion + 80)
+						.attr("height", 25)
 						.style("fill", "#F5EEDF")
 						.style("fill-opacity", "0.70")
-						.attr("transform", "translate(" + leftOfTimelineExpansion + "," + -13 + ")");
+						.attr("transform", "translate(" + (leftOfTimelineExpansion - 57) + "," + 4 + ")");
 				    
-				    expansionContainer.append("g")
-				        .attr("class", "xAxis")
-				        .attr("transform", "translate(" + leftOfTimelineExpansion + "," + 80 + ")")
-				        .call(monthAxis)
-				        .selectAll("text")
-				        .style("font-size", scope.X_AXIS_FONT_SIZE)
-				        .style("font-weight", scope.X_AXIS_FONT_WEIGHT)
-				        .style("font-family", scope.X_AXIS_FONT_FAMILY);
+				    var textComposedClass;				   
+				    // add people id
+				    var isAuthor = DataService.isPersonAuthorById(personId, yearLetters[0]); 
+				    if (isAuthor) for (var i = 0; i < yearLetters[0].recipients.length; i++) textComposedClass += " p" + yearLetters[0].recipients[i].id;
+				    else for (var i = 0; i < yearLetters[0].authors.length; i++) textComposedClass += " p" + yearLetters[0].authors[i].id;
+				    // add letters id
+				    for (var i = 0; i < yearLetters.length; i++) textComposedClass += " l" + yearLetters[i].id;				    
+				    
+				    expansionContainer.append("text")
+				    	.attr("class", "expansion-text " + textComposedClass)
+				    	.text(yearLetters[0].accuratYear + "   [")
+				    	.attr("text-anchor", "end")
+				    	.attr("transform", "translate(" + (leftOfTimelineExpansion - 8) + ",23)");
+				    
+				    expansionContainer.append("text")
+				    	.attr("class", "expansion-text " + textComposedClass)
+				    	.text("]")
+				    	.attr("text-anchor", "start")
+				    	.attr("transform", "translate(" + (leftOfTimelineExpansion - 8 + widthOfTimelineExpansion + 8 + 14) + ",23)");
+
+				    var placemarkOffset = 0;
+					if (placemarkType == 0) placemarkOffset = scope.RECT_WIDTH/2;
+				    else if (placemarkType == 1) placemarkOffset = scope.RECT_WIDTH/2;
+				    else placemarkOffset = scope.RECT_WIDTH;
 					
-				    var horizontalLine = expansionContainer.append("line")
-	        			//.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex)
-	        			//.attr("length", length)
-	        			.attr("x1", 0)
-		                .attr("y1", 0)
-		                .attr("x2", width*2/3)
-		                .attr("y2", 0)
-		                .attr("transform", "translate(" + leftOfTimelineExpansion + ",80)")
-		                .style("stroke", "rgb(168,164,155)")
-		                .style("stroke-width", "1px");
-				    
-				    
-				    var drawAuthor = false;
-				    var drawRecipient = false;
-				    
-				    if (placemarkType == 0)
-				    {
-				    	drawAuthor = true;
-				    }
-				    else if (placemarkType == 1)
-				    {
-				    	drawRecipient = true;
-				    }
-				    else
-				    {
-				    	drawAuthor = true;
-				    	drawRecipient = true;
-				    }
-				    
-				    if (drawAuthor)
-				    {
-				    	expansionContainer.append("line")
-		        			//.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex)
-		        			//.attr("length", length)
-		        			.attr("x1", leftOfTimelineExpansion + centerOfTimelineExpansion + scope.VERTICAL_LINES_OFFSET_AUTHOR)
-			                .attr("y1", -2)
-			                .attr("x2", leftOfTimelineExpansion + centerOfTimelineExpansion + scope.VERTICAL_LINES_OFFSET_AUTHOR)
-			                .attr("y2", 15)
-			                .style("stroke", "rgb(168,164,155)")
-			                .style("stroke-width", "1px");
-				    }
-				    
-				    if (drawRecipient)
-				    {
-				    	expansionContainer.append("line")
-		        			//.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex)
-		        			//.attr("length", length)
-		        			.attr("x1", leftOfTimelineExpansion + centerOfTimelineExpansion + scope.VERTICAL_LINES_OFFSET_RECIPIENT)
-			                .attr("y1", -2)
-			                .attr("x2", leftOfTimelineExpansion + centerOfTimelineExpansion + scope.VERTICAL_LINES_OFFSET_RECIPIENT)
-			                .attr("y2", 15)
-			                .style("stroke", "rgb(168,164,155)")
-			                .style("stroke-dasharray", "3,2")
-			                .style("stroke-width", "1px");
-				    }
-				    
-				    var dayScale = CanvasService.getDayScale();
-				    
 				    for (var i = 0; i < yearLetters.length; i++)
 				    {
 				    	var letter = yearLetters[i];
 				    	var isAuthor = DataService.isPersonAuthorById(personId, letter);
-				    	var xOffset = leftOfTimelineExpansion + dayScale(TimeService.getDayOfYear(letter.date));
+				    	var xOffset = leftOfTimelineExpansion + timelineExpansionScale(i);
 				    	var lineDasharray;
-				    	var lineVerticalOffset;
+				    	var lineComposedClass = " l" + letter.id;
 				    	
 				    	if (isAuthor)
 				    	{
 				    		lineDasharray = scope.VERTICAL_LINES_DASHARRAY_AUTHOR;
-				    		lineVerticalOffset = scope.VERTICAL_LINES_OFFSET_AUTHOR;
+				    		for (var k = 0; k < letter.recipients.length; k++) lineComposedClass += " p" + letter.recipients[k].id;
 				    	}
 				    	else
 				    	{
 				    		lineDasharray = scope.VERTICAL_LINES_DASHARRAY_RECIPIENT;
-				    		lineVerticalOffset = scope.VERTICAL_LINES_OFFSET_RECIPIENT;
+				    		for (var k = 0; k < letter.authors.length; k++) lineComposedClass += " p" + letter.authors[k].id;
 				    	}
 				    	
-					    var xBezierCurveStart = leftOfTimelineExpansion + centerOfTimelineExpansion + lineVerticalOffset;
-					    var yBezierCurveStart = 15;
-					   
-					   	var xBezierCurveEnd = xOffset;
-				       	var yBezierCurveEnd = 80;			            	
-				       	
-				       	var xBezierCurveControl = xOffset;
-				       	var yBezierCurveControl = 15;
-				       	
+					    var xBezierCurveStart = placemarkOffset + xPlacemark;
+					    var yBezierCurveStart = scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
+					   	var xBezierCurveEnd = placemarkOffset + xOffset;
+				       	var yBezierCurveEnd = scope.TIMELINE_EXTENSION_CURVES_HEIGHT;			            	
+				       	var xBezierCurveControl = placemarkOffset + xOffset;
+				       	var yBezierCurveControl = scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
 			        	var d = "M" + xBezierCurveStart + "," + yBezierCurveStart + " Q" + xBezierCurveControl + "," + yBezierCurveControl + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
 			        	
 			        	expansionContainer.append("path")
-			        		.attr("class", "bezier-curve")
-			        		.attr("transform", "translate(" + 0 + ",0)")
+			        		.attr("class", "bezier-curve " + lineComposedClass)
 			        		.attr("d", d)
 			        		.style("stroke-dasharray", lineDasharray);
 						
@@ -509,9 +445,19 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			            	.attr("letter-id", letter.id)
 		        	   		.attr("letter-year", letter.accuratYear)
-			            	.attr("transform", "translate(" + (xOffset - scope.RECT_WIDTH/2)  + "," + (80 - scope.RECT_HEIGHT/2) + ")")
+			            	.attr("transform", "translate(" + (placemarkOffset + xOffset - scope.RECT_WIDTH/2)  + "," + (scope.TIMELINE_EXTENSION_CURVES_HEIGHT - scope.RECT_HEIGHT/2) + ")")
 		        	   		.attr("width", scope.RECT_WIDTH)
-		        	   		.attr("height", scope.RECT_HEIGHT);
+		        	   		.attr("height", scope.RECT_HEIGHT)
+		        	   		.on("mouseover", function(d)
+			                {
+								var element = d3.select(this);
+								scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+			                })
+			                .on("mouseout", function(d)
+			                {
+			                	var element = d3.select(this);
+			                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+			                });
 				    }
 				}	
 				else

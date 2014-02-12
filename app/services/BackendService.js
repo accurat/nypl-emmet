@@ -5,7 +5,7 @@ emmetApp.factory('BackendService', function($http, $q)
 		loadData: function()
 		{
 			var deferred = $q.defer();
-			$http.get("data/letters.json")
+			$http.get("data/letters_min.json")
 				.success(function(data)
 				{
 					deferred.resolve(data);
