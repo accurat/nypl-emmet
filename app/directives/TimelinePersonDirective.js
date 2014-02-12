@@ -56,6 +56,11 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			
 			
 			// *************************************************************************
+			// DATA
+			// *************************************************************************
+			scope.dataTimelinePerson = null;
+			
+			// *************************************************************************
 			// DRAWN ELEMENTS DUMMY VARIABLES
 			// *************************************************************************
 			scope.processedLetterIds = new Array();
@@ -76,6 +81,10 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.isTimelineExpandedForRecipient = new Array();
 			scope.baseViewerHeight = 0;
 			scope.recipientContainerCount = 0;
+			
+			
+			
+			
 			
 		    // *************************************************************************
 			// WATCH LISTENERS
@@ -150,12 +159,12 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			
 			scope.draw = function() 
 			{
-				var dataTimelinePerson = DataService.getData($routeParams.dataType, SymbolsService.dataTimelineAuthor, $routeParams.personId);
-				var maximumSlicesHeight = dataTimelinePerson.lettersByRecipientArray.length * scope.HORIZONTAL_SLICE_HEIGHT;
+				scope.dataTimelinePerson = DataService.getData($routeParams.dataType, SymbolsService.dataTimelineAuthor, $routeParams.personId);
+				var maximumSlicesHeight = scope.dataTimelinePerson.length * scope.HORIZONTAL_SLICE_HEIGHT;
 			    var maximumViewerHeight = CanvasService.getMargin().top + CanvasService.getMargin().bottom + CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + maximumSlicesHeight;
 				scope.baseViewerHeight = maximumViewerHeight;
 			    
-				scope.initializeDummyVariables(dataTimelinePerson);
+				scope.initializeDummyVariables();
 				
 				var svg = d3.select(".timeline-person").append("svg")
 		        	.attr("class", "viewer")
@@ -175,9 +184,19 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			        .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getHeight()/3 - (scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE + scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES - scope.X_AXIS_HEIGHT)/2) + ")")
 			        .call(xAxis)
 			        .selectAll("text")
-			        .style("font-size", scope.X_AXIS_FONT_SIZE)
-			        .style("font-weight", scope.X_AXIS_FONT_WEIGHT)
-			        .style("font-family", scope.X_AXIS_FONT_FAMILY);
+			        	.attr("class", function(d) {return "y" + d3.select(this).text();})
+			        	.on("click", function(d) 
+			        	{
+			        		if (d3.select(this).classed("expand-all"))
+			        		{
+			        			var selection = d3.selectAll(".placemark").filter(".y" + d3.select(this).text()).each(function(d, i)
+				        		{
+			        				var sliceIndex = parseInt(d3.select(this).attr("recipient-container-id"));
+			        				var year = parseInt(d3.select(this).attr("year"));
+			        				scope.$apply(function() {scope.displayNestedTimeline(sliceIndex, year);});				        			
+				        		});
+			        		}
+			        	});
 			    
 			    var curvesContainer = svg.append("g")
 			    	.attr("id", "curves-container")
@@ -199,10 +218,10 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    for (var yearIndex = 0; yearIndex < years.length; yearIndex++)
 			    {
 			    	var year = years[yearIndex];
-			    	scope.recipientContainerCount = dataTimelinePerson.lettersByRecipientArray.length;
-			    	for (var sliceIndex = 0; sliceIndex < dataTimelinePerson.lettersByRecipientArray.length; sliceIndex++)
+			    	scope.recipientContainerCount = scope.dataTimelinePerson.length;
+			    	for (var sliceIndex = 0; sliceIndex < scope.dataTimelinePerson.length; sliceIndex++)
 			    	{
-			    		var sliceLetters = dataTimelinePerson.lettersByRecipientArray[sliceIndex];
+			    		var sliceLetters = scope.dataTimelinePerson[sliceIndex];
 			    		if (!scope.hasProcessedRecipient(sliceIndex) && scope.sliceHasLettersInYear(sliceLetters, year))
 			    		{
 			    			var recipientContainer = scope.drawRecipientContainer(chartArea, sliceIndex, sliceLetters);
@@ -350,7 +369,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
         		return composedClass;
 			};
 			
-			scope.initializeDummyVariables = function(dataTimelinePerson)
+			scope.initializeDummyVariables = function()
 			{
 				var years = TimeService.getYears();
 			    for (var year in years)
@@ -362,7 +381,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    scope.drawnVerticalLinesRecipientByYear[year] = null;
 			    }
 			    
-			    for (var recipientIndex = 0; recipientIndex < dataTimelinePerson.lettersByRecipientArray.length; recipientIndex++)
+			    for (var recipientIndex = 0; recipientIndex < scope.dataTimelinePerson.length; recipientIndex++)
 			    {
 			    	scope.drawnRecipientsByContainer[recipientIndex] = null;
 			    	scope.drawnLettersByRecipient[recipientIndex] = false;
@@ -476,6 +495,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				container.append("rect")
                    	.attr("class", "placemark pm" + sliceIndex + " y" + year)
                    	.attr("recipient-container-id", sliceIndex)
+                   	.attr("year", year)
                    	.attr("type", placemarkType)
                    	.attr("baseX", xOffset)
             	   	.attr("transform", "translate(" + xOffset  + "," + scope.PLACEMARK_OFFSET_VERTICAL + ")")
@@ -483,21 +503,35 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
         	   		.attr("height", scope.PLACEMARK_HEIGHT)
         	   		.on("click", function(d)
 	                {
-						scope.displayNestedTimeline(parseInt(d3.select(this).attr("recipient-container-id")), yearLetters);
+						scope.displayNestedTimeline(parseInt(d3.select(this).attr("recipient-container-id")), parseInt(d3.select(this).attr("year")));
 	                });
+				
+				d3.selectAll("text").filter(".y" + year).classed("expand-all", true);
             	
 			};
 			
-			scope.displayNestedTimeline = function(selectedSliceIndex, yearLetters)
+			scope.getSliceLettersInYear = function(sliceIndex, year)
+			{
+				var sliceLettersInYear = [];
+				if (sliceIndex == null) return sliceLettersInYear;
+				if (year == null) return sliceLettersInYear;
+				
+				for (var i = 0; i < scope.dataTimelinePerson[sliceIndex].length; i++)
+				{
+					if (scope.dataTimelinePerson[sliceIndex][i].accuratYear == year) sliceLettersInYear.push(scope.dataTimelinePerson[sliceIndex][i]);
+				}
+				
+				return sliceLettersInYear;
+			};
+			
+			scope.displayNestedTimeline = function(selectedSliceIndex, year)
 			{
 				if (!scope.isTimelineExpandedForRecipient[selectedSliceIndex])
 				{
 					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = true;
 					scope.expandTimeline(selectedSliceIndex);
 					
-					var year = yearLetters[0].accuratYear;
-					
-					
+					var yearLetters = scope.getSliceLettersInYear(selectedSliceIndex, year);
 					var parentPlacemark = d3.selectAll(".placemark").filter(".pm" + selectedSliceIndex).filter(".y" + year);
 					var placemarkType = parseInt(parentPlacemark.attr("type"));
 					var xPlacemark = parseFloat(parentPlacemark.attr("baseX"));

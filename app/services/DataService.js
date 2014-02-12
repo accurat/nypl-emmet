@@ -257,8 +257,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		prepareDataPerson: function(dataType, personId)
 		{
 			var that = this;
-			var dataTimelinePerson = {};
-			dataTimelinePerson.lettersByRecipientArray = [];
+			var dataTimelinePerson = [];
 			
 			var lettersFromAuthor = new Array();
 			var lettersByRecipient = new Array();
@@ -338,9 +337,9 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		    }
 			
 			// ordino i destinatari sulla base della prima lettera scritta in ordine temporale; a parit� di anno, ordine alfabetico
-			for (var recipient in lettersByRecipient) dataTimelinePerson.lettersByRecipientArray.push(lettersByRecipient[recipient]);
+			for (var recipient in lettersByRecipient) dataTimelinePerson.push(lettersByRecipient[recipient]);
 
-			dataTimelinePerson.lettersByRecipientArray.sort(function(a, b)
+			dataTimelinePerson.sort(function(a, b)
 		    {
 		        // a,b sono vettori di lettere (rispettivamente gli insiemi di due recipient)
 				if (a[0].accuratYear == b[0].accuratYear)
