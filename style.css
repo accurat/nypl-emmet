@@ -60,7 +60,7 @@ a {
 
 .bezier-curve {
 	fill: none;
-	stroke: #716558;
+	stroke: #ACA195;
 }
 
 .bezier-curve.highlighted {
@@ -69,7 +69,7 @@ a {
 
 .vertical-line {
 	fill: none;
-	stroke: #716558;
+	stroke: #ACA195;
 	stroke-width: 1px;
 }
 
@@ -79,7 +79,7 @@ a {
 
 .horizontal-line {
 	fill: none;
-	stroke: #716558;
+	stroke: #ACA195;
 	stroke-width: 1px;
 }
 
@@ -130,6 +130,22 @@ a {
 
 /* CONTAINERS */
 /* ============================================================ */
+
+.popup-container {
+	font-family: 'Gentium Basic', serif;
+	font-weight: 500;
+	font-size: 13px;
+	position: absolute;
+	visibility: hidden;
+	z-index: 100;
+	background-image: url('img/popup.svg');
+	width: 258px;
+	height: 356px;
+}
+
+.popup-contents {
+	padding: 20px;
+}
 
 .data-selection-container {
 	position: fixed;

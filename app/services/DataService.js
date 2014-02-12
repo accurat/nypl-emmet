@@ -699,6 +699,16 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			return place;
 		},
 		
+		getLetterById: function(dataType, letterId)
+		{
+			var collection = null;
+			if (dataType == SymbolsService.dataAccurat) collection = data.accuratLetters;
+			else collection = data.emmetLetters;
+			
+			for (var i = 0; i < collection.length; i++) if (collection[i].id == letterId) return collection[i];
+		},
+		
+		
 		getChapterById: function(dataType, chapterId)
 		{
 			var chapter = {};
