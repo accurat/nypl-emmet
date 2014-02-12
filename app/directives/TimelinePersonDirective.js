@@ -43,9 +43,6 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.RECT_WIDTH = 6;
 			scope.RECT_HEIGHT = 6;
 			
-			scope.PLACEMARK_COLOR = "#FFFFFF";
-			scope.PLACEMARK_STROKE_COLOR = "#000000";
-			scope.PLACEMARK_STROKE_WIDTH = "1px";
 			scope.PLACEMARK_HEIGHT = scope.RECT_HEIGHT;
 			scope.PLACEMARK_WIDTH_SINGLE = scope.RECT_WIDTH;
 			scope.PLACEMARK_WIDTH_MULTI = 2*scope.RECT_WIDTH + 2;
@@ -90,7 +87,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
-							scope.draw($routeParams.personId);
+							scope.draw();
 						}
 					}, true);
 			
@@ -151,9 +148,9 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			// METHODS
 			// *************************************************************************
 			
-			scope.draw = function(personId) 
+			scope.draw = function() 
 			{
-				var dataTimelinePerson = DataService.getData($routeParams.dataType, SymbolsService.dataTimelineAuthor, personId);
+				var dataTimelinePerson = DataService.getData($routeParams.dataType, SymbolsService.dataTimelineAuthor, $routeParams.personId);
 				var maximumSlicesHeight = dataTimelinePerson.lettersByRecipientArray.length * scope.HORIZONTAL_SLICE_HEIGHT;
 			    var maximumViewerHeight = CanvasService.getMargin().top + CanvasService.getMargin().bottom + CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + maximumSlicesHeight;
 				scope.baseViewerHeight = maximumViewerHeight;
@@ -193,7 +190,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    	.attr("id", "horizontal-lines-container");
 			    
 			    svg.append("text")
-			    	.text(DataService.getPersonById($routeParams.dataType, personId).name)
+			    	.text(DataService.getPersonById($routeParams.dataType, $routeParams.personId).name)
 			    	.attr("class", "author-name")
 			    	.attr("text-anchor", "middle")
 			    	.attr("transform", "translate(" + (CanvasService.getWidth()/2 + CanvasService.getMargin().left)  + "," + (CanvasService.getHeight()/6) + ")");
@@ -208,31 +205,149 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    		var sliceLetters = dataTimelinePerson.lettersByRecipientArray[sliceIndex];
 			    		if (!scope.hasProcessedRecipient(sliceIndex) && scope.sliceHasLettersInYear(sliceLetters, year))
 			    		{
-			    			var recipientContainer = scope.drawRecipientContainer(chartArea, sliceIndex, sliceLetters, personId);
-			    			var sliceOffset = (sliceIndex + 1) * scope.HORIZONTAL_SLICE_HEIGHT;
-				    		var sliceClass = scope.drawName(recipientContainer, sliceOffset, sliceLetters[0], DataService.isPersonAuthorById(personId, sliceLetters[0]), sliceIndex, sliceLetters);
+			    			var recipientContainer = scope.drawRecipientContainer(chartArea, sliceIndex, sliceLetters);
+			    			var sliceClass = scope.drawName(recipientContainer, sliceIndex, sliceLetters);
 				    		
 				    		scope.processedRecipientIds.push(sliceIndex);
-				    		scope.drawHorizontalLine(horizontalLinesContainer, sliceOffset, personId, sliceLetters, sliceIndex, sliceClass);
+				    		scope.drawHorizontalLine(horizontalLinesContainer, sliceLetters, sliceIndex, sliceClass);
 			    			
 				    		for (var letterIndex = 0; letterIndex < sliceLetters.length; letterIndex++)
 				    		{
 				    			var letter = sliceLetters[letterIndex];
 				    			if (!scope.hasProcessedLetter(letter.id))
 				    			{
-				    				var isPersonAuthor = DataService.isPersonAuthorById(personId, letter);
-					    			scope.processedLetterIds.push(letter.id);
-					    			scope.drawBezierCurve(curvesContainer, letter, isPersonAuthor);
-					    			scope.drawVerticalLine(verticalLinesContainer, sliceOffset, letter, isPersonAuthor, personId, sliceIndex);
+				    				scope.processedLetterIds.push(letter.id);
+					    			scope.drawBezierCurve(curvesContainer, letter);
+					    			scope.drawVerticalLine(verticalLinesContainer, letter, sliceIndex);
 					    			
 				    			}
 				    		}
 				    		
-				    		scope.drawLetters(recipientContainer, sliceIndex, sliceOffset, sliceLetters, personId);
+				    		scope.drawLetters(recipientContainer, sliceIndex, sliceLetters);
 				    		
 			    		}
 			    	}
 			    }
+			};
+			
+			scope.drawBezierCurve = function(container, letter)
+			{
+				var isAuthor = DataService.isPersonAuthorById($routeParams.personId, letter);
+				
+				// punto fisso di partenza delle curve di bezier
+			    var xBezierCurveStart = (CanvasService.getWidth()/2);
+			    var yBezierCurveStart = 0;
+			    
+			    var drawnBezierCurvesByYear;
+			    var verticalLineOffsetActual;
+			    var verticalLineDasharray;
+			    
+			    var composedClass;
+			    
+			    if (isAuthor)
+			    {
+			    	drawnBezierCurvesByYear = scope.drawnBezierCurvesAuthorByYear;
+			    	verticalLineOffsetActual = scope.VERTICAL_LINES_OFFSET_AUTHOR;
+    				verticalLineDasharray = scope.VERTICAL_LINES_DASHARRAY_AUTHOR;
+    				composedClass = DataService.getComposedRecipientClass(letter) + " l" + letter.id;
+			    }
+			    else
+			    {
+			    	drawnBezierCurvesByYear = scope.drawnBezierCurvesRecipientByYear;
+			    	verticalLineOffsetActual = scope.VERTICAL_LINES_OFFSET_RECIPIENT;
+    				verticalLineDasharray = scope.VERTICAL_LINES_DASHARRAY_RECIPIENT;
+    				composedClass = DataService.getComposedAuthorClass(letter) + " l" + letter.id;
+			    }
+			    
+			    var existingBezierCurve = drawnBezierCurvesByYear[letter.accuratYear];
+				if (existingBezierCurve == null)
+				{
+					// no existing beziers in year
+					// draw the curve
+					// make it visible
+					// set it as drawn
+					
+					var xBezierCurveEnd = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
+		        	var yBezierCurveEnd = CanvasService.getHeight()/6 - scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES - scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE;			            	
+		        	var xBezierCurveControl = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
+		        	var yBezierCurveControl = 0;
+		        	
+		        	var d = "M" + xBezierCurveStart + "," + yBezierCurveStart + " Q" + xBezierCurveControl + "," + yBezierCurveControl + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
+		        	
+		        	var bezierCurve = container.append("path")
+		        		.attr("class", "bezier-curve " + composedClass)
+		        		.attr("id", "static")
+		        		.attr("d", d)
+		        		.style("stroke-dasharray", verticalLineDasharray);
+					
+					drawnBezierCurvesByYear[letter.accuratYear] = bezierCurve;
+				}
+				else
+				{
+					// curve is already existing
+					// just update curve class attributes
+					var existingBezierCurveClass = existingBezierCurve.attr("class");
+					existingBezierCurveClass += " " + composedClass;
+					existingBezierCurve.attr("class", existingBezierCurveClass);
+				}
+			};
+			
+			scope.drawName = function(container, sliceIndex, sliceLetters)
+			{
+        		var firstLetter = sliceLetters[0];
+				var isAuthor = DataService.isPersonAuthorById($routeParams.personId, firstLetter);
+        		
+				var composedClass;
+        		if (isAuthor) composedClass = DataService.getComposedRecipientClass(firstLetter);
+        		else composedClass = DataService.getComposedAuthorClass(firstLetter);
+        		
+        		if (!scope.drawnRecipientNames[sliceIndex])
+	    		{
+	    			scope.drawnRecipientNames[sliceIndex] = true;
+	    		
+	    			var label = container.append("text")
+						.attr("class", "corresponding-person-container")
+						.attr("text-anchor", "end")
+						.attr("transform", "translate(" + (CanvasService.getXoffset(firstLetter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + ",0)");
+					
+					var peopleCollection;
+					if (isAuthor) peopleCollection = firstLetter.recipients;
+					else peopleCollection = firstLetter.authors;
+					
+					for (var i = 0; i < peopleCollection.length; i++)
+					{
+						var nameToken;
+						if (isAuthor) nameToken = DataService.getComposedRecipientNameToken(firstLetter, i);
+						else nameToken = DataService.getComposedAuthorNameToken(firstLetter, i);
+						
+						var composedClassLetters = "";
+						for (var j = 0; j < sliceLetters.length; j++) composedClassLetters += " l" + sliceLetters[j].id;
+						
+						label.append("tspan")
+		        			.text(nameToken)
+		        			.attr("class", "person-name-token p" + peopleCollection[i].id + composedClassLetters)
+		        			.attr("person-id", peopleCollection[i].id)
+		        			.on("click", function(d) 
+			                {
+		        				HighlightService.setPersonHoverId(null);
+		        				var url = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWho);
+		                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, d3.select(this).attr("person-id"));
+		                    	window.location = url;
+			                })
+			                .on("mouseover", function(d)
+			                {
+								var element = d3.select(this);
+								scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
+			                })
+			                .on("mouseout", function(d)
+			                {
+			                	var element = d3.select(this);
+			                	scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+			                });
+					}
+	    		}
+        		
+        		return composedClass;
 			};
 			
 			scope.initializeDummyVariables = function(dataTimelinePerson)
@@ -257,12 +372,13 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    }
 			};
 			
-			scope.drawLetters = function(recipientContainer, sliceIndex, sliceOffset, sliceLetters, personId)
+			scope.drawLetters = function(container, sliceIndex, sliceLetters)
 			{
 				if (!scope.drawnLettersByRecipient[sliceIndex])
 				{
 					scope.drawnLettersByRecipient[sliceIndex] = true;
 					
+					var sliceOffset = (sliceIndex + 1) * scope.HORIZONTAL_SLICE_HEIGHT;
 					var sliceLettersByYear = new Array();
 					for (var i = 0; i < sliceLetters.length; i++)
 					{
@@ -273,18 +389,45 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					for (var i in sliceLettersByYear)
 					{
 						var yearLetters = sliceLettersByYear[i];
-						if (yearLetters.length == 1) scope.drawRectangle(recipientContainer, sliceOffset, yearLetters[0], DataService.isPersonAuthorById(personId, yearLetters[0]));
-						else scope.drawPlacemark(recipientContainer, sliceOffset, yearLetters, personId, sliceIndex);
+						if (yearLetters.length == 1) scope.drawRectangle(container, yearLetters[0]);
+						else scope.drawPlacemark(container, yearLetters, sliceIndex);
 					}
 				}				
 			};
 			
-			scope.drawPlacemark = function(recipientContainer, sliceOffset, yearLetters, personId, sliceIndex)
+			scope.drawRectangle = function(container, letter)
+			{
+				var isAuthor = DataService.isPersonAuthorById($routeParams.personId, letter);
+				var rectOffsetActual;
+				
+            	if (isAuthor) rectOffsetActual = scope.RECT_OFFSET_AUTHOR;
+            	else rectOffsetActual = scope.RECT_OFFSET_RECIPIENT;
+                
+	            container.append("rect")
+	            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
+	            	.attr("letter-id", letter.id)
+        	   		.attr("letter-year", letter.accuratYear)
+	            	.attr("transform", "translate(" + (CanvasService.getXoffset(letter.accuratYear) + rectOffsetActual)  + "," + scope.RECT_OFFSET_VERTICAL + ")")
+        	   		.attr("width", scope.RECT_WIDTH)
+        	   		.attr("height", scope.RECT_HEIGHT)
+        	   		.on("mouseover", function(d)
+	                {
+						var element = d3.select(this);
+						scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+	                })
+	                .on("mouseout", function(d)
+	                {
+	                	var element = d3.select(this);
+	                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+	                });
+        	};
+			
+			scope.drawPlacemark = function(container, yearLetters, sliceIndex)
 			{
 				var isAuthor = false;
 				for (var i = 0; i < yearLetters.length; i++)
 				{
-					if (DataService.isPersonAuthorById(personId, yearLetters[i]))
+					if (DataService.isPersonAuthorById($routeParams.personId, yearLetters[i]))
 					{
 						isAuthor = true;
 						break;
@@ -294,7 +437,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				var isRecipient = false;
 				for (var i = 0; i < yearLetters.length; i++)
 				{
-					if (DataService.isPersonRecipientById(personId, yearLetters[i]))
+					if (DataService.isPersonRecipientById($routeParams.personId, yearLetters[i]))
 					{
 						isRecipient = true;
 						break;
@@ -328,31 +471,39 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				}
 				
 				var xOffset = (CanvasService.getXoffset(yearLetters[0].accuratYear) + placemarkOffsetActual);
+				var year = yearLetters[0].accuratYear;
 				
-				recipientContainer.append("rect")
-                   	.attr("class", "placemark")
+				container.append("rect")
+                   	.attr("class", "placemark pm" + sliceIndex + " y" + year)
                    	.attr("recipient-container-id", sliceIndex)
-					.style("fill", scope.PLACEMARK_COLOR)
-            	   	.style("stroke", scope.PLACEMARK_STROKE_COLOR)
-            	   	.style("stroke-width", scope.PLACEMARK_STROKE_WIDTH)
-        	   		.attr("cursor", "pointer")
+                   	.attr("type", placemarkType)
+                   	.attr("baseX", xOffset)
             	   	.attr("transform", "translate(" + xOffset  + "," + scope.PLACEMARK_OFFSET_VERTICAL + ")")
         	   		.attr("width", placemarkWidthActual)
         	   		.attr("height", scope.PLACEMARK_HEIGHT)
         	   		.on("click", function(d)
 	                {
-						scope.displayNestedTimeline(parseInt(d3.select(this).attr("recipient-container-id")), sliceOffset, yearLetters, personId, placemarkType, xOffset);
+						scope.displayNestedTimeline(parseInt(d3.select(this).attr("recipient-container-id")), yearLetters);
 	                });
             	
 			};
 			
-			scope.displayNestedTimeline = function(selectedSliceIndex, sliceOffset, yearLetters, personId, placemarkType, xPlacemark)
+			scope.displayNestedTimeline = function(selectedSliceIndex, yearLetters)
 			{
 				if (!scope.isTimelineExpandedForRecipient[selectedSliceIndex])
 				{
 					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = true;
 					scope.expandTimeline(selectedSliceIndex);
 					
+					var year = yearLetters[0].accuratYear;
+					
+					
+					var parentPlacemark = d3.selectAll(".placemark").filter(".pm" + selectedSliceIndex).filter(".y" + year);
+					var placemarkType = parseInt(parentPlacemark.attr("type"));
+					var xPlacemark = parseFloat(parentPlacemark.attr("baseX"));
+					
+					
+					var sliceOffset = (selectedSliceIndex + 1) * scope.HORIZONTAL_SLICE_HEIGHT;
 					var letterWidth = 15; // width for each letter
 					var canvasWidth = CanvasService.getWidth();
 				    var widthOfTimelineExpansion = letterWidth * yearLetters.length;
@@ -386,7 +537,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    
 				    var textComposedClass;				   
 				    // add people id
-				    var isAuthor = DataService.isPersonAuthorById(personId, yearLetters[0]); 
+				    var isAuthor = DataService.isPersonAuthorById($routeParams.personId, yearLetters[0]); 
 				    if (isAuthor) for (var i = 0; i < yearLetters[0].recipients.length; i++) textComposedClass += " p" + yearLetters[0].recipients[i].id;
 				    else for (var i = 0; i < yearLetters[0].authors.length; i++) textComposedClass += " p" + yearLetters[0].authors[i].id;
 				    // add letters id
@@ -412,7 +563,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    for (var i = 0; i < yearLetters.length; i++)
 				    {
 				    	var letter = yearLetters[i];
-				    	var isAuthor = DataService.isPersonAuthorById(personId, letter);
+				    	var isAuthor = DataService.isPersonAuthorById($routeParams.personId, letter);
 				    	var xOffset = leftOfTimelineExpansion + timelineExpansionScale(i);
 				    	var lineDasharray;
 				    	var lineComposedClass = " l" + letter.id;
@@ -509,88 +660,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				d3.select(".viewer").attr("height", (parseFloat(d3.select(".viewer").attr("height")) - scope.TIMELINE_EXTENSION_HEIGHT));
 			};
 			
-			scope.drawRectangle = function(recipientContainer, sliceOffset, letter, isAuthor)
-			{
-				var rectOffsetActual;
-				
-            	if (isAuthor) rectOffsetActual = scope.RECT_OFFSET_AUTHOR;
-            	else rectOffsetActual = scope.RECT_OFFSET_RECIPIENT;
-                
-	            recipientContainer.append("rect")
-	            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
-	            	.attr("letter-id", letter.id)
-        	   		.attr("letter-year", letter.accuratYear)
-	            	.attr("transform", "translate(" + (CanvasService.getXoffset(letter.accuratYear) + rectOffsetActual)  + "," + scope.RECT_OFFSET_VERTICAL + ")")
-        	   		.attr("width", scope.RECT_WIDTH)
-        	   		.attr("height", scope.RECT_HEIGHT)
-        	   		.on("mouseover", function(d)
-	                {
-						var element = d3.select(this);
-						scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
-	                })
-	                .on("mouseout", function(d)
-	                {
-	                	var element = d3.select(this);
-	                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
-	                });
-        	};
-			
-        	scope.drawName = function(recipientContainer, sliceOffset, letter, isAuthor, sliceIndex, sliceLetters)
-			{
-        		var composedClass;
-        		if (isAuthor) composedClass = DataService.getComposedRecipientClass(letter);
-        		else composedClass = DataService.getComposedAuthorClass(letter);
-        		
-        		if (!scope.drawnRecipientNames[sliceIndex])
-	    		{
-	    			scope.drawnRecipientNames[sliceIndex] = true;
-	    		
-	    			var label = recipientContainer.append("text")
-						.attr("class", "corresponding-person-container")
-						.attr("text-anchor", "end")
-						.attr("transform", "translate(" + (CanvasService.getXoffset(letter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + ",0)");
-					
-					var peopleCollection;
-					if (isAuthor) peopleCollection = letter.recipients;
-					else peopleCollection = letter.authors;
-					
-					for (var i = 0; i < peopleCollection.length; i++)
-					{
-						var nameToken;
-						if (isAuthor) nameToken = DataService.getComposedRecipientNameToken(letter, i);
-						else nameToken = DataService.getComposedAuthorNameToken(letter, i);
-						
-						var composedClassLetters = "";
-						for (var j = 0; j < sliceLetters.length; j++) composedClassLetters += " l" + sliceLetters[j].id;
-						
-						label.append("tspan")
-		        			.text(nameToken)
-		        			.attr("class", "person-name-token p" + peopleCollection[i].id + composedClassLetters)
-		        			.attr("person-id", peopleCollection[i].id)
-		        			.on("click", function(d) 
-			                {
-		        				HighlightService.setPersonHoverId(null);
-		        				var url = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWho);
-		                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, d3.select(this).attr("person-id"));
-		                    	window.location = url;
-			                })
-			                .on("mouseover", function(d)
-			                {
-								var element = d3.select(this);
-								scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
-			                })
-			                .on("mouseout", function(d)
-			                {
-			                	var element = d3.select(this);
-			                	scope.$apply(function() {HighlightService.setPersonHoverId(null);});
-			                });
-					}
-	    		}
-        		
-        		return composedClass;
-			};
-        	
-			scope.drawRecipientContainer = function(chartArea, sliceIndex, sliceLetters, personId)
+			scope.drawRecipientContainer = function(chartArea, sliceIndex, sliceLetters)
 			{
 				var sliceHeight = scope.HORIZONTAL_SLICE_HEIGHT;
 		    	var sliceOffset = (sliceIndex + 1) * scope.HORIZONTAL_SLICE_HEIGHT;
@@ -653,76 +723,18 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				return found;
 			};
         	
-			scope.drawBezierCurve = function(curvesContainer, letter, isAuthor)
-			{
-				// punto fisso di partenza delle curve di bezier
-			    var xBezierCurveStart = (CanvasService.getWidth()/2);
-			    var yBezierCurveStart = 0;
-			    
-			    var drawnBezierCurvesByYear;
-			    var verticalLineOffsetActual;
-			    var verticalLineDasharray;
-			    
-			    var composedClass;
-			    
-			    if (isAuthor)
-			    {
-			    	drawnBezierCurvesByYear = scope.drawnBezierCurvesAuthorByYear;
-			    	verticalLineOffsetActual = scope.VERTICAL_LINES_OFFSET_AUTHOR;
-    				verticalLineDasharray = scope.VERTICAL_LINES_DASHARRAY_AUTHOR;
-    				composedClass = DataService.getComposedRecipientClass(letter) + " l" + letter.id;
-			    }
-			    else
-			    {
-			    	drawnBezierCurvesByYear = scope.drawnBezierCurvesRecipientByYear;
-			    	verticalLineOffsetActual = scope.VERTICAL_LINES_OFFSET_RECIPIENT;
-    				verticalLineDasharray = scope.VERTICAL_LINES_DASHARRAY_RECIPIENT;
-    				composedClass = DataService.getComposedAuthorClass(letter) + " l" + letter.id;
-			    }
-			    
-			    var existingBezierCurve = drawnBezierCurvesByYear[letter.accuratYear];
-				if (existingBezierCurve == null)
-				{
-					// no existing beziers in year
-					// draw the curve
-					// make it visible
-					// set it as drawn
-					
-					var xBezierCurveEnd = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
-		        	var yBezierCurveEnd = CanvasService.getHeight()/6 - scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES - scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE;			            	
-		        	var xBezierCurveControl = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
-		        	var yBezierCurveControl = 0;
-		        	
-		        	var d = "M" + xBezierCurveStart + "," + yBezierCurveStart + " Q" + xBezierCurveControl + "," + yBezierCurveControl + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
-		        	
-		        	var bezierCurve = curvesContainer.append("path")
-		        		.attr("class", "bezier-curve " + composedClass)
-		        		.attr("id", "static")
-		        		.attr("d", d)
-		        		.style("stroke-dasharray", verticalLineDasharray);
-					
-					drawnBezierCurvesByYear[letter.accuratYear] = bezierCurve;
-				}
-				else
-				{
-					// curve is already existing
-					// just update curve class attributes
-					var existingBezierCurveClass = existingBezierCurve.attr("class");
-					existingBezierCurveClass += " " + composedClass;
-					existingBezierCurve.attr("class", existingBezierCurveClass);
-				}
-			};
-			
-			scope.drawHorizontalLine = function(horizontalLinesContainer, sliceOffset, personId, sliceLetters, sliceIndex, sliceClass)
+			scope.drawHorizontalLine = function(horizontalLinesContainer, sliceLetters, sliceIndex, sliceClass)
 			{
 				if (sliceLetters.length > 1)
 				{
+					var sliceOffset = (sliceIndex + 1) * scope.HORIZONTAL_SLICE_HEIGHT;
+					
 					var firstLetter = sliceLetters[0];
 					var lastLetter = sliceLetters[sliceLetters.length - 1];
 	        		
 					var x1base = CanvasService.getXoffset(firstLetter.accuratYear);
 		            var x1offset;
-		            if (DataService.isPersonAuthorById(personId, firstLetter)) x1offset = scope.HORIZONTAL_LINES_OFFSET_AUTHOR;
+		            if (DataService.isPersonAuthorById($routeParams.personId, firstLetter)) x1offset = scope.HORIZONTAL_LINES_OFFSET_AUTHOR;
 		            else x1offset = scope.HORIZONTAL_LINES_OFFSET_RECIPIENT;
 		            var x1 = x1base + x1offset;
 					
@@ -736,7 +748,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		        		{
 			        		var x2base = CanvasService.getXoffset(letter.accuratYear); 
 				            var x2offset;
-				            if (DataService.isPersonAuthorById(personId, letter)) x2offset = scope.HORIZONTAL_LINES_OFFSET_AUTHOR;
+				            if (DataService.isPersonAuthorById($routeParams.personId, letter)) x2offset = scope.HORIZONTAL_LINES_OFFSET_AUTHOR;
 				            else x2offset = scope.HORIZONTAL_LINES_OFFSET_RECIPIENT;
 				            var x2 = x2base + x2offset;
 			        		
@@ -783,8 +795,10 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			};
 			
 			
-			scope.drawVerticalLine = function(verticalLinesContainer, sliceOffset, letter, isAuthor, personId, sliceIndex)
+			scope.drawVerticalLine = function(container, letter, sliceIndex)
 			{
+				var sliceOffset = (sliceIndex + 1) * scope.HORIZONTAL_SLICE_HEIGHT;
+				var isAuthor = DataService.isPersonAuthorById($routeParams.personId, letter);
 				var drawnVerticalLinesByYear;
 				var verticalLineOffsetActual;
 				var verticalLineDasharray;
@@ -805,7 +819,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
     				composedClass = DataService.getComposedAuthorClass(letter);
 			    }
 				
-				var verticalLine = verticalLinesContainer.insert("line", ":first-child")
+				var verticalLine = container.insert("line", ":first-child")
 					.attr("class", "vertical-line " + composedClass + " l" + letter.id + " rc" + sliceIndex)
 					.attr("length", sliceOffset)
 	                .style("stroke-dasharray", verticalLineDasharray)

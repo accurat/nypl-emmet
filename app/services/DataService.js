@@ -66,9 +66,6 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			accuratLetter.emmetChapter = this.getChapterById(SymbolsService.dataEmmet, letter.eChapId);
 			accuratLetter.emmetText = letter.eText;
 			
-			
-			console.log(accuratLetter);
-			
 			return accuratLetter;
 		},
 		
