@@ -613,17 +613,31 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    		for (var k = 0; k < letter.authors.length; k++) lineComposedClass += " p" + letter.authors[k].id;
 				    	}
 				    	
-					    var xBezierCurveStart = placemarkOffset + xPlacemark;
-					    var yBezierCurveStart = scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
-					   	var xBezierCurveEnd = placemarkOffset + xOffset;
+					    // ================================================================================================
+				       	// QUADRATIC BEZIER
+				       	//var xBezierCurveStart = placemarkOffset + xPlacemark;
+					    //var yBezierCurveStart = scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
+					   	//var xBezierCurveEnd = placemarkOffset + xOffset;
+				       	//var yBezierCurveEnd = scope.TIMELINE_EXTENSION_CURVES_HEIGHT;			            	
+				       	//var xBezierCurveControl = placemarkOffset + xOffset;
+				       	//var yBezierCurveControl = scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
+				       	//var dQuadratic = "M" + xBezierCurveStart + "," + yBezierCurveStart + " Q" + xBezierCurveControl1 + "," + yBezierCurveControl1 + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
+
+				    	// ================================================================================================
+				       	// CUBIC BEZIER 
+				    	var xBezierCurveStart = placemarkOffset + xPlacemark;
+					    var yBezierCurveStart = 0; //scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
+				       	var xBezierCurveControl1 = placemarkOffset + xPlacemark;
+				       	var yBezierCurveControl1 = scope.TIMELINE_EXTENSION_CURVES_HEIGHT;
+				       	var xBezierCurveControl2 = placemarkOffset + xOffset;
+				       	var yBezierCurveControl2 = 0; //scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;				       	
+				       	var xBezierCurveEnd = placemarkOffset + xOffset;
 				       	var yBezierCurveEnd = scope.TIMELINE_EXTENSION_CURVES_HEIGHT;			            	
-				       	var xBezierCurveControl = placemarkOffset + xOffset;
-				       	var yBezierCurveControl = scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK;
-			        	var d = "M" + xBezierCurveStart + "," + yBezierCurveStart + " Q" + xBezierCurveControl + "," + yBezierCurveControl + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
-			        	
+				       	var dCubic = "M" + xBezierCurveStart + "," + yBezierCurveStart + " C" + xBezierCurveControl1 + "," + yBezierCurveControl1 + " " + xBezierCurveControl2 + "," + yBezierCurveControl2 + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
+				       					       	
 			        	expansionContainer.append("path")
 			        		.attr("class", "bezier-curve " + lineComposedClass)
-			        		.attr("d", d)
+			        		.attr("d", dCubic)
 			        		.style("stroke-dasharray", lineDasharray);
 						
 			        	expansionContainer.append("rect")
