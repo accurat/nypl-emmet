@@ -52,6 +52,7 @@ a {
 /* ============================================================ */
 
 .author-name {
+	fill: #716558;
 	font-family: 'Gentium Basic', serif;
 	font-weight: 700;
 	font-size: 24px;
@@ -59,7 +60,7 @@ a {
 
 .bezier-curve {
 	fill: none;
-	stroke: rgb(168,164,155);
+	stroke: #716558;
 }
 
 .bezier-curve.highlighted {
@@ -68,7 +69,7 @@ a {
 
 .vertical-line {
 	fill: none;
-	stroke: rgb(168,164,155);
+	stroke: #716558;
 	stroke-width: 1px;
 }
 
@@ -78,7 +79,7 @@ a {
 
 .horizontal-line {
 	fill: none;
-	stroke: rgb(168,164,155);
+	stroke: #716558;
 	stroke-width: 1px;
 }
 
@@ -93,7 +94,8 @@ a {
 }
 
 .person-name-token {
-	fill: rgb(168,164,155);
+	/*fill: rgb(168,164,155);*/
+	fill: #716558;
 	cursor: pointer;
 }
 
@@ -103,14 +105,14 @@ a {
 }
 
 .expansion-text {
-	fill: rgb(168,164,155);
+	fill: #716558;
 	font-family: 'Gentium Basic', serif;
 	font-weight: 500;
 	font-size: 11px;
 }
 
 .expansion-text.highlighted {
-	fill: rgb(0,0,0);
+	fill: #000000;
 }
 
 .placemark {
