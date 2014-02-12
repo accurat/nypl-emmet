@@ -45,20 +45,22 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		
 		processAccuratLetter: function(letter)
 		{
+			var chapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
+			
 			var accuratLetter = {};
 			// varying fields
 			accuratLetter.authorTotal = letter.aAutTot;
 			accuratLetter.authorTotalInYear = letter.aAutTotInYear;
 			accuratLetter.authors = this.processAccuratPeopleByIndex(letter.aAut);
-			accuratLetter.chapterId = letter.aChapId;
-			accuratLetter.chapterName = letter.aChapName;
 			accuratLetter.date = letter.aDate;
 			accuratLetter.id = letter.aId;
 			accuratLetter.place = this.getPlaceById(SymbolsService.dataAccurat, letter.aPl);
 			accuratLetter.recipients = this.processAccuratPeopleByIndex(letter.aRec);
+			accuratLetter.chapterId = chapter.id;
+			accuratLetter.chapterName = chapter.name;
 			// common fields
 			accuratLetter.accuratYear = letter.aYear;
-			accuratLetter.accuratChapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
+			accuratLetter.accuratChapter = chapter;
 			accuratLetter.emmetAuthorString = letter.eAutSt;
 			accuratLetter.emmetContent = letter.eContent;
 			accuratLetter.emmetPhysDesc = letter.ePhysDesc;
@@ -71,17 +73,19 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		
 		processEmmetLetter: function(letter)
 		{
+			var chapter = this.getChapterById(SymbolsService.dataEmmet, letter.eChapId);
+			
 			var emmetLetter = {};
 			// varying fields
 			emmetLetter.authorTotal = letter.eAutTot;
 			emmetLetter.authorTotalInYear = letter.eAutTotInYear;
 			emmetLetter.authors = this.processEmmetPeopleByIndex(letter.eAut);
-			emmetLetter.chapterId = letter.eChapId;
-			emmetLetter.chapterName = letter.eChapName;
 			emmetLetter.date = letter.eDate;
 			emmetLetter.id = letter.eId;
 			emmetLetter.place = this.getPlaceById(SymbolsService.dataEmmet, letter.ePl);
 			emmetLetter.recipients = this.processEmmetPeopleByIndex(letter.eRec);
+			emmetLetter.chapterId = chapter.id;
+			emmetLetter.chapterName = chapter.name;
 			// common fields
 			emmetLetter.accuratYear = letter.aYear;
 			emmetLetter.accuratChapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
@@ -89,7 +93,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			emmetLetter.emmetContent = letter.eContent;
 			emmetLetter.emmetPhysDesc = letter.ePhysDesc;
 			emmetLetter.emmetRecipientString = letter.eRecSt;
-			emmetLetter.emmetChapter = this.getChapterById(SymbolsService.dataEmmet, letter.eChapId);
+			emmetLetter.emmetChapter = chapter;
 			emmetLetter.emmetText = letter.eText;
 			
 			return emmetLetter;
@@ -254,9 +258,12 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		{
 			var that = this;
 			var dataTimelinePerson = {};
-			dataTimelinePerson.lettersFromAuthor = new Array();
-			dataTimelinePerson.lettersByRecipient = new Array();
 			dataTimelinePerson.lettersByRecipientArray = [];
+			
+			var lettersFromAuthor = new Array();
+			var lettersByRecipient = new Array();
+			
+			
 			
 			var collection = null;
 			if (dataType == SymbolsService.dataAccurat) collection = data.accuratLetters;
@@ -266,22 +273,28 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			// estraggo le lettere scritte dall'autore
 			collection.forEach(function(letter) 
 			{
-				if (TimeService.isLetterInTimeline(letter) && that.isPersonAuthorById(personId, letter)) dataTimelinePerson.lettersFromAuthor.push(letter);
+				if (TimeService.isLetterInTimeline(letter) && that.isPersonAuthorById(personId, letter)) lettersFromAuthor.push(letter);
 			});
 			
 			// divido le lettere per destinatario
-			dataTimelinePerson.lettersFromAuthor.forEach(function(letter)
+			lettersFromAuthor.forEach(function(letter)
 		    {
 		        var recipient = that.getComposedRecipientId(letter);
-		        if (dataTimelinePerson.lettersByRecipient[recipient] == null || dataTimelinePerson.lettersByRecipient[recipient] == undefined) dataTimelinePerson.lettersByRecipient[recipient] = new Array();
-		        dataTimelinePerson.lettersByRecipient[recipient].push(letter);
+		        if (lettersByRecipient[recipient] == null || lettersByRecipient[recipient] == undefined) lettersByRecipient[recipient] = new Array();
+		        lettersByRecipient[recipient].push(letter);
 		    });
 			
 			// aggiungo a ciascun destinatario le lettere che ha mandato all'autore selezionato
-			for (var composedRecipientId in dataTimelinePerson.lettersByRecipient)
+			for (var composedRecipientId in lettersByRecipient)
 			{
 				var receivedLetters = this.getLettersFromComposedRecipientToAuthor(dataType, composedRecipientId, personId);
-				for (var i = 0; i < receivedLetters.length; i++) dataTimelinePerson.lettersByRecipient[composedRecipientId].push(receivedLetters[i]);
+				for (var i = 0; i < receivedLetters.length; i++)
+				{
+					if (!that.isLetterInCollection(lettersByRecipient[composedRecipientId], receivedLetters[i]))
+					{
+						lettersByRecipient[composedRecipientId].push(receivedLetters[i]);
+					}
+				}
 			}
 			
 			// aggiungo gli autori che hanno scritto all'autore selezionato, ma a cui l'autore selezionato non ha mai scritto
@@ -295,18 +308,22 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 					{
 						if (letter.recipients[j].id == personId)
 						{
-							// la lettera � stata scritta all'autore selezionato per la timeline; la aggiungo a quelle da visualizzare
-							if (dataTimelinePerson.lettersByRecipient[composedAuthorId] == null || dataTimelinePerson.lettersByRecipient[composedAuthorId] == undefined) dataTimelinePerson.lettersByRecipient[composedAuthorId] = new Array();
-							dataTimelinePerson.lettersByRecipient[composedAuthorId].push(letter);
+							// lettera scritta all'autore selezionato per la timeline; la aggiungo a quelle da visualizzare
+							if (lettersByRecipient[composedAuthorId] == null || lettersByRecipient[composedAuthorId] == undefined) lettersByRecipient[composedAuthorId] = new Array();
+							
+							if (!that.isLetterInCollection(lettersByRecipient[composedAuthorId], letter))
+							{
+								lettersByRecipient[composedAuthorId].push(letter);
+							}
 						}
 					}
 				}
 			});
 			
 			// ordino le lettere di destinatario in ordine temporale
-			for (var recipient in dataTimelinePerson.lettersByRecipient)
+			for (var recipient in lettersByRecipient)
 		    {
-				dataTimelinePerson.lettersByRecipient[recipient].sort(function(a, b)
+				lettersByRecipient[recipient].sort(function(a, b)
 		        {
 		            if (dataType == "accurat")
 					{
@@ -321,7 +338,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		    }
 			
 			// ordino i destinatari sulla base della prima lettera scritta in ordine temporale; a parit� di anno, ordine alfabetico
-			for (var recipient in dataTimelinePerson.lettersByRecipient) dataTimelinePerson.lettersByRecipientArray.push(dataTimelinePerson.lettersByRecipient[recipient]);
+			for (var recipient in lettersByRecipient) dataTimelinePerson.lettersByRecipientArray.push(lettersByRecipient[recipient]);
 
 			dataTimelinePerson.lettersByRecipientArray.sort(function(a, b)
 		    {
@@ -361,6 +378,22 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			
 			
 			return dataTimelinePerson;
+		},
+		
+		isLetterInCollection: function(collection, letter)
+		{
+			var found = false;
+			for (var collectionElement in collection)
+			{
+				if (collection[collectionElement].id == letter.id)
+				{
+					found = true;
+					break;
+				}
+			}
+			
+			return found;
+			
 		},
 		
 		isPersonAuthorById: function(personId, letter)
