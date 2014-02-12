@@ -21,6 +21,27 @@ a {
     margin-top: 20%;
 }
 
+.title {
+	font-family: 'Gentium Basic', serif;
+	font-weight: 700;
+	font-size: 24px;
+	position: absolute;
+	margin-left: 30%;
+	text-align: right;
+	color: #716558;
+}
+
+.subtitle {
+	font-family: 'Gentium Basic', serif;
+	font-weight: 500;
+	font-size: 24px;
+	position: absolute;
+	margin-left: 30%;
+	margin-top: 30px;
+	text-align: right;
+	color: #716558;
+}
+
 /* COMMON COMPONENTS */
 /* ============================================================ */
 
@@ -156,12 +177,21 @@ a {
 }
 
 .view-container {
-	position: fixed;
-    padding: 10px;
-    top: 30px;
-    font-size:13px;
-	color: #000000;
 	font-family: 'Gentium Basic', serif;
+	font-size:20px;
+	font-weight: 500;
+	position: absolute;
+    margin-left: 60%;
+    top: 75px;
+    color: #716558;
+	
+}
+
+.view a {
+	font-family: 'Gentium Basic', serif;
+	font-size:20px;
+	font-weight: 500;
+	color: #716558;
 }
 
 .order-by-container {
@@ -174,12 +204,14 @@ a {
 }
 
 .person-selection-container {
-	position: fixed;
-    padding: 10px;
-    top: 80px;
-    font-size:13px;
-	color: #000000;
 	font-family: 'Gentium Basic', serif;
+	font-size:20px;
+	font-weight: 500;
+	position: absolute;
+    margin-left: 30%;
+    top: 75px;
+	color: #716558;
+	
 }
 
 .person-selection-input {
@@ -187,16 +219,20 @@ a {
 	border-left: none;
 	border-right: none;
 	border-bottom-width: 1px;
-	border-bottom-color: #000000;
+	border-bottom-color: #716558;
 	background-color: #F5EEDF;
 	font-family: 'Gentium Basic', serif;
+	font-size:18px;
 	outline: none;
+	color: #716558;
 }
 
 .person-selection-list {
 	height: 300px;
 	width: 350px;
 	overflow: auto;
+	background-color: #F5EEDF;
+	opacity: 0.80;
 }
 
 .person-list {
@@ -204,7 +240,9 @@ a {
 }
 
 .person-item {
-	color: #A8A49B;
+	color: #716558;
+	font-family: 'Gentium Basic', serif;
+	font-size:18px;
 }
 
 .person-item:hover {

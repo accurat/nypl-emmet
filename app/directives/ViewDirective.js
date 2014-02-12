@@ -12,11 +12,11 @@ emmetApp.directive('view', ['SymbolsService', 'LocationService', function(Symbol
 		{
 			var whenUrl = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWhen);
 			var whenLabel = 'when';
-			var whenElementClass = 'view-when'; 
+			var whenElementClass = 'view when'; 
 			
 			var whereUrl = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWhere);
 			var whereLabel = 'where';
-			var whereElementClass = 'view-where'; 
+			var whereElementClass = 'view where'; 
 
 			var directiveTemplate = '<div class="view-container">';
 			directiveTemplate += '<span class="' + whenElementClass + '"><a href="' + whenUrl + '">' + whenLabel + '</a></span>';

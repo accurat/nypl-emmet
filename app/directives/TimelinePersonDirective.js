@@ -22,10 +22,11 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.HORIZONTAL_SLICE_HEIGHT = 15;
 			scope.HORIZONTAL_SLICE_HEIGHT_MULTI = 8;
 			
-			scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES = 20;
-			scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE = 20;
-			scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES = 20;
-			scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER = 20;
+			scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES = 10;
+			scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE = 10;
+			scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES = 10;
+			scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER = 10;
+			scope.DISTANCE_PERSON_NAME_FROM_BASELINE = -3;
 			
 			scope.VERTICAL_LINES_DASHARRAY_AUTHOR = "";
 			scope.VERTICAL_LINES_DASHARRAY_RECIPIENT = "3,2";
@@ -181,7 +182,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		    
 			    svg.append("g")
 			        .attr("class", "xAxis")
-			        .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getHeight()/3 - (scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE + scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES - scope.X_AXIS_HEIGHT)/2) + ")")
+			        .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getHeight()/3 - scope.X_AXIS_HEIGHT) + ")")
 			        .call(xAxis)
 			        .selectAll("text")
 			        	.attr("class", function(d) {return "y" + d3.select(this).text();})
@@ -327,7 +328,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 	    			var label = container.append("text")
 						.attr("class", "corresponding-person-container")
 						.attr("text-anchor", "end")
-						.attr("transform", "translate(" + (CanvasService.getXoffset(firstLetter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + ",0)");
+						.attr("transform", "translate(" + (CanvasService.getXoffset(firstLetter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + "," + scope.DISTANCE_PERSON_NAME_FROM_BASELINE + ")");
 					
 					var peopleCollection;
 					if (isAuthor) peopleCollection = firstLetter.recipients;
