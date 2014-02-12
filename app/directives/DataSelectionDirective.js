@@ -12,11 +12,11 @@ emmetApp.directive('dataselection', ['SymbolsService', 'LocationService', functi
 		{
 			var accuratUrl = LocationService.setUrlParameter(SymbolsService.urlTokenData, SymbolsService.dataAccurat);
 			var accuratLabel = 'accurat';
-			var accuratElementClass = 'data-accurat';
+			var accuratElementClass = 'data accurat';
 			
 			var emmetUrl = LocationService.setUrlParameter(SymbolsService.urlTokenData, SymbolsService.dataEmmet);
 			var emmetLabel = 'emmet';
-			var emmetElementClass = 'data-emmet';
+			var emmetElementClass = 'data emmet';
 			
 			var directiveTemplate = '<div class="data-selection-container">';
 			directiveTemplate += '<span class="' + accuratElementClass + '"><a href="' + accuratUrl + '">' + accuratLabel + '</a></span>';

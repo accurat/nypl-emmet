@@ -11,6 +11,11 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			'<div class="timeline-collection"></div>',
 		link: function(scope, element, attrs)
 		{
+			d3.selectAll(".view").classed("active", false);
+			d3.selectAll(".view").filter(".when").classed("active", true);
+			d3.selectAll(".data").classed("active", false);
+			d3.selectAll(".data").filter("." + $routeParams.dataType).classed("active", true);
+			
 			scope.X_AXIS_HEIGHT = 40;
 			
 			scope.X_AXIS_FONT_FAMILY = "'Gentium Basic', serif";
