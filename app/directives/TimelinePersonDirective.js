@@ -157,7 +157,29 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 						}
 					}, true);
 			
-			
+			scope.$watch(
+					function() {return HighlightService.getTopicId();}, 
+					function (newValue, oldValue) 
+					{
+						if (newValue) 
+						{
+							d3.selectAll(".letter-rect").classed("highlighted", true);
+							d3.selectAll(".letter-rect").filter(".t" + newValue).classed("highlighted", false);
+							d3.selectAll(".placemark").classed("highlighted", true);
+							d3.selectAll(".placemark").filter(".t" + newValue).classed("highlighted", false);
+							d3.selectAll(".person-name-token").classed("opacized", true);
+							d3.selectAll(".person-name-token").filter(".t" + newValue).classed("opacized", false);
+							d3.selectAll(".expansion-text").classed("opacized", true);
+							d3.selectAll(".expansion-text").filter(".t" + newValue).classed("opacized", false);
+						}	
+						else
+						{
+							d3.selectAll(".letter-rect").classed("highlighted", false);
+							d3.selectAll(".placemark").classed("highlighted", false);
+							d3.selectAll(".person-name-token").classed("opacized", false);
+							d3.selectAll(".expansion-text").classed("opacized", false);
+						}
+					}, true);
 			
 			
 			// *************************************************************************
@@ -347,7 +369,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 						else nameToken = DataService.getComposedAuthorNameToken(firstLetter, i);
 						
 						var composedClassLetters = "";
-						for (var j = 0; j < sliceLetters.length; j++) composedClassLetters += " l" + sliceLetters[j].id;
+						for (var j = 0; j < sliceLetters.length; j++) composedClassLetters += " l" + sliceLetters[j].id + " t" + sliceLetters[j].chapterId;
 						
 						label.append("tspan")
 		        			.text(nameToken)
@@ -430,6 +452,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
             	else rectOffsetActual = scope.RECT_OFFSET_RECIPIENT;
                 
 	            container.append("rect")
+	            	.attr("class", "letter-rect t" + letter.chapterId)
 	            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 	            	.attr("letter-id", letter.id)
         	   		.attr("letter-year", letter.accuratYear)
@@ -499,8 +522,11 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				var xOffset = (CanvasService.getXoffset(yearLetters[0].accuratYear) + placemarkOffsetActual);
 				var year = yearLetters[0].accuratYear;
 				
+				var composedClass = "";
+				for (var i = 0; i < yearLetters.length; i++) composedClass += " t" + yearLetters[i].chapterId;
+				
 				container.append("rect")
-                   	.attr("class", "placemark pm" + sliceIndex + " y" + year)
+                   	.attr("class", "placemark pm" + sliceIndex + " y" + year + composedClass)
                    	.attr("recipient-container-id", sliceIndex)
                    	.attr("year", year)
                    	.attr("type", placemarkType)
@@ -582,7 +608,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    if (isAuthor) for (var i = 0; i < yearLetters[0].recipients.length; i++) textComposedClass += " p" + yearLetters[0].recipients[i].id;
 				    else for (var i = 0; i < yearLetters[0].authors.length; i++) textComposedClass += " p" + yearLetters[0].authors[i].id;
 				    // add letters id
-				    for (var i = 0; i < yearLetters.length; i++) textComposedClass += " l" + yearLetters[i].id;				    
+				    for (var i = 0; i < yearLetters.length; i++) textComposedClass += " l" + yearLetters[i].id + " t" + yearLetters[i].chapterId;				    
 				    
 				    expansionContainer.append("text")
 				    	.attr("class", "expansion-text " + textComposedClass)
@@ -648,7 +674,8 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			        		.style("stroke-dasharray", lineDasharray);
 						
 			        	expansionContainer.append("rect")
-			            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
+			            	.attr("class", "letter-rect t" + letter.chapterId)
+			        		.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			            	.attr("letter-id", letter.id)
 		        	   		.attr("letter-year", letter.accuratYear)
 			            	.attr("transform", "translate(" + (placemarkOffset + xOffset - scope.RECT_WIDTH/2)  + "," + (scope.TIMELINE_EXTENSION_CURVES_HEIGHT - scope.RECT_HEIGHT/2) + ")")

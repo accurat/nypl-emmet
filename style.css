@@ -97,6 +97,15 @@ a {
 	fill-opacity: 0.2;
 }
 
+.letter-rect {
+	cursor: pointer;
+	fill-opacity: 1.0;
+}
+
+.letter-rect.highlighted {
+	fill-opacity: 0.2;
+}
+
 .author-name {
 	fill: #716558;
 	font-family: 'Gentium Basic', serif;
@@ -143,11 +152,17 @@ a {
 	/*fill: rgb(168,164,155);*/
 	fill: #716558;
 	cursor: pointer;
+	opacity: 1.0;
 }
 
 .person-name-token.highlighted {
 	fill: rgb(0,0,0);
-	cursor: pointer;
+	opacity: 1.0;
+}
+
+.person-name-token.opacized {
+	fill: #716558;
+	opacity: 0.2;
 }
 
 .expansion-text {
@@ -155,10 +170,17 @@ a {
 	font-family: 'Gentium Basic', serif;
 	font-weight: 500;
 	font-size: 11px;
+	opacity: 1.0;
 }
 
 .expansion-text.highlighted {
 	fill: #000000;
+	opacity: 1.0;
+}
+
+.expansion-text.opacized {
+	fill: #716558;
+	opacity: 0.2;
 }
 
 .placemark {
@@ -166,6 +188,11 @@ a {
 	stroke: #000000;
 	stroke-width: 1px;
 	cursor: pointer;
+	opacity: 1.0;
+}
+
+.placemark.highlighted {
+	opacity: 0.45;
 }
 
 .expand-all {
