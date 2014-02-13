@@ -32,29 +32,22 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			scope.X_AXIS_LABEL_OFFSET_HORIZONTAL = "";
 			scope.X_AXIS_LABEL_OFFSET_VERTICAL = "10";
 			
-			scope.LETTER_STROKE_COLOR = "#F5EEDF";
-			scope.LETTER_STROKE_WIDTH = "1px";
-			
 			scope.$watch(
 					function() {return DataService.hasData();}, 
 					function (newValue, oldValue) {if (newValue) {scope.draw();}}, true);
 			
 			scope.$watch(
-					function() {return HighlightService.getData();}, 
+					function() {return HighlightService.getPersonId();}, 
 					function (newValue, oldValue) 
 					{
 						if (newValue) 
 						{
-							if (newValue.personId != null)
-							{
-								d3.selectAll("rect")
-		                            .style("fill-opacity", function(d)
-		                            {
-		                                if(newValue.personId == d3.select(this).attr("author_id")) return 1;
-		                                else return 0.1;
-		                            });
-							}
-							else d3.selectAll("rect").style("fill-opacity", 1);
+							d3.selectAll(".letter").classed("highlighted", true);
+							d3.selectAll(".letter").filter(".p" + newValue).classed("highlighted", false);
+						}	
+						else
+						{
+							d3.selectAll(".letter").classed("highlighted", false);
 						}
 					}, true);
 			
@@ -111,43 +104,35 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			            for (var i = 0; i < year.length; i++)
 			            {
 			                var letter = year[i];
+			                
+			                var composedClass = "";
+			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
+			                
 			                chartArea.append("rect")
-			                    .attr("author_id", letter.authors[0].id)
-			                    .attr("letter_id", letter.id)
+			                    .attr("class", "letter l" + letter.id + composedClass)
+			                	.attr("person-id", letter.authors[0].id)
+			                    .attr("letter-id", letter.id)
 			                    .attr("width", CanvasService.getXscale().rangeBand())
 			                    .attr("y", CanvasService.getYoffset(maxColumnHeight - i))
 			                    .attr("transform", "translate(" + CanvasService.getXoffset(letter.accuratYear) + ",0)")
 			                    .attr("height", CanvasService.getYoffset(1))
-			                    .attr("cursor", "pointer")
 			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
-			                    .style("stroke-width", scope.LETTER_STROKE_WIDTH)
-			                    .style("stroke", scope.LETTER_STROKE_COLOR)
 			                    .on("click", function(d)
 			                    {
 			                    	var url = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWho);
-			                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, d3.select(this).attr("author_id"));
+			                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, d3.select(this).attr("person-id"));
 			                    	window.location = url;
 			                    })
 			                    .on("mouseover", function(d)
 			                    {
-			                    	//tooltip.displayHtml(template(dataGeneral.lettersById[d3.select(this).attr("letter_id")]));
-			                    	
-			                        var authorId = d3.select(this).attr("author_id");
-			                        d3.selectAll("rect")
-			                            .style("fill-opacity", function(d)
-			                            {
-			                                if(authorId == d3.select(this).attr("author_id")) return 1;
-			                                else return 0.1;
-			                            });
-			                    })
-			                    .on("mousemove", function(d)
-			                    {
-			                        //tooltip.refresh(d3.event.pageX, d3.event.pageY);
+			                    	var element = d3.select(this);
+									scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+									scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
 			                    })
 			                    .on("mouseout", function(d)
 			                    {
-			                        //tooltip.close();	
-			                        d3.selectAll("rect").style("fill-opacity", 1);
+									scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+									scope.$apply(function() {HighlightService.setPersonHoverId(null);});
 			                    });
 			            }
 			        }

@@ -4,7 +4,7 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 	var availableHeight;
 	
 	var padding = 25;
-	var margin = {top: 5, right: 20, bottom: 5, left: 80}; 
+	var margin = {top: 100, right: 20, bottom: 5, left: 80}; 
 	
 	var width = 0;
 	var height = 0;

@@ -21,23 +21,37 @@ a {
     margin-top: 20%;
 }
 
+.header {
+	position: fixed;
+	background: none repeat scroll 0 0 #F5EEDF;
+	width: 100%;
+	height: 100px;
+	opacity: 1;
+	z-index: 1;
+	top: 0;
+}
+
 .title {
 	font-family: 'Gentium Basic', serif;
 	font-weight: 700;
-	font-size: 24px;
+	font-size: 1.5vw;
+	line-height: 1.5vw;
 	position: absolute;
 	margin-left: 30%;
 	text-align: right;
 	color: #716558;
+	margin-top: 5px;
+	
 }
 
 .subtitle {
 	font-family: 'Gentium Basic', serif;
 	font-weight: 500;
-	font-size: 24px;
+	font-size: 1.5vw;
+	line-height: 1.5vw;
 	position: absolute;
 	margin-left: 30%;
-	margin-top: 30px;
+	margin-top: 1.9vw;
 	text-align: right;
 	color: #716558;
 }
@@ -71,6 +85,17 @@ a {
 
 /* VIEW ELEMENTS */
 /* ============================================================ */
+
+.letter {
+	cursor: pointer;
+	stroke: #F5EEDF;
+	stroke-width: 1px;
+	fill-opacity: 1.0;
+}
+
+.letter.highlighted {
+	fill-opacity: 0.2;
+}
 
 .author-name {
 	fill: #716558;
@@ -170,7 +195,7 @@ a {
 
 .data-selection-container {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 500;
 	position: absolute;
     margin-left: 0;
@@ -180,14 +205,14 @@ a {
 
 .data a {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 500;
 	color: #716558;
 }
 
 .data.active a {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 700;
 	color: #716558;
 	text-decoration: underline;
@@ -195,7 +220,7 @@ a {
 
 .view-container {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 500;
 	position: absolute;
     margin-left: 60%;
@@ -206,14 +231,14 @@ a {
 
 .view a {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 500;
 	color: #716558;
 }
 
 .view.active a {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 700;
 	color: #716558;
 	text-decoration: underline;
@@ -221,14 +246,14 @@ a {
 
 .view {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 500;
 	color: #716558;
 }
 
 .view.active {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 700;
 	color: #716558;
 	text-decoration: underline;
@@ -245,13 +270,13 @@ a {
 
 .person-selection-container {
 	font-family: 'Gentium Basic', serif;
-	font-size:20px;
+	font-size: 1vw;
 	font-weight: 500;
 	position: absolute;
     margin-left: 30%;
     top: 75px;
 	color: #716558;
-	
+	text-align: right;
 }
 
 .person-selection-input {
@@ -265,24 +290,30 @@ a {
 	font-size:18px;
 	outline: none;
 	color: #716558;
+	text-align: right;
+	width: 200px;
 }
 
 .person-selection-list {
 	height: 300px;
-	width: 350px;
-	overflow: auto;
+	width: 200px;
+	overflow-y: auto;
+	overflow-x: visible;
 	background-color: #F5EEDF;
 	opacity: 0.80;
+	text-align: right;
+	white-space: nowrap;
 }
 
 .person-list {
 	list-style-type: none;
+	padding-right: 10px;
 }
 
 .person-item {
 	color: #716558;
 	font-family: 'Gentium Basic', serif;
-	font-size:18px;
+	font-size:14px;
 }
 
 .person-item:hover {

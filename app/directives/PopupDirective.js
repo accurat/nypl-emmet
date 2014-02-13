@@ -13,16 +13,14 @@ emmetApp.directive('popup', ['HighlightService', '$window', function (HighlightS
 				margin = 10;
 
 			scope.$watch(
-				function () {
+				function () 
+				{
 					return HighlightService.getLetterId();
 				},
-				function (newValue, oldValue) {
-					if (newValue) {
-						scope.show();
-					}
-					else {
-						scope.hide();
-					}
+				function (newValue, oldValue) 
+				{
+					if (newValue) {scope.show();}
+					else {scope.hide();}
 				}, true);
 
 

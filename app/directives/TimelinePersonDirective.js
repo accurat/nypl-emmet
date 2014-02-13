@@ -188,7 +188,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		    
 			    svg.append("g")
 			        .attr("class", "xAxis")
-			        .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getHeight()/3 - scope.X_AXIS_HEIGHT) + ")")
+			        .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top + CanvasService.getHeight()/3 - scope.X_AXIS_HEIGHT - 3) + ")")
 			        .call(xAxis)
 			        .selectAll("text")
 			        	.attr("class", function(d) {return "y" + d3.select(this).text();})
@@ -207,7 +207,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    
 			    var curvesContainer = svg.append("g")
 			    	.attr("id", "curves-container")
-			    	.attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getHeight()/6 + scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES) + ")");
+			    	.attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top + CanvasService.getHeight()/6 + scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES) + ")");
 			    
 			    var verticalLinesContainer = chartArea.append("g")
 			    	.attr("id", "vertical-lines-container");
@@ -219,7 +219,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			    	.text(DataService.getPersonById($routeParams.dataType, $routeParams.personId).name)
 			    	.attr("class", "author-name")
 			    	.attr("text-anchor", "middle")
-			    	.attr("transform", "translate(" + (CanvasService.getWidth()/2 + CanvasService.getMargin().left)  + "," + (CanvasService.getHeight()/6) + ")");
+			    	.attr("transform", "translate(" + (CanvasService.getWidth()/2 + CanvasService.getMargin().left)  + "," + (CanvasService.getMargin().top + CanvasService.getHeight()/6) + ")");
 			    
 			    var years = TimeService.getYears();
 			    for (var yearIndex = 0; yearIndex < years.length; yearIndex++)
