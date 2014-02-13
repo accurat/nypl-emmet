@@ -51,6 +51,20 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 						}
 					}, true);
 			
+			scope.$watch(
+					function() {return HighlightService.getTopicId();}, 
+					function (newValue, oldValue) 
+					{
+						if (newValue) 
+						{
+							d3.selectAll(".letter").classed("highlighted", true);
+							d3.selectAll(".letter").filter(".t" + newValue).classed("highlighted", false);
+						}	
+						else
+						{
+							d3.selectAll(".letter").classed("highlighted", false);
+						}
+					}, true);
 			
 			scope.draw = function() 
 			{
@@ -109,7 +123,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
 			                
 			                chartArea.append("rect")
-			                    .attr("class", "letter l" + letter.id + composedClass)
+			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass)
 			                	.attr("person-id", letter.authors[0].id)
 			                    .attr("letter-id", letter.id)
 			                    .attr("width", CanvasService.getXscale().rangeBand())

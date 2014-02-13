@@ -14,7 +14,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			this.processPeople();
 			this.processPlaces();
 			this.processLetters();
-			
+			this.processChapters();
 			hasData = true;
 		},
 		
@@ -28,6 +28,12 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 		{
 			data.accuratPlaces = this.processAccuratPlacesByEnumeration(data.placeByAccuratId);
 			data.emmetPlaces = this.processEmmetPlacesByEnumeration(data.placeByEmmetId);
+		},
+		
+		processChapters: function()
+		{
+			data.accuratChapters = this.processAccuratChaptersByEnumeration(data.chapterByAccuratId);
+			data.emmetChapters = this.processEmmetChaptersByEnumeration(data.chapterByEmmetId);
 		},
 		
 		processLetters: function()
@@ -188,6 +194,44 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			
 			return places;
 		},
+		
+		processAccuratChaptersByEnumeration: function(accuratChapters)
+		{
+			var chapters = new Array();
+			
+			for (var accuratChapterId in accuratChapters)
+			{
+				var accuratChapter = accuratChapters[accuratChapterId];
+				var chapter = {};
+				
+				chapter.id = accuratChapter.aId;
+				chapter.name = accuratChapter.aName;
+				
+				chapters.push(chapter);
+			}
+			
+			return chapters;
+		},
+		
+		processEmmetChaptersByEnumeration: function(emmetChapters)
+		{
+			var chapters = new Array();
+			
+			for (var emmetChapterId in emmetChapters)
+			{
+				var emmetChapter = emmetChapters[emmetChapterId];
+				var chapter = {};
+				
+				chapter.id = emmetChapter.eId;
+				chapter.name = emmetChapter.eName;
+				
+				chapters.push(chapter);
+			}
+			
+			return chapters;
+		},
+		
+		
 		
 		
 		hasData: function()

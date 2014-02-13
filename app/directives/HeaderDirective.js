@@ -14,12 +14,13 @@ emmetApp.directive('header', ['SymbolsService', 'LocationService', '$routeParams
 			var appSubtitle = 'Visualizing the Emmet Collection';
 			
 			var directiveTemplate = '<div class="header">';
+				directiveTemplate += '<popup></popup>';	
 				directiveTemplate += '<div class="title">' + appTitle + '</div>';
 				directiveTemplate += '<div class="subtitle">' + appSubtitle + '</div>';
 				directiveTemplate += '<personselection></personselection>';
 				directiveTemplate += '<dataselection></dataselection>';
 				directiveTemplate += '<view></view>';
-				directiveTemplate += '<popup></popup>';
+				directiveTemplate += '<topicselection></topicselection>';
 				if ($routeParams.viewType == SymbolsService.viewWhen) directiveTemplate += '<orderby></orderby>';
 			directiveTemplate += '</div>';
 			

@@ -3,7 +3,8 @@ emmetApp.factory('HighlightService', function()
 	var letterHoverId = null;
 	var personHoverId = null;
 	var yearHoverId = null;
-	var personYearHoverId = null;
+	var topicHoverId = null;
+	
 	
 	return {
 		
@@ -13,6 +14,7 @@ emmetApp.factory('HighlightService', function()
 			highlight.letterId = letterHoverId;
 			highlight.personId = personHoverId;
 			highlight.yearId = yearHoverId;
+			highlight.topicId = topicHoverId;
 			
 			return highlight;
 		},
@@ -25,6 +27,9 @@ emmetApp.factory('HighlightService', function()
 		
 		setYearHoverId: function(yearId) {yearHoverId = yearId;},
 		getYearId: function() {return yearHoverId;},
+		
+		setTopicHoverId: function(topicId) {topicHoverId = topicId;},
+		getTopicId: function() {return topicHoverId;}
 
 	};
 });
