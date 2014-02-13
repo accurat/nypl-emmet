@@ -100,7 +100,7 @@ a {
 	fill-opacity: 1.0;
 }
 
-.letter.highlighted {
+.letter.opacized {
 	fill-opacity: 0.2;
 }
 
@@ -109,7 +109,7 @@ a {
 	fill-opacity: 1.0;
 }
 
-.letter-rect.highlighted {
+.letter-rect.opacized {
 	fill-opacity: 0.2;
 }
 
@@ -198,7 +198,7 @@ a {
 	opacity: 1.0;
 }
 
-.placemark.highlighted {
+.placemark.opacized {
 	opacity: 0.45;
 }
 

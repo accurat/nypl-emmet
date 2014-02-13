@@ -42,12 +42,12 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 					{
 						if (newValue) 
 						{
-							d3.selectAll(".letter").classed("highlighted", true);
-							d3.selectAll(".letter").filter(".p" + newValue).classed("highlighted", false);
+							d3.selectAll(".letter").classed("opacized", true);
+							d3.selectAll(".letter").filter(".p" + newValue).classed("opacized", false);
 						}	
 						else
 						{
-							d3.selectAll(".letter").classed("highlighted", false);
+							d3.selectAll(".letter").classed("opacized", false);
 						}
 					}, true);
 			
@@ -57,12 +57,12 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 					{
 						if (newValue) 
 						{
-							d3.selectAll(".letter").classed("highlighted", true);
-							d3.selectAll(".letter").filter(".t" + newValue).classed("highlighted", false);
+							d3.selectAll(".letter").classed("opacized", true);
+							d3.selectAll(".letter").filter(".t" + newValue).classed("opacized", false);
 						}	
 						else
 						{
-							d3.selectAll(".letter").classed("highlighted", false);
+							d3.selectAll(".letter").classed("opacized", false);
 						}
 					}, true);
 			

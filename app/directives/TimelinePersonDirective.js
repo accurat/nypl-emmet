@@ -114,16 +114,34 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
-							d3.selectAll(".expansion-text").filter(".p" + newValue).classed("highlighted", true);
-							d3.selectAll(".person-name-token").filter(".p" + newValue).classed("highlighted", true);
+							d3.selectAll(".letter-rect").classed("opacized", true);
+							d3.selectAll(".letter-rect").filter(".p" + newValue).classed("opacized", false);
+							
+							d3.selectAll(".placemark").classed("opacized", true);
+							d3.selectAll(".placemark").filter(".p" + newValue).classed("opacized", false);
+							
+							d3.selectAll(".expansion-text").classed("opacized", true);
+							d3.selectAll(".expansion-text").filter(".p" + newValue).classed("highlighted", true).classed("opacized", false);
+							
+							d3.selectAll(".person-name-token").classed("opacized", true);
+							d3.selectAll(".person-name-token").filter(".p" + newValue).classed("highlighted", true).classed("opacized", false);
+							
 							d3.selectAll(".bezier-curve").filter(".p" + newValue).classed("highlighted", true);
 							d3.selectAll(".horizontal-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
 	                        d3.selectAll(".vertical-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
 						}
 						else
 						{
+							d3.selectAll(".letter-rect").classed("opacized", false);
+							
+							d3.selectAll(".placemark").classed("opacized", false);
+							
 							d3.selectAll(".expansion-text").classed("highlighted", false);
+							d3.selectAll(".expansion-text").classed("opacized", false);
+							
 							d3.selectAll(".person-name-token").classed("highlighted", false);
+							d3.selectAll(".person-name-token").classed("opacized", false);
+							
 							d3.selectAll(".bezier-curve").classed("highlighted", false);
 							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
 							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
@@ -138,16 +156,33 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
-							d3.selectAll(".expansion-text").filter(".l" + newValue).classed("highlighted", true);
-							d3.selectAll(".person-name-token").filter(".l" + newValue).classed("highlighted", true);
+							d3.selectAll(".letter-rect").classed("opacized", true);
+							d3.selectAll(".letter-rect").filter(".l" + newValue).classed("opacized", false);
+							
+							d3.selectAll(".placemark").classed("opacized", true);
+							d3.selectAll(".placemark").filter(".l" + newValue).classed("opacized", false);
+							
+							d3.selectAll(".expansion-text").classed("opacized", true);
+							d3.selectAll(".expansion-text").filter(".l" + newValue).classed("highlighted", true).classed("opacized", false);
+							
+							d3.selectAll(".person-name-token").classed("opacized", true);
+							d3.selectAll(".person-name-token").filter(".l" + newValue).classed("highlighted", true).classed("opacized", false);
+							
 							d3.selectAll(".horizontal-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
 							d3.selectAll(".vertical-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
 							d3.selectAll(".bezier-curve").filter(".l" + newValue).classed("highlighted", true);
 						}	
 						else
 						{
+							d3.selectAll(".letter-rect").classed("opacized", false);
+							
+							d3.selectAll(".placemark").classed("opacized", false);
+							
 							d3.selectAll(".expansion-text").classed("highlighted", false);
+							d3.selectAll(".expansion-text").classed("opacized", false);
+							
 							d3.selectAll(".person-name-token").classed("highlighted", false);
+							d3.selectAll(".person-name-token").classed("opacized", false);
 							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
 							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
 							d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
@@ -163,10 +198,10 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					{
 						if (newValue) 
 						{
-							d3.selectAll(".letter-rect").classed("highlighted", true);
-							d3.selectAll(".letter-rect").filter(".t" + newValue).classed("highlighted", false);
-							d3.selectAll(".placemark").classed("highlighted", true);
-							d3.selectAll(".placemark").filter(".t" + newValue).classed("highlighted", false);
+							d3.selectAll(".letter-rect").classed("opacized", true);
+							d3.selectAll(".letter-rect").filter(".t" + newValue).classed("opacized", false);
+							d3.selectAll(".placemark").classed("opacized", true);
+							d3.selectAll(".placemark").filter(".t" + newValue).classed("opacized", false);
 							d3.selectAll(".person-name-token").classed("opacized", true);
 							d3.selectAll(".person-name-token").filter(".t" + newValue).classed("opacized", false);
 							d3.selectAll(".expansion-text").classed("opacized", true);
@@ -174,8 +209,8 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 						}	
 						else
 						{
-							d3.selectAll(".letter-rect").classed("highlighted", false);
-							d3.selectAll(".placemark").classed("highlighted", false);
+							d3.selectAll(".letter-rect").classed("opacized", false);
+							d3.selectAll(".placemark").classed("opacized", false);
 							d3.selectAll(".person-name-token").classed("opacized", false);
 							d3.selectAll(".expansion-text").classed("opacized", false);
 						}
@@ -447,12 +482,21 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			{
 				var isAuthor = DataService.isPersonAuthorById($routeParams.personId, letter);
 				var rectOffsetActual;
+				var composedClass = "";
 				
-            	if (isAuthor) rectOffsetActual = scope.RECT_OFFSET_AUTHOR;
-            	else rectOffsetActual = scope.RECT_OFFSET_RECIPIENT;
+            	if (isAuthor)
+            	{
+            		rectOffsetActual = scope.RECT_OFFSET_AUTHOR;
+            		for (var i = 0; i < letter.recipients.length; i++) composedClass += " p" + letter.recipients[i].id;
+            	}
+            	else
+            	{
+            		rectOffsetActual = scope.RECT_OFFSET_RECIPIENT;
+            		for (var i = 0; i < letter.authors.length; i++) composedClass += " p" + letter.authors[i].id;
+            	}
                 
-	            container.append("rect")
-	            	.attr("class", "letter-rect t" + letter.chapterId)
+            	container.append("rect")
+	            	.attr("class", "letter-rect l" + letter.id + " t" + letter.chapterId + composedClass)
 	            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 	            	.attr("letter-id", letter.id)
         	   		.attr("letter-year", letter.accuratYear)
@@ -473,13 +517,16 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			
 			scope.drawPlacemark = function(container, yearLetters, sliceIndex)
 			{
+				var composedClass = "";
+				for (var i = 0; i < yearLetters.length; i++) composedClass += " t" + yearLetters[i].chapterId + " l" + yearLetters[i].id;
+				
 				var isAuthor = false;
 				for (var i = 0; i < yearLetters.length; i++)
 				{
 					if (DataService.isPersonAuthorById($routeParams.personId, yearLetters[i]))
 					{
 						isAuthor = true;
-						break;
+						for (var j = 0; j < yearLetters[i].recipients.length; j++) composedClass += " p" + yearLetters[i].recipients[j].id;
 					}
 				}
 				
@@ -489,7 +536,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					if (DataService.isPersonRecipientById($routeParams.personId, yearLetters[i]))
 					{
 						isRecipient = true;
-						break;
+						for (var j = 0; j < yearLetters[i].authors.length; j++) composedClass += " p" + yearLetters[i].authors[j].id;
 					}
 				}
 				
@@ -521,9 +568,6 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				
 				var xOffset = (CanvasService.getXoffset(yearLetters[0].accuratYear) + placemarkOffsetActual);
 				var year = yearLetters[0].accuratYear;
-				
-				var composedClass = "";
-				for (var i = 0; i < yearLetters.length; i++) composedClass += " t" + yearLetters[i].chapterId;
 				
 				container.append("rect")
                    	.attr("class", "placemark pm" + sliceIndex + " y" + year + composedClass)
@@ -635,15 +679,16 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				    	var lineDasharray;
 				    	var lineComposedClass = " l" + letter.id;
 				    	
+				    	var personComposedClass = "";
 				    	if (isAuthor)
 				    	{
 				    		lineDasharray = scope.VERTICAL_LINES_DASHARRAY_AUTHOR;
-				    		for (var k = 0; k < letter.recipients.length; k++) lineComposedClass += " p" + letter.recipients[k].id;
+				    		for (var k = 0; k < letter.recipients.length; k++) personComposedClass += " p" + letter.recipients[k].id;
 				    	}
 				    	else
 				    	{
 				    		lineDasharray = scope.VERTICAL_LINES_DASHARRAY_RECIPIENT;
-				    		for (var k = 0; k < letter.authors.length; k++) lineComposedClass += " p" + letter.authors[k].id;
+				    		for (var k = 0; k < letter.authors.length; k++) personComposedClass += " p" + letter.authors[k].id;
 				    	}
 				    	
 					    // ================================================================================================
@@ -669,12 +714,12 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				       	var dCubic = "M" + xBezierCurveStart + "," + yBezierCurveStart + " C" + xBezierCurveControl1 + "," + yBezierCurveControl1 + " " + xBezierCurveControl2 + "," + yBezierCurveControl2 + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
 				       					       	
 			        	expansionContainer.append("path")
-			        		.attr("class", "bezier-curve " + lineComposedClass)
+			        		.attr("class", "bezier-curve " + lineComposedClass + personComposedClass)
 			        		.attr("d", dCubic)
 			        		.style("stroke-dasharray", lineDasharray);
 						
 			        	expansionContainer.append("rect")
-			            	.attr("class", "letter-rect t" + letter.chapterId)
+			            	.attr("class", "letter-rect l" + letter.id + " t" + letter.chapterId + personComposedClass)
 			        		.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			            	.attr("letter-id", letter.id)
 		        	   		.attr("letter-year", letter.accuratYear)
