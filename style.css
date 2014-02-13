@@ -23,12 +23,19 @@ a {
 
 .header {
 	position: fixed;
-	background: none repeat scroll 0 0 #F5EEDF;
+	/*background: none repeat scroll 0 0 #F5EEDF;*/
 	width: 100%;
 	height: 100px;
 	opacity: 1;
 	z-index: 1;
 	top: 0;
+	
+	
+	background: rgba(245,238,223,0.9);
+	-webkit-box-shadow: 10px 10px 10px rgba(245,238,223,0.9);
+	-moz-box-shadow: 10px 10px 10px rgba(245,238,223,0.9);
+	box-shadow: 10px 10px 10px rgba(245,238,223,0.9);
+	
 }
 
 .title {
@@ -327,7 +334,7 @@ a {
 	border-right: none;
 	border-bottom-width: 1px;
 	border-bottom-color: #716558;
-	background-color: #F5EEDF;
+	background-color: transparent;
 	font-family: 'Gentium Basic', serif;
 	font-size:18px;
 	outline: none;
@@ -374,8 +381,8 @@ a {
 }
 
 .topic-selection-list {
-	height: 700px;
-	width: 700px;
+	/*height: 700px;
+	width: 700px;*/
 	overflow-y: auto;
 	overflow-x: visible;
 	opacity: 1.0;

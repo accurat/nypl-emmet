@@ -30,12 +30,16 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 	{
 		if (!$scope.isTopicListVisible)
 		{
-			d3.select(".topic-selection-list").style("visibility", "visible");
+			d3.select(".topic-selection-list")
+				.style("visibility", "visible")
+				.style("display", "block");
 			d3.selectAll(".topic").classed("active", true);
 		}
 		else
 		{
-			d3.select(".topic-selection-list").style("visibility", "hidden");
+			d3.select(".topic-selection-list")
+				.style("visibility", "hidden")
+				.style("display", "none");
 			d3.selectAll(".topic").classed("active", false);
 		}
 		
