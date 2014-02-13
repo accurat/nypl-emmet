@@ -15,6 +15,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			d3.selectAll(".view").filter(".when").classed("active", true);
 			d3.selectAll(".data").classed("active", false);
 			d3.selectAll(".data").filter("." + $routeParams.dataType).classed("active", true);
+			d3.select(".header").style("height", "30px");
 			
 			scope.X_AXIS_HEIGHT = 40;
 			
@@ -92,7 +93,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			    
 			    var chartArea = svg.append("g")
 			    	.attr("class", "chartArea")
-			    	.attr("transform", "translate(" + CanvasService.getMargin().left + "," + CanvasService.getMargin().top + ")");
+			    	.attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top) + ")");
 
 			    svg.append("g")
 			        .attr("class", "xAxis")

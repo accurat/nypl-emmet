@@ -15,7 +15,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			d3.selectAll(".view").filter(".who").classed("active", true);
 			d3.selectAll(".data").classed("active", false);
 			d3.selectAll(".data").filter("." + $routeParams.dataType).classed("active", true);
-
+			d3.select(".header").style("height", "100px");
 			
 			// *************************************************************************
 			// CONFIGURATION CONSTANTS 

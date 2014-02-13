@@ -8,8 +8,11 @@ emmetApp.directive('orderby', ['SymbolsService', 'LocationService', function(Sym
 		{
 			
 		},
+		controller: 'OrderByController',
 		template: function()
 		{
+			var label = "order by";
+			
 			var authorYearUrl = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWhen);
 			    authorYearUrl = LocationService.setUrlParameter(SymbolsService.urlTokenOrder, SymbolsService.orderAuthorYear);
 			var authorYearLabel = 'author volumes per year';
@@ -25,13 +28,20 @@ emmetApp.directive('orderby', ['SymbolsService', 'LocationService', function(Sym
 			var topicLabel = 'topic';
 			var topicElementClass = 'order-by-topic'; 
 			
-			var directiveTemplate = '<div class="order-by-container">';
-			directiveTemplate += '<span class="' + authorYearElementClass + '"><a href="' + authorYearUrl + '">' + authorYearLabel + '</a></span>';
-			directiveTemplate += '<span> &#47; </span>';
-			directiveTemplate += '<span class="' + authorTotalElementClass + '"><a href="' + authorTotalUrl + '">' + authorTotalLabel + '</a></span>';
-			directiveTemplate += '<span> &#47; </span>';
-			directiveTemplate += '<span class="' + topicElementClass + '"><a href="' + topicUrl + '">' + topicLabel + '</a></span>';
+			var directiveTemplate;
+			directiveTemplate  = '<div class="order-by-container">';
+				directiveTemplate += '<div class="order-by active"><span ng-mousedown="displayOrderByList()">' + label + '</span><img src="img/chevron.png" width="15" style="margin-left: 10px;"></div>';
+				
+				directiveTemplate += '<div class="order-by-selection-list">'; 
+					directiveTemplate += '<ul class="order-by-list">';						
+						directiveTemplate += '<li class="order-by-item"><span class="' + authorYearElementClass + '"><a href="' + authorYearUrl + '">' + authorYearLabel + '</a></span></li>';
+						directiveTemplate += '<li class="order-by-item"><span class="' + authorTotalElementClass + '"><a href="' + authorTotalUrl + '">' + authorTotalLabel + '</a></span></li>';
+						directiveTemplate += '<li class="order-by-item"><span class="' + topicElementClass + '"><a href="' + topicUrl + '">' + topicLabel + '</a></span></li>';
+					directiveTemplate += '</ul>';
+				directiveTemplate += '</div>';
+				
 			directiveTemplate += '</div>';
+			
 			
 			return directiveTemplate;
 		},
