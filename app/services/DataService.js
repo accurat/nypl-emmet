@@ -16,6 +16,9 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			this.processLetters();
 			this.processChapters();
 			hasData = true;
+			
+			this.prepareDataWhere();
+			
 		},
 		
 		processPeople: function()
@@ -188,6 +191,8 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				
 				place.id = emmetPlace.eId;
 				place.name = emmetPlace.eName;
+				place.country = emmetPlace.eCountry;
+				place.state = emmetPlace.eState;
 				
 				places.push(place);
 			}
@@ -253,6 +258,90 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			{
 				return this.prepareDataPerson(dataType, param);
 			}
+		},
+		
+		prepareDataWhere: function(dataType)
+		{
+			var dataWhere = {};
+			
+			var collection = null;
+			if (dataType == SymbolsService.dataAccurat) collection = data.accuratLetters;
+			else collection = data.emmetLetters;
+			
+			var lettersByForeignCountry = []; // group letters by country (foreign)
+			var lettersByState = []; // group letters by state (US)
+			var lettersUnknownPlace = [];
+			var lettersUndeterminedPlace = [];
+			
+			collection.forEach(function(letter) 
+			{
+				if (TimeService.isLetterInTimeline(letter))
+				{
+					var place = letter.place;
+					
+					
+					if (place.id == 0) lettersUnknownPlace.push(letter);
+					else if (place.state == "" && place.country == "") lettersUndeterminedPlace.push(letter);
+					else if (place.state == "")
+					{
+						if (!lettersByForeignCountry[place.country] || lettersByForeignCountry[place.country] == null) lettersByForeignCountry[place.country] = new Array();
+						lettersByForeignCountry[place.country].push(letter);
+					}
+					else
+					{
+						if (!lettersByState[place.state] || lettersByState[place.state] == null) lettersByState[place.state] = new Array();
+						lettersByState[place.state].push(letter);
+					}
+					
+				}				
+			});
+			
+			
+			
+			console.log(lettersByForeignCountry);
+			console.log(lettersByState);
+			console.log(lettersUnknownPlace);
+			console.log(lettersUndeterminedPlace);
+			
+			var lettersByStateAndPlace = new Array();
+			
+			
+			for (stateId in lettersByState)
+			{
+				var lettersOfState = lettersByState[stateId];
+				lettersByStateAndPlace[stateId] = new Array();
+				lettersOfState.forEach(function(letter) 
+				{
+					var place = letter.place;
+					if (!lettersByStateAndPlace[stateId][place.name] || lettersByStateAndPlace[stateId][place.name] == null) lettersByStateAndPlace[stateId][place.name] = new Array();
+					lettersByStateAndPlace[stateId][place.name].push(letter);
+					
+				});
+			}
+			
+			console.log(lettersByStateAndPlace);
+			
+			for (stateId in lettersByStateAndPlace)
+			{
+				var lettersOfState = lettersByStateAndPlace[stateId];
+				lettersByStateAndPlace[stateId] = this.sortAssociativeArray(lettersOfState);
+			}
+			
+			console.log(lettersByStateAndPlace);
+			
+			return dataWhere;
+		},
+		
+		
+		sortAssociativeArray: function(associativeArray) 
+		{
+		    var keys = [];
+		    for(var key in associativeArray)
+		    {
+		    	keys.push(associativeArray[key]);
+		    }
+		    //console.log(keys);
+		    return keys.sort(function(a,b){return - a.length + b.length;});
 		},
 		
 		prepareDataTimelineCollection: function(dataType)
@@ -736,8 +825,10 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			{
 				var emmetPlace = data.placeByEmmetId[placeId];
 				
-				place.id = emmetPlace.emmetId;
-				place.name = emmetPlace.emmetName;
+				place.id = emmetPlace.eId;
+				place.name = emmetPlace.eName;
+				place.country = emmetPlace.eCountry;
+				place.state = emmetPlace.eState;
 			}
 			
 			return place;

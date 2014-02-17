@@ -21,7 +21,6 @@ emmetApp.directive('header', ['SymbolsService', 'LocationService', '$routeParams
 				directiveTemplate += '<dataselection></dataselection>';
 				directiveTemplate += '<view></view>';
 				directiveTemplate += '<topicselection></topicselection>';
-				if ($routeParams.viewType == SymbolsService.viewWhen) directiveTemplate += '<orderby></orderby>';
 			directiveTemplate += '</div>';
 			
 			return directiveTemplate;

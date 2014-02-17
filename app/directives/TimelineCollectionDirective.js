@@ -15,18 +15,18 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			d3.selectAll(".view").filter(".when").classed("active", true);
 			d3.selectAll(".data").classed("active", false);
 			d3.selectAll(".data").filter("." + $routeParams.dataType).classed("active", true);
-			d3.select(".header").style("height", "30px");
+			d3.selectAll(".orderby").classed("active", false);
+			d3.selectAll(".orderby").filter("." + $routeParams.orderType).classed("active", true);
+			
+			d3.select(".header").style("height", "5px");
 			
 			scope.X_AXIS_HEIGHT = 40;
+			
+			
 			
 			scope.X_AXIS_FONT_FAMILY = "'Gentium Basic', serif";
 			scope.X_AXIS_FONT_WEIGHT = "500";
 			scope.X_AXIS_FONT_SIZE = "10px";
-			
-			// vertical text
-			/*scope.X_AXIS_FONT_ORIENTATION = "rotate(-90)";
-			scope.X_AXIS_LABEL_OFFSET_HORIZONTAL = "-20";
-			scope.X_AXIS_LABEL_OFFSET_VERTICAL = "-5";*/
 			
 			//horizontal text
 			scope.X_AXIS_FONT_ORIENTATION = "";
@@ -69,19 +69,27 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			
 			scope.draw = function() 
 			{
+				d3.select(".order-by-container")
+					.style("visibility", "visible")
+					.style("bottom", CanvasService.getAvailableHeight() - (CanvasService.getMargin().top + CanvasService.getHeight() - scope.X_AXIS_HEIGHT) + "px");
+				
 				var orderType = $routeParams.orderType;
 				if (!orderType) orderType = SymbolsService.orderTopic;
 				
 				var dataTimelineColletion = DataService.getData($routeParams.dataType, SymbolsService.dataTimelineCollection, null);
 				
+				var xScale = d3.scale.ordinal()
+		    		.rangeBands([0, CanvasService.getWidth()], .65)
+		    		.domain(TimeService.getYears());
+				
 			    var xAxis = d3.svg.axis()
-			        .scale(CanvasService.getXscale())
+			        .scale(xScale)
 			        .orient("bottom");
 
 			    var maxColumnHeight = d3.max(dataTimelineColletion.lettersCountByYear, function(d) { return d; });
 			    
-			    CanvasService.getYscale()
-			    	.domain([0, maxColumnHeight])
+			    var yScale = d3.scale.linear()
+		    		.domain([0, maxColumnHeight])
 			    	.range([0, (CanvasService.getHeight() - scope.X_AXIS_HEIGHT)]);
 			    
 			    d3.select("svg").remove();
@@ -111,6 +119,8 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			   
 			    DataService.sortLetters(dataTimelineColletion.lettersByYear, orderType);
 			    
+			    
+			    
 			    dataTimelineColletion.lettersByYear.forEach(function(year)
 			    {
 			        var yearNum = year[0].accuratYear;
@@ -127,10 +137,10 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass)
 			                	.attr("person-id", letter.authors[0].id)
 			                    .attr("letter-id", letter.id)
-			                    .attr("width", CanvasService.getXscale().rangeBand())
-			                    .attr("y", CanvasService.getYoffset(maxColumnHeight - i))
-			                    .attr("transform", "translate(" + CanvasService.getXoffset(letter.accuratYear) + ",0)")
-			                    .attr("height", CanvasService.getYoffset(1))
+			                    .attr("width", xScale.rangeBand())
+			                    .attr("height", yScale(1))
+			                    .attr("y", yScale(maxColumnHeight - i))
+			                    .attr("x", xScale(letter.accuratYear))
 			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			                    .on("click", function(d)
 			                    {
@@ -141,7 +151,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			                    .on("mouseover", function(d)
 			                    {
 			                    	var element = d3.select(this);
-									scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+			                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
 									scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
 			                    })
 			                    .on("mouseout", function(d)
@@ -149,6 +159,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 									scope.$apply(function() {HighlightService.setLetterHoverId(null);});
 									scope.$apply(function() {HighlightService.setPersonHoverId(null);});
 			                    });
+			                    
 			            }
 			        }
 			    });

@@ -50,8 +50,8 @@ a {
 .subtitle {
 	font-family: 'Gentium Basic', serif;
 	font-weight: 500;
-	font-size: 1.5vw;
-	line-height: 1.5vw;
+	font-size: 1.2vw;
+	line-height: 1.2vw;
 	position: absolute;
 	right: 55%;
 	margin-top: 1.9vw;
@@ -76,6 +76,7 @@ a {
 	font-family: 'Gentium Basic', serif;
 	font-weight: 500;
 	font-size: 10px;
+	fill: #716558;
 }
 
 .visible {
@@ -221,6 +222,7 @@ a {
 
 .popup-contents {
 	padding: 20px;
+	color: #716558;
 }
 
 .data-selection-container {
@@ -417,10 +419,9 @@ a {
 	font-size: 1vw;
 	font-weight: 500;
 	position: absolute;
-    /*left: 1%;*/
-    top: 8vw;
 	color: #716558;
 	text-align: left;
+	visibility: hidden;
 }
 
 .order-by {
@@ -467,10 +468,27 @@ a {
 	opacity: 0.2;
 }
 
-.order-by-item:hover {
+.order-by-item:hover a {
 	color: #000000;
 }
 
+.orderby {
+	color: #716558;
+	font-family: 'Gentium Basic', serif;
+	font-size:14px;
+	cursor: pointer;
+	opacity: 1.0;
+}
+
+.orderby.active {
+	color: #716558;
+	font-family: 'Gentium Basic', serif;
+	font-size:14px;
+	cursor: pointer;
+	opacity: 1.0;
+	text-decoration: underline;
+	font-weight: 700;
+}
 
 
 

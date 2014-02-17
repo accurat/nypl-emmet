@@ -16,7 +16,7 @@ emmetApp.directive('personselection', ['SymbolsService', 'LocationService', func
 			
 			var directiveTemplate;
 			directiveTemplate  = '<div class="person-selection-container">';
-				directiveTemplate += '<div><span class="view who">' + label + '</span><img src="img/chevron.png" width="15" style="margin-left: 10px;"></div>';
+				directiveTemplate += '<div><span class="view who">' + label + '</span><img src="img/chevron_down.png" width="12" style="margin-left: 10px;"></div>';
 				directiveTemplate += '<div><input class="person-selection-input" type="text" ng-model="personName" placeholder=""></div>';
 				directiveTemplate += '<div class="person-selection-list" ng-hide="!matchingPeople.length">'; 
 					directiveTemplate += '<ul class="person-list">';						

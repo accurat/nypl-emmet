@@ -15,7 +15,7 @@ emmetApp.directive('topicselection', ['SymbolsService', 'LocationService', 'High
 			
 			var directiveTemplate;
 			directiveTemplate  = '<div class="topic-selection-container">';
-				directiveTemplate += '<div class="topic"><span ng-mousedown="displayTopicList()">' + label + '</span><img src="img/chevron.png" width="15" style="margin-left: 10px;"></div>';
+				directiveTemplate += '<div class="topic"><span ng-mousedown="displayTopicList()">' + label + '</span><img src="img/chevron_down.png" width="12" style="margin-left: 10px;"></div>';
 				
 				directiveTemplate += '<div class="topic-selection-list">'; 
 					directiveTemplate += '<ul class="topic-list">';						
@@ -51,4 +51,4 @@ emmetApp.directive('topicselection', ['SymbolsService', 'LocationService', 'High
 					}, true);
 		}
 	};
-}]);
+}])
