@@ -163,6 +163,60 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			            }
 			        }
 			    });
+			    
+			    
+			    /*================================================================*/
+			    /* MAGNIFICATION EFFECT
+			    /*================================================================*/
+			    var rects = d3.selectAll("rect");
+				var coordinates = [0, 0];
+				
+				var defaultWidth = xScale.rangeBand();
+				var defaultHeight = yScale(1);
+				var radius = 50;
+				var xMag = 2;
+				var yMag = 1;
+				
+				
+				
+				svg.on("mousemove", function() 
+				{
+					coordinates = d3.mouse(this);
+				    var mx = coordinates[0] - CanvasService.getMargin().left;
+				    var my = coordinates[1] - CanvasService.getMargin().top;
+				    rects.each(function(d) 
+				    {
+				    	var r = d3.select(this);
+				    	var rx = parseInt(r.attr("x"));
+				    	var ry = parseInt(r.attr("y"));
+				    	var d = Math.sqrt((mx-rx)*(mx-rx) + (my-ry)*(my-ry));
+				    	if (d <= radius)
+				    	{
+				    		r.attr("width", function(d) 
+		    				{
+		    					var dim = parseFloat(r.attr("width"));
+		    					if (dim > defaultWidth) return dim;
+		    					else return dim * xMag;
+		    				});
+					    	r.attr("height", function(d) 
+			    			{
+					    		var dim = parseFloat(r.attr("height"));
+								if (dim > defaultHeight) return dim;
+								else return dim * yMag;
+			    			});
+					    	r.attr("transform", function (d)
+					    	{
+					    		return "translate(" + (-defaultWidth / 2) + ",0)";
+					    	});
+				    	}
+				    	else
+				    	{
+				    		r.attr("width", defaultWidth);
+					    	r.attr("height", defaultHeight);
+					    	r.attr("transform", "");
+				    	}
+				    });
+				  });
 			};
 		}
 	};

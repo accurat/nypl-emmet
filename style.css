@@ -95,6 +95,13 @@ a {
 	stroke: #F5EEDF;
 	stroke-width: 1px;
 	fill-opacity: 1.0;
+	
+	-webkit-transition: fill-opacity .2s ease-in-out;
+  	-moz-transition: fill-opacity .2s ease-in-out;
+  	-ms-transition: fill-opacity .2s ease-in-out;
+  	-o-transition: fill-opacity .2s ease-in-out;
+  	transition: fill-opacity .2s ease-in-out;
+	
 }
 
 .letter.opacized {
@@ -104,6 +111,12 @@ a {
 .letter-rect {
 	cursor: pointer;
 	fill-opacity: 1.0;
+	
+	-webkit-transition: fill-opacity .2s ease-in-out;
+  	-moz-transition: fill-opacity .2s ease-in-out;
+  	-ms-transition: fill-opacity .2s ease-in-out;
+  	-o-transition: fill-opacity .2s ease-in-out;
+  	transition: fill-opacity .2s ease-in-out;
 }
 
 .letter-rect.opacized {
@@ -120,6 +133,12 @@ a {
 .bezier-curve {
 	fill: none;
 	stroke: #ACA195;
+	
+	-webkit-transition: stroke .2s ease-in-out;
+  	-moz-transition: stroke .2s ease-in-out;
+  	-ms-transition: stroke .2s ease-in-out;
+  	-o-transition: stroke .2s ease-in-out;
+  	transition: stroke .2s ease-in-out;
 }
 
 .bezier-curve.highlighted {
@@ -130,6 +149,12 @@ a {
 	fill: none;
 	stroke: #ACA195;
 	stroke-width: 1px;
+	
+	-webkit-transition: stroke .2s ease-in-out;
+  	-moz-transition: stroke .2s ease-in-out;
+  	-ms-transition: stroke .2s ease-in-out;
+  	-o-transition: stroke .2s ease-in-out;
+  	transition: stroke .2s ease-in-out;
 }
 
 .vertical-line.highlighted {
@@ -140,6 +165,12 @@ a {
 	fill: none;
 	stroke: #ACA195;
 	stroke-width: 1px;
+	
+	-webkit-transition: stroke .2s ease-in-out;
+  	-moz-transition: stroke .2s ease-in-out;
+  	-ms-transition: stroke .2s ease-in-out;
+  	-o-transition: stroke .2s ease-in-out;
+  	transition: stroke .2s ease-in-out;
 }
 
 .horizontal-line.highlighted {
@@ -157,6 +188,12 @@ a {
 	fill: #716558;
 	cursor: pointer;
 	opacity: 1.0;
+	
+	-webkit-transition: opacity .2s ease-in-out;
+  	-moz-transition: opacity .2s ease-in-out;
+  	-ms-transition: opacity .2s ease-in-out;
+  	-o-transition: opacity .2s ease-in-out;
+  	transition: opacity .2s ease-in-out;
 }
 
 .person-name-token.highlighted {
@@ -175,6 +212,12 @@ a {
 	font-weight: 500;
 	font-size: 11px;
 	opacity: 1.0;
+	
+	-webkit-transition: opacity .2s ease-in-out;
+  	-moz-transition: opacity .2s ease-in-out;
+  	-ms-transition: opacity .2s ease-in-out;
+  	-o-transition: opacity .2s ease-in-out;
+  	transition: opacity .2s ease-in-out;
 }
 
 .expansion-text.highlighted {
@@ -193,6 +236,12 @@ a {
 	stroke-width: 1px;
 	cursor: pointer;
 	opacity: 1.0;
+	
+	-webkit-transition: opacity .2s ease-in-out;
+  	-moz-transition: opacity .2s ease-in-out;
+  	-ms-transition: opacity .2s ease-in-out;
+  	-o-transition: opacity .2s ease-in-out;
+  	transition: opacity .2s ease-in-out;
 }
 
 .placemark.opacized {
