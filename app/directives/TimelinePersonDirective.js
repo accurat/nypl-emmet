@@ -603,9 +603,13 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			
 			scope.displayNestedTimeline = function(selectedSliceIndex, year)
 			{
-				if (!scope.isTimelineExpandedForRecipient[selectedSliceIndex])
+				if (scope.isTimelineExpandedForRecipient[selectedSliceIndex] == 0)
 				{
-					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = true;
+					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = year;
+				
+				//if (!scope.isTimelineExpandedForRecipient[selectedSliceIndex])
+				//{
+				//	scope.isTimelineExpandedForRecipient[selectedSliceIndex] = true;
 					scope.expandTimeline(selectedSliceIndex);
 					
 					var yearLetters = scope.getSliceLettersInYear(selectedSliceIndex, year);
@@ -740,10 +744,14 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 				}	
 				else
 				{
-					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = false;
+					var existingYear = scope.isTimelineExpandedForRecipient[selectedSliceIndex];
+					
+					scope.isTimelineExpandedForRecipient[selectedSliceIndex] = 0;
 					scope.compressTimeline(selectedSliceIndex);
 					
 					d3.select(".rce" + selectedSliceIndex).remove();
+					
+					if (existingYear != year) scope.displayNestedTimeline(selectedSliceIndex, year);
 				}
 			};
 			
