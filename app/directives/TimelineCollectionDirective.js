@@ -176,7 +176,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 									var element = d3.select(this);
 									element.attr("height", defaultHeight);
 									element.attr("width", defaultWidth);
-									d3.selectAll("rect").attr("transform", "");
+									d3.selectAll("rect").filter(".y" + yearNum).attr("transform", "");
 			                    });
 			                    
 			            }
