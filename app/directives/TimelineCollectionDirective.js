@@ -168,7 +168,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			    /*================================================================*/
 			    /* MAGNIFICATION EFFECT
 			    /*================================================================*/
-			    var rects = d3.selectAll("rect");
+			    /*var rects = d3.selectAll("rect");
 				var coordinates = [0, 0];
 				
 				var defaultWidth = xScale.rangeBand();
@@ -216,7 +216,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 					    	r.attr("transform", "");
 				    	}
 				    });
-				  });
+				  });*/
 			};
 		}
 	};
