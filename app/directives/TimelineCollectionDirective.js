@@ -134,9 +134,10 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
 			                
 			                chartArea.append("rect")
-			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass)
+			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass + " y" + yearNum)
 			                	.attr("person-id", letter.authors[0].id)
 			                    .attr("letter-id", letter.id)
+			                    .attr("letter-index", i)
 			                    .attr("width", xScale.rangeBand())
 			                    .attr("height", yScale(1))
 			                    .attr("y", yScale(maxColumnHeight - i))
@@ -166,7 +167,7 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			    
 			    
 			    /*================================================================*/
-			    /* MAGNIFICATION EFFECT
+			    /* MAGNIFICATION EFFECT - FISHEYE-LIKE
 			    /*================================================================*/
 			    /*var rects = d3.selectAll("rect");
 				var coordinates = [0, 0];
@@ -217,6 +218,104 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 				    	}
 				    });
 				  });*/
+			    
+			    
+			    /*================================================================*/
+			    /* MAGNIFICATION EFFECT - EXPANDING RECTANGLES
+			    /*================================================================*/
+			    //var rects = d3.selectAll("rect");
+				var coordinates = [0, 0];
+				
+				var defaultWidth = xScale.rangeBand();
+				var defaultHeight = yScale(1);
+				var radius = 50;
+				var xMag = 2;
+				var yMag = 1;
+				
+				var currentPointingYear;
+				
+				svg.on("mousemove", function() 
+				{
+					coordinates = d3.mouse(this);
+				    var mx = coordinates[0] - CanvasService.getMargin().left;
+				    var my = coordinates[1] - CanvasService.getMargin().top;
+				    
+				    var leftEdges = xScale.range();
+			        var width = xScale.rangeBand();
+			        var j;
+			        for(j = 0; mx > (leftEdges[j] + width); j++) {}
+			        
+			        var year = xScale.domain()[j];
+			        
+			        
+			        d3.selectAll("rect")
+			        	.attr("width", defaultWidth)
+			        	.attr("height", defaultHeight)
+			        	.attr("transform", "");
+			        
+			        var rects = d3.selectAll("rect").filter(".y" + year).each(function(d) 
+			        {
+			        	var r = d3.select(this);
+			        	var rx = parseInt(r.attr("x"));
+				    	var ry = parseInt(r.attr("y"));
+			        	
+				    	
+				    	if (ry <= my)
+				    	{
+				    		
+				    		if (((mx >= rx && mx<=(rx+defaultWidth)) && (my>=ry && my <= (ry+defaultHeight))))
+				    		{
+				    			//r.attr("width", 2*defaultWidth);
+				    			r.attr("height", 3*defaultHeight);
+					        	r.attr("transform", "translate(0," + (-(defaultHeight*3 - defaultHeight)) + ")");
+					        	//r.attr("transform", "translate(" + (-defaultWidth / 2) + "," + (-(defaultHeight*3 - defaultHeight)) + ")");
+				    		}
+				    		else if (mx >= rx && mx<=(rx+defaultWidth))
+				    		{
+				    			//r.attr("width", 2*defaultWidth);
+				    			r.attr("height", defaultHeight);
+					        	r.attr("transform", "translate(0," + (-(defaultHeight*3 - defaultHeight)) + ")");
+				    			
+				    		}
+				    	}
+			        });
+			        
+			        
+			        
+				    /*
+				    rects.each(function(d) 
+				    {
+				    	var r = d3.select(this);
+				    	var rx = parseInt(r.attr("x"));
+				    	var ry = parseInt(r.attr("y"));
+				    	var d = Math.sqrt((mx-rx)*(mx-rx) + (my-ry)*(my-ry));
+				    	if (d <= radius)
+				    	{
+				    		r.attr("width", function(d) 
+		    				{
+		    					var dim = parseFloat(r.attr("width"));
+		    					if (dim > defaultWidth) return dim;
+		    					else return dim * xMag;
+		    				});
+					    	r.attr("height", function(d) 
+			    			{
+					    		var dim = parseFloat(r.attr("height"));
+								if (dim > defaultHeight) return dim;
+								else return dim * yMag;
+			    			});
+					    	r.attr("transform", function (d)
+					    	{
+					    		return "translate(" + (-defaultWidth / 2) + ",0)";
+					    	});
+				    	}
+				    	else
+				    	{
+				    		r.attr("width", defaultWidth);
+					    	r.attr("height", defaultHeight);
+					    	r.attr("transform", "");
+				    	}
+				    });*/
+				  });
 			};
 		}
 	};
