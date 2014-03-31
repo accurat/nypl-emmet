@@ -62,6 +62,8 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.TIMELINE_EXTENSION_CURVES_HEIGHT = 20;
 			
 			
+			
+			
 			// *************************************************************************
 			// DATA
 			// *************************************************************************
@@ -94,17 +96,9 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			// WATCH LISTENERS
 			// *************************************************************************
 			
-		    scope.$watch(
-					function() {return DataService.hasData();}, 
-					function (newValue, oldValue) 
-					{
-						if (newValue) 
-						{
-							scope.draw();
-						}
-					}, true);
+		    scope.$watch(function() {return DataService.hasData();}, 
+					function (newValue, oldValue) {if (newValue) {scope.draw();}}, true);
 			
-		    
 		    scope.$watch(
 					function() {return HighlightService.getPersonId();}, 
 					function (newValue, oldValue) 
@@ -221,6 +215,10 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			// Main drawing method
 			scope.draw = function() 
 			{
+				scope.xScale = d3.scale.ordinal()
+	    			.rangeBands([0, CanvasService.getWidth()], .75)
+	    			.domain(TimeService.getYears());
+				
 				scope.dataTimelinePerson = DataService.getData($routeParams.dataType, SymbolsService.dataTimelineAuthor, $routeParams.personId);
 				var maximumSlicesHeight = scope.dataTimelinePerson.length * scope.HORIZONTAL_SLICE_HEIGHT;
 			    var maximumViewerHeight = CanvasService.getMargin().top + CanvasService.getMargin().bottom + CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + maximumSlicesHeight;
@@ -234,7 +232,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		        	.attr("height", maximumViewerHeight);
 			    
 				var xAxis = d3.svg.axis()
-		        	.scale(CanvasService.getXscale())
+		        	.scale(scope.xScale)
 		        	.orient("bottom");
 				
 			    var chartArea = svg.append("g")
@@ -644,7 +642,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 	            	.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 	            	.attr("letter-id", letter.id)
         	   		.attr("letter-year", letter.accuratYear)
-	            	.attr("transform", "translate(" + (CanvasService.getXoffset(letter.accuratYear) + rectOffsetActual)  + "," + scope.RECT_OFFSET_VERTICAL + ")")
+	            	.attr("transform", "translate(" + (scope.xScale(letter.accuratYear) + rectOffsetActual)  + "," + scope.RECT_OFFSET_VERTICAL + ")")
         	   		.attr("width", scope.RECT_WIDTH)
         	   		.attr("height", scope.RECT_HEIGHT)
         	   		.on("mouseover", function(d)
@@ -711,16 +709,16 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					placemarkWidthActual = scope.PLACEMARK_WIDTH_MULTI;
 				}
 				
-				var xOffset = (CanvasService.getXoffset(yearLetters[0].accuratYear) + placemarkOffsetActual);
 				var year = yearLetters[0].accuratYear;
+				var placemarkOffsetHorizontal = (scope.xScale(year) + placemarkOffsetActual);
 				
 				container.append("rect")
                    	.attr("class", "placemark pm" + sliceIndex + " y" + year + composedClass)
                    	.attr("recipient-container-id", sliceIndex)
                    	.attr("year", year)
                    	.attr("type", placemarkType)
-                   	.attr("baseX", xOffset)
-            	   	.attr("transform", "translate(" + xOffset  + "," + scope.PLACEMARK_OFFSET_VERTICAL + ")")
+                   	.attr("baseX", placemarkOffsetHorizontal)
+            	   	.attr("transform", "translate(" + placemarkOffsetHorizontal  + "," + scope.PLACEMARK_OFFSET_VERTICAL + ")")
         	   		.attr("width", placemarkWidthActual)
         	   		.attr("height", scope.PLACEMARK_HEIGHT)
         	   		.on("click", function(d)
@@ -742,7 +740,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					var firstLetter = sliceLetters[0];
 					var lastLetter = sliceLetters[sliceLetters.length - 1];
 	        		
-					var x1base = CanvasService.getXoffset(firstLetter.accuratYear);
+					var x1base = scope.xScale(firstLetter.accuratYear);
 		            var x1offset;
 		            if (DataService.isPersonAuthorById($routeParams.personId, firstLetter)) x1offset = scope.HORIZONTAL_LINES_OFFSET_AUTHOR;
 		            else x1offset = scope.HORIZONTAL_LINES_OFFSET_RECIPIENT;
@@ -756,7 +754,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		        		// ignore multiple first letters 
 		        		if (letter.accuratYear != firstLetter.accuratYear)
 		        		{
-			        		var x2base = CanvasService.getXoffset(letter.accuratYear); 
+			        		var x2base = scope.xScale(letter.accuratYear); 
 				            var x2offset;
 				            if (DataService.isPersonAuthorById($routeParams.personId, letter)) x2offset = scope.HORIZONTAL_LINES_OFFSET_AUTHOR;
 				            else x2offset = scope.HORIZONTAL_LINES_OFFSET_RECIPIENT;
@@ -834,9 +832,9 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					.attr("length", sliceOffset)
 	                .style("stroke-dasharray", verticalLineDasharray)
 	                .attr("transform", "translate(0," + (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset) + ")")
-                	.attr("x1", CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual)
+                	.attr("x1", scope.xScale(letter.accuratYear) + verticalLineOffsetActual)
 	                .attr("y1", -(sliceOffset + scope.DISTANCE_TIMELINE_TO_VERTICAL_LINES))
-	                .attr("x2", CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual)
+	                .attr("x2", scope.xScale(letter.accuratYear) + verticalLineOffsetActual)
 	                .attr("y2", scope.VERTICAL_LINES_OFFSET_VERTICAL);
 				
 				var existingVerticalLine = drawnVerticalLinesByYear[letter.accuratYear];
@@ -904,9 +902,9 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 					// make it visible
 					// set it as drawn
 					
-					var xBezierCurveEnd = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
+					var xBezierCurveEnd = scope.xScale(letter.accuratYear) + verticalLineOffsetActual;
 		        	var yBezierCurveEnd = CanvasService.getHeight()/6 - scope.DISTANCE_AUTHOR_NAME_TO_BEZIER_CURVES - scope.DISTANCE_BEZIER_CURVES_TO_TIMELINE;			            	
-		        	var xBezierCurveControl = CanvasService.getXoffset(letter.accuratYear) + verticalLineOffsetActual;
+		        	var xBezierCurveControl = scope.xScale(letter.accuratYear) + verticalLineOffsetActual;
 		        	var yBezierCurveControl = 0;
 		        	
 		        	var d = "M" + xBezierCurveStart + "," + yBezierCurveStart + " Q" + xBezierCurveControl + "," + yBezierCurveControl + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
@@ -946,7 +944,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 	    			var label = container.append("text")
 						.attr("class", "corresponding-person-container")
 						.attr("text-anchor", "end")
-						.attr("transform", "translate(" + (CanvasService.getXoffset(firstLetter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + "," + scope.DISTANCE_PERSON_NAME_FROM_BASELINE + ")");
+						.attr("transform", "translate(" + (scope.xScale(firstLetter.accuratYear) - scope.DISTANCE_PERSON_NAME_TO_FIRST_LETTER)  + "," + scope.DISTANCE_PERSON_NAME_FROM_BASELINE + ")");
 					
 					var peopleCollection;
 					if (isAuthor) peopleCollection = firstLetter.recipients;
@@ -994,8 +992,7 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			
 			scope.initializeDummyVariables = function()
 			{
-				var years = TimeService.getYears();
-			    for (var year in years)
+			    for (var year in TimeService.getYears())
 			    {
 			    	scope.drawnBezierCurvesAuthorByYear[year] = false;
 				    scope.drawnBezierCurvesRecipientByYear[year] = false;

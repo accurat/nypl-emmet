@@ -17,7 +17,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			this.processChapters();
 			hasData = true;
 			
-			this.prepareDataWhere();
+			//this.prepareDataWhere();
 			
 		},
 		

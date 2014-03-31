@@ -13,24 +13,21 @@ emmetApp.directive('popup', ['HighlightService', '$window', function (HighlightS
 				margin = 10;
 
 			scope.$watch(
-				function () 
-				{
-					return HighlightService.getLetterId();
-				},
+				function () {return HighlightService.getLetterId();},
 				function (newValue, oldValue) 
 				{
-					if (newValue) {scope.show();}
+					if (newValue) {scope.show(newValue);}
 					else {scope.hide();}
 				}, true);
 
 
-			scope.show = function () {
-				var body = angular.element('body')[0],
-					windowWidth = $window.outerWidth,
-					windowHeight = $window.outerHeight,
-					coordinates = d3.mouse(body),
-					x = coordinates[0] > windowWidth - popupWidth ? coordinates[0] - popupWidth + margin : coordinates[0] + margin,
-					y = coordinates[1] > windowHeight - popupHeight ? coordinates[1] - popupHeight + margin : coordinates[1] + margin;
+			scope.show = function (newValue) {
+				var body = angular.element('body')[0];
+				var coordinates = d3.mouse(body);
+				var windowWidth = $window.outerWidth;
+				var windowHeight = $window.outerHeight;
+				var x = coordinates[0] > windowWidth - popupWidth ? coordinates[0] - popupWidth + margin : coordinates[0] + margin;
+				var y = coordinates[1] > windowHeight - popupHeight ? coordinates[1] - popupHeight + margin : coordinates[1] + margin;
 
 
 				d3.select(".popup-container")

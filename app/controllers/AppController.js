@@ -4,9 +4,9 @@ emmetApp.controller('AppController', ['$scope', 'BackendService', 'DataService',
 		.then(function (data) 
 		{
 			TimeService.init(1754, 1805); // initialize timeline
+			DataService.init(data);
 			ColorService.init();
 			CanvasService.init(null, null); // initialize dynamic canvas
-			DataService.init(data);
 			d3.select("#loading").remove();
 		}, 
 		function (error) 

@@ -33,7 +33,6 @@ emmetApp.factory('TimeService', function()
 			
 			days = new Array();
 			for (var day = 1; day <= 365; day++) days.push(day);
-				
 		},
 		
 		getDayOfYear: function(dateString)
