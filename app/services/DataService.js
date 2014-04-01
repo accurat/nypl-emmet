@@ -17,7 +17,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			this.processChapters();
 			hasData = true;
 			
-			//this.prepareDataWhere();
+			this.prepareDataWhere();
 			
 		},
 		
@@ -297,10 +297,13 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			});
 			
 			
-			
+			console.log("LETTERS BY: <FOREIGN COUNTRY>");
 			console.log(lettersByForeignCountry);
+			console.log("LETTERS BY: <STATE>");
 			console.log(lettersByState);
+			console.log("LETTERS WITH: <UNKNOWN PLACE> (" + lettersUnknownPlace.length + ")");
 			console.log(lettersUnknownPlace);
+			console.log("LETTERS WITH: <UNDETERMINED PLACE> (" + lettersUndeterminedPlace.length + ")");
 			console.log(lettersUndeterminedPlace);
 			
 			var lettersByStateAndPlace = new Array();
@@ -319,7 +322,8 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				});
 			}
 			
-			console.log(lettersByStateAndPlace);
+			//console.log("LETTERS BY: <STATE AND PLACE>");
+			//console.log(lettersByStateAndPlace);
 			
 			for (stateId in lettersByStateAndPlace)
 			{
@@ -327,6 +331,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				lettersByStateAndPlace[stateId] = this.sortAssociativeArray(lettersOfState);
 			}
 			
+			console.log("LETTERS BY: <STATE AND PLACE>");
 			console.log(lettersByStateAndPlace);
 			
 			return dataWhere;

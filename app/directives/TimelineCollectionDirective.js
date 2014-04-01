@@ -1,4 +1,23 @@
-emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasService', 'ColorService', 'SymbolsService', 'LocationService', '$routeParams', 'HighlightService', function(DataService, TimeService, CanvasService, ColorService, SymbolsService, LocationService, $routeParams, HighlightService)
+emmetApp.directive('timelinecollection', [
+'DataService', 
+'TimeService', 
+'CanvasService', 
+'ColorService', 
+'SymbolsService', 
+'LocationService', 
+'$routeParams', 
+'HighlightService', 
+'PopupService', 
+function(
+	DataService, 
+	TimeService, 
+	CanvasService, 
+	ColorService, 
+	SymbolsService, 
+	LocationService, 
+	$routeParams, 
+	HighlightService, 
+	PopupService) 
 {
 	return {
 		restrict: 'E',
@@ -92,18 +111,52 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 		    		.domain([0, maxColumnHeight])
 			    	.range([0, (CanvasService.getHeight() - scope.X_AXIS_HEIGHT)]);
 			    
+			    var defaultHeight = yScale(1);
+            	var defaultWidth = xScale.rangeBand();
+			    
 			    d3.select("svg").remove();
 			    
 			    var svg = d3.select(".timeline-collection").append("svg")
 			        .attr("class", "viewer")
 			        .attr("width", CanvasService.getAvailableWidth())
 			        .attr("height", CanvasService.getAvailableHeight());
+			        
+			    
+			    var chartBackground = svg.append("g")
+			    	.attr("class", "chartBackground");
+			    
+			    chartBackground.append("rect")
+			    	.attr("class", "background")
+			    	.attr("width", CanvasService.getAvailableWidth())
+			        .attr("height", CanvasService.getAvailableHeight())
+	                .attr("y", 0)
+	                .attr("x", 0)
+	                .style("fill", ColorService.getColorFor("pageBackground"))
+	                .on("click", function() 
+	                {
+	                	if (PopupService.isVisible() && PopupService.isPersistent())
+	                	{
+	                		PopupService.setPersistent(false);
+	                		PopupService.hidePopup();
+	                		
+	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+							scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+	                		
+	                		var element = d3.selectAll("rect").filter(".magnified");
+							element.attr("height", defaultHeight);
+							element.attr("width", defaultWidth);
+							element.classed("magnified", false);
+							
+							var yearNum = element.attr("letter-year");
+							d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).attr("transform", "");
+	                	}
+	                });
 			    
 			    var chartArea = svg.append("g")
 			    	.attr("class", "chartArea")
 			    	.attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top) + ")");
-
-			    svg.append("g")
+			    
+			    var chartAxis = svg.append("g")
 			        .attr("class", "xAxis")
 			        .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top + CanvasService.getHeight() - scope.X_AXIS_HEIGHT) + ")")
 			        .call(xAxis)
@@ -115,12 +168,9 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			        .style("font-family", scope.X_AXIS_FONT_FAMILY)
 			        .attr("transform", scope.X_AXIS_FONT_ORIENTATION);
 
-			    d3.selectAll("rect").remove();
+			    d3.selectAll("rect").filter(".letter").remove();
 			   
 			    DataService.sortLetters(dataTimelineColletion.lettersByYear, orderType);
-			    
-			    var defaultHeight = yScale(1);
-            	var defaultWidth = xScale.rangeBand();
 			    
 			    dataTimelineColletion.lettersByYear.forEach(function(year)
 			    {
@@ -146,39 +196,44 @@ emmetApp.directive('timelinecollection', ['DataService', 'TimeService', 'CanvasS
 			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			                    .on("click", function(d)
 			                    {
-			                    	var url = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWho);
-			                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, d3.select(this).attr("person-id"));
-			                    	window.location = url;
+			                    	var element = d3.select(this);
+			                    	scope.$apply(function() {PopupService.setPersistent(true);});
 			                    })
 			                    .on("mouseover", function(d)
 			                    {
-			                    	var element = d3.select(this);
-			                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
-									scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
-									
-									element.attr("height", 3*defaultHeight);
-									element.attr("width", 2*defaultWidth);
-									element.attr("transform", "translate(" + (-defaultWidth / 2) + "," + (-(defaultHeight*3 - defaultHeight)) + ")");
-									
-									var ry = element.attr("y");
-									d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).each(function(d)
-									{
-										var otherRect = d3.select(this);
-										if (parseFloat(otherRect.attr("y")) < ry) otherRect.attr("transform", "translate(0," + (-(defaultHeight*3 - defaultHeight)) + ")");
-									});
-									
+			                    	if (!PopupService.isPersistent())
+			                    	{
+				                    	var element = d3.select(this);
+				                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+										scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
+										
+										element.classed("magnified", true);
+										element.attr("height", 3*defaultHeight);
+										element.attr("width", 2*defaultWidth);
+										element.attr("transform", "translate(" + (-defaultWidth / 2) + "," + (-(defaultHeight*3 - defaultHeight)) + ")");
+										
+										var ry = element.attr("y");
+										d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).each(function(d)
+										{
+											var otherRect = d3.select(this);
+											if (parseFloat(otherRect.attr("y")) < ry) otherRect.attr("transform", "translate(0," + (-(defaultHeight*3 - defaultHeight)) + ")");
+										});
+			                    	}
 			                    })
 			                    .on("mouseout", function(d)
 			                    {
-									scope.$apply(function() {HighlightService.setLetterHoverId(null);});
-									scope.$apply(function() {HighlightService.setPersonHoverId(null);});
-									
-									var element = d3.select(this);
-									element.attr("height", defaultHeight);
-									element.attr("width", defaultWidth);
-									d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).attr("transform", "");
+									if (!PopupService.isPersistent())
+									{
+				                    	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+										scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+										
+										var element = d3.select(this);
+										element.classed("magnified", false);
+										element.attr("height", defaultHeight);
+										element.attr("width", defaultWidth);
+										d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).attr("transform", "");
+									}
 			                    });
-			                    
 			            }
 			        }
 			    });

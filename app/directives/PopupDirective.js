@@ -1,4 +1,4 @@
-emmetApp.directive('popup', ['HighlightService', '$window', function (HighlightService, $window) {
+emmetApp.directive('popup', ['PopupService', 'HighlightService', '$window', function (PopupService, HighlightService, $window) {
 	return {
 		restrict: 'E',
 		replace: true,
@@ -22,7 +22,8 @@ emmetApp.directive('popup', ['HighlightService', '$window', function (HighlightS
 
 
 			scope.show = function (newValue) {
-				var body = angular.element('body')[0];
+				PopupService.showPopup();
+				/*var body = angular.element('body')[0];
 				var coordinates = d3.mouse(body);
 				var windowWidth = $window.outerWidth;
 				var windowHeight = $window.outerHeight;
@@ -33,11 +34,12 @@ emmetApp.directive('popup', ['HighlightService', '$window', function (HighlightS
 				d3.select(".popup-container")
 					.style("visibility", "visible")
 					.style("top", y + "px")
-					.style("left", x + "px");
+					.style("left", x + "px");*/
 			};
 
-			scope.hide = function () {
-				d3.select(".popup-container").style("visibility", "hidden");
+			scope.hide = function () {				
+				if (!PopupService.isPersistent()) PopupService.hidePopup();
+				//d3.select(".popup-container").style("visibility", "hidden");
 			};
 
 		}

@@ -265,8 +265,14 @@ a {
 	visibility: hidden;
 	z-index: 100;
 	background-image: url('img/popup.svg');
+	background-repeat: no-repeat;
 	width: 258px;
 	height: 356px;
+	/*width: 350px;
+	height: 400px;*/
+	-moz-background-size: contain;
+	-webkit-background-size: contain;
+	background-size: contain;
 }
 
 .popup-contents {

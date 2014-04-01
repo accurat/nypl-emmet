@@ -1,9 +1,71 @@
 <div class="popup-container">
 	<div class="popup-contents">
-		From: <b>{{letter.authors[0].name}}</b><br/><br/>
-		To: <b>{{letter.recipients[0].name}}</b><br/><br/>
-		{{letter.place.name}}<br/>
-		<i>{{formattedLetterDate}}</i><br/><br/>
-		{{letter.emmetContent}}.<br/>
+		<div ng-click="closePopup()">CLOSE</div>
+		
+		<table>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;">from</td>
+				<td width="208px" style="text-align: left; vertical-align: top;">
+					<div ng-repeat="author in letter.authors"><b ng-click="openPersonTimeline(author.id)">{{author.name}}</b></a></div>
+				</td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;">to</td>
+				<td width="208px" style="text-align: left; vertical-align: top;">
+					<div ng-repeat="recipient in letter.recipients"><b>{{recipient.name}}</b></div>
+				</td>
+			</tr>
+			
+		</table>
+		
+		<table>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"></td>
+				<td width="208px" style="text-align: left; vertical-align: top;"><i>{{formattedLetterDate}}</i></td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"> </td>
+				<td width="208px" style="text-align: left; vertical-align: top;">place</td>
+			</tr>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"> </td>
+				<td width="208px" style="text-align: left; vertical-align: top;"><b>{{letter.place.name}}</b></td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"> </td>
+				<td width="208px" style="text-align: left; vertical-align: top;">chapter</td>
+			</tr>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"> </td>
+				<td width="208px" style="text-align: left; vertical-align: top;"><b>{{letter.chapterName}}</b></td>
+			</tr>
+		</table>
+		
+		<table>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"> </td>
+				<td width="208px" style="text-align: left; vertical-align: top;">chapter</td>
+			</tr>
+			<tr>
+				<td width="50px" style="text-align: right; vertical-align: top;"> </td>
+				<td width="208px" style="text-align: left; vertical-align: top;">
+					<div >
+						{{letter.emmetContent}}
+					</div>
+				</td>
+			</tr>
+		</table>
+		
+		
+		
 	</div>
 </div>
