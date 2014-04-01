@@ -32,15 +32,13 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 	{
 		if (!$scope.isTopicListVisible)
 		{
-			d3.select(".topic-selection-list")
-				.style("visibility", "visible");
-			d3.selectAll(".topic").classed("active", true);
+			d3.selectAll(".menu-element").filter(".topic").style("visibility", "visible");
+			d3.selectAll(".menu-item").filter(".topic").classed("active", true);
 		}
 		else
 		{
-			d3.select(".topic-selection-list")
-				.style("visibility", "hidden");
-			d3.selectAll(".topic").classed("active", false);
+			d3.selectAll(".menu-element").filter(".topic").style("visibility", "hidden");
+			d3.selectAll(".menu-item").filter(".topic").classed("active", false);
 		}
 		
 		$scope.isTopicListVisible = !$scope.isTopicListVisible;
@@ -52,15 +50,17 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 		{
 			if (newValue) 
 			{
-				d3.selectAll(".topic-bullet").classed("highlighted", true);
-				d3.selectAll(".topic-bullet").filter(".t" + newValue).classed("highlighted", false);
-				d3.selectAll(".topic-item").classed("highlighted", true);
-				d3.selectAll(".topic-item").filter(".t" + newValue).classed("highlighted", false);
+				console.log(newValue);
+				d3.selectAll(".menu-element-text").filter(".topic").classed("opacized", true);
+				d3.selectAll(".menu-bullet").filter(".topic").classed("opacized", true);
+				
+				d3.selectAll(".menu-element-text").filter(".topic").filter(".t" + newValue).classed("opacized", false);
+				d3.selectAll(".menu-bullet").filter(".topic").filter(".t" + newValue).classed("opacized", false);
 			}	
 			else
 			{
-				d3.selectAll(".topic-bullet").classed("highlighted", false);
-				d3.selectAll(".topic-item").classed("highlighted", false);
+				d3.selectAll(".menu-element-text").filter(".topic").classed("opacized", false);
+				d3.selectAll(".menu-bullet").filter(".topic").classed("opacized", false);
 			}
 		}, true);
 	

@@ -1,16 +1,10 @@
-<div class="container-fluid order-by-container" style="top: 20em;">
-	<div class="row order-by active">	
-		<div class="col-md-9"><span ng-click="displayOrderByList()">{{label}}</span></div>
-		<div class="col-md-3"><img src="img/chevron_down.png" width="12"></div>
+<div class="container-fluid">
+	<div class="row">	
+		<div class="col-md-10 menu-item orderby active" ng-click="displayOrderByList()">{{label}}</div>
+		<div class="col-md-2 menu-image orderby"><img src="img/chevron_down.png" width="12px"></div>
 	</div>
-	<div class="row order-by-selection-list">
-		<div class="col-md-9">
-			<ul class="order-by-list">				
-				<li class="order-by-item"><span class="orderby topic" ng-click="orderBy('topic')">{{topicLabel}}</span></li>
-				<li class="order-by-item"><span class="orderby authorYear" ng-click="orderBy('authorYear')">{{authorYearLabel}}</span></li>
-				<li class="order-by-item"><span class="orderby authorTotal" ng-click="orderBy('authorTotal')">{{authorTotalLabel}}</span></li>
-			</ul>
-		</div>
-		<div class="col-md-3"></div>
-	</div>
+		
+	<div class="row"><div class="col-md-10 menu-element orderby orderby-byTopic" ng-click="orderBy('topic')">{{topicLabel}}</div></div>
+	<div class="row"><div class="col-md-10 menu-element orderby orderby-byAuthorYear" ng-click="orderBy('authorYear')">{{authorYearLabel}}</div></div>
+	<div class="row"><div class="col-md-10 menu-element orderby orderby-byAuthorTotal" ng-click="orderBy('authorTotal')">{{authorTotalLabel}}</div></div>
 </div>

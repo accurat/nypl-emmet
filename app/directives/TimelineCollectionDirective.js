@@ -30,10 +30,11 @@ function(
 		templateUrl: 'app/templates/TimelineCollection.tpl.html',
 		link: function(scope, element, attrs)
 		{
-			d3.selectAll(".view").classed("active", false);
-			d3.selectAll(".view").filter(".when").classed("active", true);
-			d3.selectAll(".orderby").classed("active", false);
-			d3.selectAll(".orderby").filter("." + $routeParams.orderType).classed("active", true);
+			d3.selectAll(".menu-item").filter(".view").classed("active", false);
+			d3.selectAll(".menu-item").filter(".view").filter(".view-when").classed("active", true);
+			
+			d3.selectAll(".menu-element").filter(".orderby").classed("active", false);
+			d3.selectAll(".menu-element").filter(".orderby").filter(".orderby-" + $routeParams.orderType).classed("active", true);
 			
 			scope.X_AXIS_HEIGHT = 40;
 			scope.X_AXIS_FONT_FAMILY = "'Gentium Basic', serif";

@@ -18,17 +18,8 @@ emmetApp.controller('OrderByController', ['$scope', '$filter', '$routeParams', '
 	
 	$scope.displayOrderByList = function()
 	{
-		if (!$scope.isOrderByListVisible)
-		{
-			d3.select(".order-by-selection-list")
-				.style("visibility", "visible");
-		}
-		else
-		{
-			d3.select(".order-by-selection-list")
-				.style("visibility", "hidden");
-		}
-		
+		if ( !$scope.isOrderByListVisible) d3.selectAll(".menu-element").filter(".orderby").style("visibility", "visible");
+		else d3.selectAll(".menu-element").filter(".orderby").style("visibility", "hidden");
 		$scope.isOrderByListVisible = !$scope.isOrderByListVisible;
 	};
 	
