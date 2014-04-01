@@ -7,12 +7,12 @@ var emmetApp = angular
 			.when('/data/:dataType/view/:viewType/order/:orderType',
 			{
 				controller: 'WhenController',
-				templateUrl: 'app/templates/WhenTemplate.html'
+				templateUrl: 'app/templates/When.tpl.html'
 			})
 			.when('/data/:dataType/view/:viewType/person/:personId',
 			{
 				controller: 'WhoController',
-				templateUrl: 'app/templates/WhoTemplate.html'
+				templateUrl: 'app/templates/Who.tpl.html'
 			})
 			.otherwise({redirectTo:'/'});
 	});

@@ -1,4 +1,21 @@
-emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasService', 'ColorService', 'SymbolsService', 'LocationService', '$routeParams', 'HighlightService', function(DataService, TimeService, CanvasService, ColorService, SymbolsService, LocationService, $routeParams, HighlightService)
+emmetApp.directive('timelineperson', [
+'DataService', 
+'TimeService', 
+'CanvasService', 
+'ColorService', 
+'SymbolsService', 
+'LocationService', 
+'$routeParams', 
+'HighlightService', 
+function(
+	DataService, 
+	TimeService, 
+	CanvasService, 
+	ColorService, 
+	SymbolsService, 
+	LocationService, 
+	$routeParams, 
+	HighlightService)
 {
 	return {
 		restrict: 'E',
@@ -7,15 +24,12 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 		{
 			
 		},
-		template: 
-			'<div class="timeline-person"></div>',
+		controller: 'TimelinePersonController',
+		templateUrl: 'app/templates/TimelinePerson.tpl.html',
 		link: function(scope, element, attrs)
 		{
 			d3.selectAll(".view").classed("active", false);
 			d3.selectAll(".view").filter(".who").classed("active", true);
-			d3.selectAll(".data").classed("active", false);
-			d3.selectAll(".data").filter("." + $routeParams.dataType).classed("active", true);
-			d3.select(".header").style("height", "100px");
 			
 			// *************************************************************************
 			// CONFIGURATION CONSTANTS 
@@ -60,9 +74,6 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			scope.TIMELINE_EXTENSION_HEIGHT = 30;
 			scope.TIMELINE_EXTENSION_DISTANCE_FROM_PLACEMARK = 5; // -2 is collapsed to placemark
 			scope.TIMELINE_EXTENSION_CURVES_HEIGHT = 20;
-			
-			
-			
 			
 			// *************************************************************************
 			// DATA
@@ -215,6 +226,8 @@ emmetApp.directive('timelineperson', ['DataService', 'TimeService', 'CanvasServi
 			// Main drawing method
 			scope.draw = function() 
 			{
+				CanvasService.initOnContainer('viewer-contents');
+				
 				scope.xScale = d3.scale.ordinal()
 	    			.rangeBands([0, CanvasService.getWidth()], .75)
 	    			.domain(TimeService.getYears());

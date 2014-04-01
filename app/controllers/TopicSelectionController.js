@@ -2,6 +2,8 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 {
 	$scope.isTopicListVisible = false;	
 	
+	$scope.label = "topic";
+	
 	$scope.topics = new Array();
 	
 	$scope.$watch(function() {return DataService.hasData();}, 
@@ -43,5 +45,23 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 		
 		$scope.isTopicListVisible = !$scope.isTopicListVisible;
 	};
+	
+	$scope.$watch(
+		function() {return HighlightService.getTopicId();}, 
+		function (newValue, oldValue) 
+		{
+			if (newValue) 
+			{
+				d3.selectAll(".topic-bullet").classed("highlighted", true);
+				d3.selectAll(".topic-bullet").filter(".t" + newValue).classed("highlighted", false);
+				d3.selectAll(".topic-item").classed("highlighted", true);
+				d3.selectAll(".topic-item").filter(".t" + newValue).classed("highlighted", false);
+			}	
+			else
+			{
+				d3.selectAll(".topic-bullet").classed("highlighted", false);
+				d3.selectAll(".topic-item").classed("highlighted", false);
+			}
+		}, true);
 	
 }]);

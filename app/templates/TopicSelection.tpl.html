@@ -1,0 +1,16 @@
+<div class="container-fluid topic-selection-container" style="top: 10em;">
+	<div class="row topic-selection-list"> 
+		<div class="col-md-9">
+			<ul class="topic-list">				
+				<li ng-repeat="topic in topics">
+					<span class="topic-item t{{topic.id}}" ng-mouseenter="setHighlightTopic(topic.id)" ng-mouseleave="setHighlightTopic(null)">{{topic.name}}</span>
+					<span class="topic-bullet t{{topic.id}}" style="background: {{getTopicColor(topic.id)}};"></span>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="row topic">
+		<div class="col-md-9"><span ng-mousedown="displayTopicList()">{{label}}</span></div>
+		<div class="col-md-3"><img src="img/chevron_up.png" width="12"></div>
+	</div>
+</div>

@@ -1,20 +1,12 @@
-emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
+emmetApp.factory('CanvasService', function()
 {
 	var availableWidth;
 	var availableHeight;
 	
-	var padding = 25;
-	var margin = {top: 5, right: 20, bottom: 5, left: 150}; 
+	var margin = {top: 5, right: 20, bottom: 5, left: 40}; 
 	
 	var width = 0;
 	var height = 0;
-	
-	var xScale = null;
-	var yScale = null;
-	
-	var monthScale = null;
-	var dayScale = null;
-	var dayScale = null;
 	
 	return {
 		
@@ -24,7 +16,7 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 			{
 				if (typeof(window.innerWidth) == 'number')
 				{
-				    availableWidth = window.innerWidth;
+					availableWidth = window.innerWidth;
 				    availableHeight = window.innerHeight;
 				}
 				else
@@ -39,24 +31,20 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 				availableHeight = desiredHeight;
 			}
 			
-			width = availableWidth - margin.left - margin.right - padding;
-			height = availableHeight - margin.top - margin.bottom - padding;
+			width = availableWidth - margin.left - margin.right;
+			height = availableHeight - margin.top - margin.bottom;
+		},
+		
+		initOnContainer: function(elementSelector) {
+			if (!elementSelector) return;
 			
-			xScale = d3.scale.ordinal()
-		    	.rangeBands([0, width], .75)
-		    	.domain(TimeService.getYears());
-
-			yScale = d3.scale.linear()
-		    	.range([0, height]);
+			var parentContainer = document.getElementById(elementSelector);
 			
-			monthScale = d3.scale.ordinal()
-	    		.rangeBands([0, width*2/3], 0)
-	    		.domain(TimeService.getMonths());
+			availableWidth = parentContainer.offsetWidth;
+			availableHeight = window.innerHeight;
 			
-			dayScale = d3.scale.ordinal()
-				.rangeBands([0, width*2/3], 0)
-	    		.domain(TimeService.getDays());
-			
+			width = availableWidth - margin.left - margin.right;
+			height = availableHeight - margin.top - margin.bottom;
 		},
 		
 		getWidth: function()
@@ -71,47 +59,17 @@ emmetApp.factory('CanvasService', ['TimeService', function(TimeService)
 		
 		getAvailableWidth: function()
 		{
-			return availableWidth - padding;
+			return availableWidth;
 		},
 		
 		getAvailableHeight: function()
 		{
-			return availableHeight - padding;
+			return availableHeight;
 		},
 		
 		getMargin: function()
 		{
 			return margin;
-		},
-		
-		getXoffset: function(value)
-		{
-			return xScale(value);
-		},
-		
-		getYoffset: function(value)
-		{
-			return yScale(value);
-		},
-		
-		getXscale: function()
-		{
-			return xScale;
-		},
-		
-		getYscale: function()
-		{
-			return yScale;
-		},
-		
-		getMonthScale: function()
-		{
-			return monthScale;
-		},
-		
-		getDayScale: function()
-		{
-			return dayScale;
 		}
 	};
-}]);
+});

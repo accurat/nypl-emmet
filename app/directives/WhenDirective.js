@@ -8,8 +8,8 @@ emmetApp.directive('when', function()
 		{
 			
 		},
-		template: 
-			'<div class="when" ng-transclude></div>',
+		controller: 'WhenController',
+		templateUrl: 'When.tpl.html',
 		link: function (scope, element) 
 		{
 			

@@ -26,28 +26,19 @@ function(
 		{
 			
 		},
-		template: 
-			'<div class="timeline-collection"></div>',
+		controller: 'TimelineCollectionController',
+		templateUrl: 'app/templates/TimelineCollection.tpl.html',
 		link: function(scope, element, attrs)
 		{
 			d3.selectAll(".view").classed("active", false);
 			d3.selectAll(".view").filter(".when").classed("active", true);
-			d3.selectAll(".data").classed("active", false);
-			d3.selectAll(".data").filter("." + $routeParams.dataType).classed("active", true);
 			d3.selectAll(".orderby").classed("active", false);
 			d3.selectAll(".orderby").filter("." + $routeParams.orderType).classed("active", true);
 			
-			d3.select(".header").style("height", "5px");
-			
 			scope.X_AXIS_HEIGHT = 40;
-			
-			
-			
 			scope.X_AXIS_FONT_FAMILY = "'Gentium Basic', serif";
 			scope.X_AXIS_FONT_WEIGHT = "500";
 			scope.X_AXIS_FONT_SIZE = "10px";
-			
-			//horizontal text
 			scope.X_AXIS_FONT_ORIENTATION = "";
 			scope.X_AXIS_LABEL_OFFSET_HORIZONTAL = "";
 			scope.X_AXIS_LABEL_OFFSET_VERTICAL = "10";
@@ -88,9 +79,7 @@ function(
 			
 			scope.draw = function() 
 			{
-				d3.select(".order-by-container")
-					.style("visibility", "visible")
-					.style("bottom", CanvasService.getAvailableHeight() - (CanvasService.getMargin().top + CanvasService.getHeight() - scope.X_AXIS_HEIGHT) + "px");
+				CanvasService.initOnContainer('viewer-contents');
 				
 				var orderType = $routeParams.orderType;
 				if (!orderType) orderType = SymbolsService.orderTopic;
@@ -118,20 +107,22 @@ function(
 			    
 			    var svg = d3.select(".timeline-collection").append("svg")
 			        .attr("class", "viewer")
-			        .attr("width", CanvasService.getAvailableWidth())
-			        .attr("height", CanvasService.getAvailableHeight());
-			        
+			        .attr("width", CanvasService.getWidth())
+			        .attr("height", CanvasService.getHeight());
+			      
+			    console.log("Container: " + CanvasService.getWidth() + "x" + CanvasService.getHeight());
 			    
 			    var chartBackground = svg.append("g")
 			    	.attr("class", "chartBackground");
 			    
 			    chartBackground.append("rect")
 			    	.attr("class", "background")
-			    	.attr("width", CanvasService.getAvailableWidth())
-			        .attr("height", CanvasService.getAvailableHeight())
+			    	.attr("width", CanvasService.getWidth())
+			        .attr("height", CanvasService.getHeight())
 	                .attr("y", 0)
 	                .attr("x", 0)
 	                .style("fill", ColorService.getColorFor("pageBackground"))
+	                .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top) + ")")
 	                .on("click", function() 
 	                {
 	                	if (PopupService.isVisible() && PopupService.isPersistent())

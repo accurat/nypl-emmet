@@ -19,9 +19,9 @@ emmetApp.factory('SymbolsService', function()
 		viewWhere: 'where',
 		
 		dataTimelineCollection: 'data-timeline-collection',
-		dataTimelineAuthor: 'data-timeline-author'
+		dataTimelineAuthor: 'data-timeline-author',
 		
-		
-			
+		appTitle: "Founding Fathers' Correspondence",
+		appSubTitle: "Visualizing the Emmet Collection"
 	};
 });

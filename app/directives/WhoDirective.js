@@ -1,4 +1,4 @@
-emmetApp.directive('who', ['DataService', function(DataService) 
+emmetApp.directive('who', function(DataService) 
 {
 	return {
 		restrict: 'E',
@@ -8,11 +8,11 @@ emmetApp.directive('who', ['DataService', function(DataService)
 		{
 			
 		},
-		template: 
-			'<div class="who" ng-transclude></div>',
+		controller: 'WhoController',
+		templateUrl: 'app/templates/Who.tpl.html',
 		link: function(scope, element, attrs)
 		{
 			
 		}
 	};
-}]);
+});
