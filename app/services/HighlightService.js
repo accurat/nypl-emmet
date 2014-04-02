@@ -1,5 +1,7 @@
 emmetApp.factory('HighlightService', function()
 {
+	var highlightIsPersistent = false;
+	
 	var letterHoverId = null;
 	var personHoverId = null;
 	var yearHoverId = null;
@@ -8,16 +10,8 @@ emmetApp.factory('HighlightService', function()
 	
 	return {
 		
-		getData: function()
-		{
-			var highlight = {};
-			highlight.letterId = letterHoverId;
-			highlight.personId = personHoverId;
-			highlight.yearId = yearHoverId;
-			highlight.topicId = topicHoverId;
-			
-			return highlight;
-		},
+		setPersistent: function(isPersistent) {highlightIsPersistent = isPersistent;},
+		isPersistent: function() {return highlightIsPersistent;},
 		
 		setLetterHoverId: function(letterId) {letterHoverId = letterId;},
 		getLetterId: function() {return letterHoverId;},

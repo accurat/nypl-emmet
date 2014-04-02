@@ -3,7 +3,7 @@
 		<div class="col-md-10 no-padding">
 			<div class="container-fluid no-padding">				
 				<div class="row menu-element topic" ng-repeat="topic in topics">
-					<div class="col-md-10 menu-element-text topic t{{topic.id}}" ng-mouseenter="setHighlightTopic(topic.id)" ng-mouseleave="setHighlightTopic(null)">{{topic.name}}</div>
+					<div class="col-md-10 menu-element-text topic t{{topic.id}}" ng-click="filterOnTopic(topic.id)" ng-mouseenter="setHighlightTopic(topic.id)" ng-mouseleave="setHighlightTopic(null)">{{topic.name}}</div>
 					<div class="col-md-2 menu-bullet-container"><span class="menu-bullet topic t{{topic.id}}" style="background: {{getTopicColor(topic.id)}};"></span></div>
 				</div>
 			</div>

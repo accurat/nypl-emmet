@@ -2,6 +2,8 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 {
 	$scope.isTopicListVisible = false;	
 	
+	$scope.activeTopicId = null;
+	
 	$scope.label = "topic";
 	
 	$scope.topics = new Array();
@@ -18,6 +20,15 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 				else $scope.topics = new Array();
 			}, true);
 	
+	$scope.$watch(function() {return HighlightService.isPersistent();}, 
+			function (newValue, oldValue) 
+			{
+				if (newValue == false) 
+				{
+					$scope.activeTopicId = null;
+				}
+			}, true);
+	
 	$scope.getTopicColor = function(topicId)
 	{
 		return ColorService.getChapterColor($routeParams.dataType, topicId);
@@ -25,7 +36,7 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 	
 	$scope.setHighlightTopic = function(topicId)
 	{
-		HighlightService.setTopicHoverId(topicId);
+		if (!HighlightService.isPersistent()) HighlightService.setTopicHoverId(topicId);
 	};
 	
 	$scope.displayTopicList = function()
@@ -44,23 +55,37 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 		$scope.isTopicListVisible = !$scope.isTopicListVisible;
 	};
 	
+	$scope.filterOnTopic = function(topicId)
+	{
+		if ($scope.activeTopicId == null || $scope.activeTopicId == topicId)
+		{
+			HighlightService.setPersistent(!HighlightService.isPersistent());
+			d3.selectAll(".menu-element-text").filter(".topic").filter(".t" + topicId).classed("active", HighlightService.isPersistent());
+			if (!HighlightService.isPersistent()) $scope.activeTopicId = null;
+			else $scope.activeTopicId = topicId;
+		}
+	};
+	
+	
 	$scope.$watch(
 		function() {return HighlightService.getTopicId();}, 
 		function (newValue, oldValue) 
 		{
-			if (newValue) 
+			if (!HighlightService.isPersistent())
 			{
-				console.log(newValue);
-				d3.selectAll(".menu-element-text").filter(".topic").classed("opacized", true);
-				d3.selectAll(".menu-bullet").filter(".topic").classed("opacized", true);
-				
-				d3.selectAll(".menu-element-text").filter(".topic").filter(".t" + newValue).classed("opacized", false);
-				d3.selectAll(".menu-bullet").filter(".topic").filter(".t" + newValue).classed("opacized", false);
-			}	
-			else
-			{
-				d3.selectAll(".menu-element-text").filter(".topic").classed("opacized", false);
-				d3.selectAll(".menu-bullet").filter(".topic").classed("opacized", false);
+				if (newValue) 
+				{
+					d3.selectAll(".menu-element-text").filter(".topic").classed("opacized", true);
+					d3.selectAll(".menu-bullet").filter(".topic").classed("opacized", true);
+					
+					d3.selectAll(".menu-element-text").filter(".topic").filter(".t" + newValue).classed("opacized", false);
+					d3.selectAll(".menu-bullet").filter(".topic").filter(".t" + newValue).classed("opacized", false);
+				}	
+				else
+				{
+					d3.selectAll(".menu-element-text").filter(".topic").classed("opacized", false);
+					d3.selectAll(".menu-bullet").filter(".topic").classed("opacized", false);
+				}
 			}
 		}, true);
 	

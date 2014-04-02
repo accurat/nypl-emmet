@@ -52,14 +52,17 @@ function(
 					function() {return HighlightService.getPersonId();}, 
 					function (newValue, oldValue) 
 					{
-						if (newValue) 
+						if (!HighlightService.isPersistent())
 						{
-							d3.selectAll(".letter").classed("opacized", true);
-							d3.selectAll(".letter").filter(".p" + newValue).classed("opacized", false);
-						}	
-						else
-						{
-							d3.selectAll(".letter").classed("opacized", false);
+							if (newValue) 
+							{
+								d3.selectAll(".letter").classed("opacized", true);
+								d3.selectAll(".letter").filter(".p" + newValue).classed("opacized", false);
+							}	
+							else
+							{
+								d3.selectAll(".letter").classed("opacized", false);
+							}
 						}
 					}, true);
 			
@@ -67,20 +70,25 @@ function(
 					function() {return HighlightService.getTopicId();}, 
 					function (newValue, oldValue) 
 					{
-						if (newValue) 
+						if (!HighlightService.isPersistent())
 						{
-							d3.selectAll(".letter").classed("opacized", true);
-							d3.selectAll(".letter").filter(".t" + newValue).classed("opacized", false);
-						}	
-						else
-						{
-							d3.selectAll(".letter").classed("opacized", false);
+							if (newValue) 
+							{
+								d3.selectAll(".letter").classed("opacized", true);
+								d3.selectAll(".letter").filter(".t" + newValue).classed("opacized", false);
+							}	
+							else
+							{
+								d3.selectAll(".letter").classed("opacized", false);
+							}
 						}
 					}, true);
 			
 			scope.draw = function() 
 			{
 				CanvasService.initOnContainer('viewer-contents');
+				HighlightService.setPersistent(false);
+				
 				
 				var orderType = $routeParams.orderType;
 				if (!orderType) orderType = SymbolsService.orderTopic;
@@ -111,8 +119,6 @@ function(
 			        .attr("width", CanvasService.getWidth())
 			        .attr("height", CanvasService.getHeight());
 			      
-			    console.log("Container: " + CanvasService.getWidth() + "x" + CanvasService.getHeight());
-			    
 			    var chartBackground = svg.append("g")
 			    	.attr("class", "chartBackground");
 			    
@@ -181,6 +187,7 @@ function(
 			                	.attr("person-id", letter.authors[0].id)
 			                    .attr("letter-id", letter.id)
 			                    .attr("letter-year", yearNum)
+			                    .attr("letter-topic", letter.chapterId)
 			                    .attr("width", defaultWidth)
 			                    .attr("height", defaultHeight)
 			                    .attr("y", yScale(maxColumnHeight - i))
@@ -196,20 +203,24 @@ function(
 			                    	if (!PopupService.isPersistent())
 			                    	{
 				                    	var element = d3.select(this);
-				                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
-										scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
-										
-										element.classed("magnified", true);
-										element.attr("height", 3*defaultHeight);
-										element.attr("width", 2*defaultWidth);
-										element.attr("transform", "translate(" + (-defaultWidth / 2) + "," + (-(defaultHeight*3 - defaultHeight)) + ")");
-										
-										var ry = element.attr("y");
-										d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).each(function(d)
-										{
-											var otherRect = d3.select(this);
-											if (parseFloat(otherRect.attr("y")) < ry) otherRect.attr("transform", "translate(0," + (-(defaultHeight*3 - defaultHeight)) + ")");
-										});
+				                    	
+				                    	if (!HighlightService.isPersistent() || (HighlightService.isPersistent() && HighlightService.getTopicId() == element.attr("letter-topic")))
+				                    	{
+					                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+											scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
+											
+											element.classed("magnified", true);
+											element.attr("height", 3*defaultHeight);
+											element.attr("width", 2*defaultWidth);
+											element.attr("transform", "translate(" + (-defaultWidth / 2) + "," + (-(defaultHeight*3 - defaultHeight)) + ")");
+											
+											var ry = element.attr("y");
+											d3.selectAll("rect").filter(".letter").filter(".y" + yearNum).each(function(d)
+											{
+												var otherRect = d3.select(this);
+												if (parseFloat(otherRect.attr("y")) < ry) otherRect.attr("transform", "translate(0," + (-(defaultHeight*3 - defaultHeight)) + ")");
+											});
+				                    	}
 			                    	}
 			                    })
 			                    .on("mouseout", function(d)
