@@ -1,0 +1,64 @@
+<div class="container-fluid popup-container">
+	
+	<div class="row popup-authors">
+		<div class="col-md-1 popup-title-right">from</div>
+		<div class="col-md-11">
+			<span ng-repeat="author in letter.authors"><span class="popup-people" ng-click="openPersonTimeline(author.id)">{{author.name}}; </span></span>
+		</div>
+	</div>
+	
+	
+	<div class="row popup-recipients">
+		<div class="col-md-1 popup-title-right">to</div>
+		<div class="col-md-11">
+			<span ng-repeat="recipient in letter.recipients"><span class="popup-people" ng-click="openPersonTimeline(recipient.id)">{{recipient.name}}; </span></span>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-4 popup-date popup-bordered-element">{{formattedLetterDate}}</div>
+		<div class="col-md-2"></div>
+		<div class="col-md-4 popup-title-left popup-bordered-element no-padding">content</div>
+		<div class="col-md-1"></div>
+	</div>
+	
+	
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-4 pull-down">
+			<div class="row">
+				<div class="col-md-12 popup-title-left">place</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 popup-place">{{letter.place.name}}</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12 popup-title-left">topic</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 popup-topic">{{letter.chapterName}}</div>
+			</div>
+		</div>
+		<div class="col-md-2"></div>
+		<div class="col-md-4 no-padding">
+			<div class="row">
+				<div id="popup-contents" class="col-md-11 popup-contents-container">
+					<div class="popup-contents no-padding">{{letter.emmetContent}}</div>
+				</div>
+			</div>
+		
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-4 popup-bordered-element"></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-4 popup-bordered-element no-padding"><span class="popup-link">view original document »</span></div>
+		<div class="col-md-1"></div>
+	</div>
+	
+</div>

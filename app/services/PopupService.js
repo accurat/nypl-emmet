@@ -3,10 +3,11 @@ emmetApp.factory('PopupService', ['$window', function($window)
 	var popupIsVisible = false;
 	var popupIsPersistent = false;
 	
-	var popupWidth = 258;
-	var popupHeight = 356;
-	var margin = 10;
-	
+	var popupWidth = 727;
+	var popupHeight = 463;
+	var spacingHorizontal = 10;
+	var spacingVertical = 10;
+	var padding = 40;
 	
 	return {
 		
@@ -19,10 +20,10 @@ emmetApp.factory('PopupService', ['$window', function($window)
 		showPopup: function() {
 			var body = angular.element('body')[0];
 			var coordinates = d3.mouse(body);
-			var windowWidth = $window.outerWidth;
-			var windowHeight = $window.outerHeight;
-			var x = coordinates[0] > windowWidth - popupWidth ? coordinates[0] - popupWidth + margin : coordinates[0] + margin;
-			var y = coordinates[1] > windowHeight - popupHeight ? coordinates[1] - popupHeight + margin : coordinates[1] + margin;
+			var windowWidth = $window.innerWidth;
+			var windowHeight = $window.innerHeight;
+			var x = coordinates[0] > (windowWidth - popupWidth - padding) ? coordinates[0] - popupWidth - spacingHorizontal : coordinates[0] + spacingHorizontal;
+			var y = coordinates[1] > (windowHeight - popupHeight - padding) ? coordinates[1] - popupHeight - spacingVertical : coordinates[1] + spacingVertical;
 
 			d3.select(".popup-container")
 				.style("visibility", "visible")

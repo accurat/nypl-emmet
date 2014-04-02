@@ -4,13 +4,9 @@ emmetApp.directive('popup', ['PopupService', 'HighlightService', '$window', func
 		replace: true,
 		scope: false,
 		controller: 'PopupController',
-		templateUrl: 'app/templates/PopupTemplate.html',
-		link: function (scope, element) {
-
-			//TODO fix when fixed the final css for popup
-			var popupWidth = 258,
-				popupHeight = 356,
-				margin = 10;
+		templateUrl: 'app/templates/Popup.tpl.html',
+		link: function (scope, element) 
+		{
 
 			scope.$watch(
 				function () {return HighlightService.getLetterId();},
@@ -23,23 +19,10 @@ emmetApp.directive('popup', ['PopupService', 'HighlightService', '$window', func
 
 			scope.show = function (newValue) {
 				PopupService.showPopup();
-				/*var body = angular.element('body')[0];
-				var coordinates = d3.mouse(body);
-				var windowWidth = $window.outerWidth;
-				var windowHeight = $window.outerHeight;
-				var x = coordinates[0] > windowWidth - popupWidth ? coordinates[0] - popupWidth + margin : coordinates[0] + margin;
-				var y = coordinates[1] > windowHeight - popupHeight ? coordinates[1] - popupHeight + margin : coordinates[1] + margin;
-
-
-				d3.select(".popup-container")
-					.style("visibility", "visible")
-					.style("top", y + "px")
-					.style("left", x + "px");*/
 			};
 
 			scope.hide = function () {				
 				if (!PopupService.isPersistent()) PopupService.hidePopup();
-				//d3.select(".popup-container").style("visibility", "hidden");
 			};
 
 		}

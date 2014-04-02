@@ -250,28 +250,7 @@ a {
 /* CONTAINERS */
 /* ============================================================ */
 
-.popup-container {
-	font-family: 'Gentium Basic', serif;
-	font-weight: 500;
-	font-size: 13px;
-	position: absolute;
-	visibility: hidden;
-	z-index: 100;
-	background-image: url('img/popup.svg');
-	background-repeat: no-repeat;
-	width: 258px;
-	height: 356px;
-	/*width: 350px;
-	height: 400px;*/
-	-moz-background-size: contain;
-	-webkit-background-size: contain;
-	background-size: contain;
-}
 
-.popup-contents {
-	padding: 20px;
-	color: #716558;
-}
 
 
 .view-container {
@@ -470,11 +449,89 @@ a {
 	opacity: 0.2;
 }
 
+/* ====== ELEMENTI POPUP ====== */
 
+.popup-container {
+	font-family: 'Gentium Basic', serif;
+	font-weight: 500;
+	font-size: 13px;
+	color: #716558;
+	position: absolute;
+	visibility: hidden;
+	z-index: 100;
+	background-image: url('img/popup-background.svg');
+	background-repeat: no-repeat;
+	width: 727px;
+	height: 463px;
+	padding-left: 25px;
+	padding-right: 25px;
+}
 
+.popup-authors {
+	padding-top: 40px;	
+}
 
+.popup-recipients {
+	padding-bottom: 15px;	
+}
 
+.popup-title-left {
+	font-weight: 700;
+	text-align: left;
+}
 
+.popup-title-right {
+	font-weight: 500;
+	text-align: right;
+	padding-top: 3px;
+}
+
+.popup-people {
+	font-weight: 700;
+	font-size: 16px;
+	cursor: pointer;	
+}
+
+.popup-date {
+	font-style: italic;
+	font-size: 16px;
+}
+
+.popup-place {
+	font-size: 16px;
+}
+
+.popup-topic {
+	font-size: 16px;
+}
+
+.popup-contents-container {
+	height: 250px; 
+	padding-right: 0px;
+}
+
+.popup-contents {
+	height: 240px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	overflow-y: auto; 
+	overflow-x: hidden;
+}
+
+.popup-link {
+	font-weight: 700;
+	font-style: italic;
+	cursor: pointer;
+}
+
+.popup-link:hover {
+	text-decoration: underline;
+}
+
+.popup-bordered-element {
+	padding-top: 10px;
+	border-top: 1px dashed #716558;
+}
 
 
 

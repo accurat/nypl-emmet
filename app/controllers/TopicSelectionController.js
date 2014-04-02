@@ -49,7 +49,7 @@ emmetApp.controller('TopicSelectionController', ['$scope', '$filter', '$routePar
 		else
 		{
 			d3.selectAll(".menu-element").filter(".topic").style("visibility", "hidden");
-			d3.selectAll(".menu-item").filter(".topic").classed("active", false);
+			if (!HighlightService.isPersistent()) d3.selectAll(".menu-item").filter(".topic").classed("active", false);
 		}
 		
 		$scope.isTopicListVisible = !$scope.isTopicListVisible;
