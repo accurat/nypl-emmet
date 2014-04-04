@@ -45,6 +45,11 @@ emmetApp.controller('PopupController', ['$scope', '$routeParams', 'DataService',
     	window.location = url;
 	};
 	
+	$scope.openOriginalDocument = function(uuid) {
+		var url = "http://digitalcollections.nypl.org/items/" + uuid;
+		window.open(url, '_blank');
+	};
+	
 	$scope.closePopup = function() {
 		HighlightService.setLetterHoverId(null);
 	};

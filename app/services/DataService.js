@@ -17,7 +17,9 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			this.processChapters();
 			hasData = true;
 			
-			this.prepareDataWhere();
+			console.log(data);
+			
+			//this.prepareDataWhere();
 			
 		},
 		
@@ -68,6 +70,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			accuratLetter.chapterId = chapter.id;
 			accuratLetter.chapterName = chapter.name;
 			// common fields
+			accuratLetter.uuid = letter.uuid;
 			accuratLetter.accuratYear = letter.aYear;
 			accuratLetter.accuratChapter = chapter;
 			accuratLetter.emmetAuthorString = letter.eAutSt;
@@ -96,6 +99,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			emmetLetter.chapterId = chapter.id;
 			emmetLetter.chapterName = chapter.name;
 			// common fields
+			emmetLetter.uuid = letter.uuid;
 			emmetLetter.accuratYear = letter.aYear;
 			emmetLetter.accuratChapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
 			emmetLetter.emmetAuthorString = letter.eAutSt;

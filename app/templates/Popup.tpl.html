@@ -57,7 +57,7 @@
 		<div class="col-md-1"></div>
 		<div class="col-md-4 popup-bordered-element"></div>
 		<div class="col-md-2"></div>
-		<div class="col-md-4 popup-bordered-element no-padding"><span class="popup-link">view original document »</span></div>
+		<div class="col-md-4 popup-bordered-element no-padding"><span ng-if="letter.uuid" class="popup-link" ng-click="openOriginalDocument(letter.uuid)">view original document »</span></div>
 		<div class="col-md-1"></div>
 	</div>
 	
