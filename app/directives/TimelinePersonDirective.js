@@ -4,7 +4,8 @@ emmetApp.directive('timelineperson', [
 'CanvasService', 
 'ColorService', 
 'SymbolsService', 
-'LocationService', 
+'LocationService',
+'PopupService',
 '$routeParams', 
 'HighlightService', 
 function(
@@ -13,7 +14,8 @@ function(
 	CanvasService, 
 	ColorService, 
 	SymbolsService, 
-	LocationService, 
+	LocationService,
+	PopupService,
 	$routeParams, 
 	HighlightService)
 {
@@ -30,6 +32,8 @@ function(
 		{
 			d3.selectAll(".view").classed("active", false);
 			d3.selectAll(".view").filter(".who").classed("active", true);
+			
+			
 			
 			// *************************************************************************
 			// CONFIGURATION CONSTANTS 
@@ -114,108 +118,117 @@ function(
 					function() {return HighlightService.getPersonId();}, 
 					function (newValue, oldValue) 
 					{
-						if (newValue) 
-						{
-							d3.selectAll(".letter-rect").classed("opacized", true);
-							d3.selectAll(".letter-rect").filter(".p" + newValue).classed("opacized", false);
-							
-							d3.selectAll(".placemark").classed("opacized", true);
-							d3.selectAll(".placemark").filter(".p" + newValue).classed("opacized", false);
-							
-							d3.selectAll(".expansion-text").classed("opacized", true);
-							d3.selectAll(".expansion-text").filter(".p" + newValue).classed("highlighted", true).classed("opacized", false);
-							
-							d3.selectAll(".person-name-token").classed("opacized", true);
-							d3.selectAll(".person-name-token").filter(".p" + newValue).classed("highlighted", true).classed("opacized", false);
-							
-							d3.selectAll(".bezier-curve").filter(".p" + newValue).classed("highlighted", true);
-							d3.selectAll(".horizontal-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
-	                        d3.selectAll(".vertical-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
-						}
-						else
-						{
-							d3.selectAll(".letter-rect").classed("opacized", false);
-							
-							d3.selectAll(".placemark").classed("opacized", false);
-							
-							d3.selectAll(".expansion-text").classed("highlighted", false);
-							d3.selectAll(".expansion-text").classed("opacized", false);
-							
-							d3.selectAll(".person-name-token").classed("highlighted", false);
-							d3.selectAll(".person-name-token").classed("opacized", false);
-							
-							d3.selectAll(".bezier-curve").classed("highlighted", false);
-							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
-							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
-							d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
-							d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
-						}
+						if (!PopupService.isPersistent())
+                    	{
+							if (newValue) 
+							{
+								d3.selectAll(".letter-rect").classed("opacized", true);
+								d3.selectAll(".letter-rect").filter(".p" + newValue).classed("opacized", false);
+								
+								d3.selectAll(".placemark").classed("opacized", true);
+								d3.selectAll(".placemark").filter(".p" + newValue).classed("opacized", false);
+								
+								d3.selectAll(".expansion-text").classed("opacized", true);
+								d3.selectAll(".expansion-text").filter(".p" + newValue).classed("highlighted", true).classed("opacized", false);
+								
+								d3.selectAll(".person-name-token").classed("opacized", true);
+								d3.selectAll(".person-name-token").filter(".p" + newValue).classed("highlighted", true).classed("opacized", false);
+								
+								d3.selectAll(".bezier-curve").filter(".p" + newValue).classed("highlighted", true);
+								d3.selectAll(".horizontal-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
+		                        d3.selectAll(".vertical-line").filter(".p" + newValue).classed({'highlighted': true, 'hidden': false});
+							}
+							else
+							{
+								d3.selectAll(".letter-rect").classed("opacized", false);
+								
+								d3.selectAll(".placemark").classed("opacized", false);
+								
+								d3.selectAll(".expansion-text").classed("highlighted", false);
+								d3.selectAll(".expansion-text").classed("opacized", false);
+								
+								d3.selectAll(".person-name-token").classed("highlighted", false);
+								d3.selectAll(".person-name-token").classed("opacized", false);
+								
+								d3.selectAll(".bezier-curve").classed("highlighted", false);
+								d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
+								d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
+								d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
+							}
+                    	}
 					}, true);
 			
 			scope.$watch(
 					function() {return HighlightService.getLetterId();}, 
 					function (newValue, oldValue) 
 					{
-						if (newValue) 
-						{
-							d3.selectAll(".letter-rect").classed("opacized", true);
-							d3.selectAll(".letter-rect").filter(".l" + newValue).classed("opacized", false);
-							
-							d3.selectAll(".placemark").classed("opacized", true);
-							d3.selectAll(".placemark").filter(".l" + newValue).classed("opacized", false);
-							
-							d3.selectAll(".expansion-text").classed("opacized", true);
-							d3.selectAll(".expansion-text").filter(".l" + newValue).classed("highlighted", true).classed("opacized", false);
-							
-							d3.selectAll(".person-name-token").classed("opacized", true);
-							d3.selectAll(".person-name-token").filter(".l" + newValue).classed("highlighted", true).classed("opacized", false);
-							
-							d3.selectAll(".horizontal-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
-							d3.selectAll(".vertical-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
-							d3.selectAll(".bezier-curve").filter(".l" + newValue).classed("highlighted", true);
-						}	
-						else
-						{
-							d3.selectAll(".letter-rect").classed("opacized", false);
-							
-							d3.selectAll(".placemark").classed("opacized", false);
-							
-							d3.selectAll(".expansion-text").classed("highlighted", false);
-							d3.selectAll(".expansion-text").classed("opacized", false);
-							
-							d3.selectAll(".person-name-token").classed("highlighted", false);
-							d3.selectAll(".person-name-token").classed("opacized", false);
-							d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
-							d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
-							d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
-							d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
-							d3.selectAll(".bezier-curve").classed("highlighted", false);
-							
-						}
+						if (!PopupService.isPersistent())
+                    	{
+							if (newValue) 
+							{
+								d3.selectAll(".letter-rect").classed("opacized", true);
+								d3.selectAll(".letter-rect").filter(".l" + newValue).classed("opacized", false);
+								
+								d3.selectAll(".placemark").classed("opacized", true);
+								d3.selectAll(".placemark").filter(".l" + newValue).classed("opacized", false);
+								
+								d3.selectAll(".expansion-text").classed("opacized", true);
+								d3.selectAll(".expansion-text").filter(".l" + newValue).classed("highlighted", true).classed("opacized", false);
+								
+								d3.selectAll(".person-name-token").classed("opacized", true);
+								d3.selectAll(".person-name-token").filter(".l" + newValue).classed("highlighted", true).classed("opacized", false);
+								
+								d3.selectAll(".horizontal-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
+								d3.selectAll(".vertical-line").filter(".l" + newValue).classed({'highlighted': true, 'hidden': false});
+								d3.selectAll(".bezier-curve").filter(".l" + newValue).classed("highlighted", true);
+							}	
+							else
+							{
+								d3.selectAll(".letter-rect").classed("opacized", false);
+								
+								d3.selectAll(".placemark").classed("opacized", false);
+								
+								d3.selectAll(".expansion-text").classed("highlighted", false);
+								d3.selectAll(".expansion-text").classed("opacized", false);
+								
+								d3.selectAll(".person-name-token").classed("highlighted", false);
+								d3.selectAll(".person-name-token").classed("opacized", false);
+								d3.selectAll(".horizontal-line").classed({'highlighted': false, 'hidden': true});
+								d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".vertical-line").classed({'highlighted': false, 'hidden': true});
+								d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".bezier-curve").classed("highlighted", false);
+								
+							}
+                    	}
 					}, true);
 			
 			scope.$watch(
 					function() {return HighlightService.getTopicId();}, 
 					function (newValue, oldValue) 
 					{
-						if (newValue) 
-						{
-							d3.selectAll(".letter-rect").classed("opacized", true);
-							d3.selectAll(".letter-rect").filter(".t" + newValue).classed("opacized", false);
-							d3.selectAll(".placemark").classed("opacized", true);
-							d3.selectAll(".placemark").filter(".t" + newValue).classed("opacized", false);
-							d3.selectAll(".person-name-token").classed("opacized", true);
-							d3.selectAll(".person-name-token").filter(".t" + newValue).classed("opacized", false);
-							d3.selectAll(".expansion-text").classed("opacized", true);
-							d3.selectAll(".expansion-text").filter(".t" + newValue).classed("opacized", false);
-						}	
-						else
-						{
-							d3.selectAll(".letter-rect").classed("opacized", false);
-							d3.selectAll(".placemark").classed("opacized", false);
-							d3.selectAll(".person-name-token").classed("opacized", false);
-							d3.selectAll(".expansion-text").classed("opacized", false);
-						}
+						if (!PopupService.isPersistent())
+                    	{
+							if (newValue) 
+							{
+								d3.selectAll(".letter-rect").classed("opacized", true);
+								d3.selectAll(".letter-rect").filter(".t" + newValue).classed("opacized", false);
+								d3.selectAll(".placemark").classed("opacized", true);
+								d3.selectAll(".placemark").filter(".t" + newValue).classed("opacized", false);
+								d3.selectAll(".person-name-token").classed("opacized", true);
+								d3.selectAll(".person-name-token").filter(".t" + newValue).classed("opacized", false);
+								d3.selectAll(".expansion-text").classed("opacized", true);
+								d3.selectAll(".expansion-text").filter(".t" + newValue).classed("opacized", false);
+							}	
+							else
+							{
+								d3.selectAll(".letter-rect").classed("opacized", false);
+								d3.selectAll(".placemark").classed("opacized", false);
+								d3.selectAll(".person-name-token").classed("opacized", false);
+								d3.selectAll(".expansion-text").classed("opacized", false);
+							}
+                    	}
 					}, true);
 			
 			
@@ -227,6 +240,9 @@ function(
 			scope.draw = function() 
 			{
 				CanvasService.initOnContainer('viewer-contents');
+				HighlightService.setPersistent(false);
+				PopupService.setPersistent(false);
+				PopupService.hidePopup();
 				
 				scope.xScale = d3.scale.ordinal()
 	    			.rangeBands([0, CanvasService.getWidth()], .75)
@@ -241,9 +257,33 @@ function(
 				
 				var svg = d3.select(".timeline-person").append("svg")
 		        	.attr("class", "viewer")
-		        	.attr("width", CanvasService.getAvailableWidth())
-		        	.attr("height", maximumViewerHeight);
+		        	.attr("width", CanvasService.getWidth())
+		        	.attr("height", Math.max(maximumViewerHeight, CanvasService.getHeight()));
 			    
+				var chartBackground = svg.append("g")
+			    	.attr("class", "chartBackground");
+				
+				chartBackground.append("rect")
+			    	.attr("class", "background")
+			    	.attr("width", CanvasService.getWidth())
+			        .attr("height", Math.max(maximumViewerHeight, CanvasService.getHeight()))
+	                .attr("y", 0)
+	                .attr("x", 0)
+	                .style("fill", ColorService.getColorFor("pageBackground"))
+	                .attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top) + ")")
+	                .on("click", function() 
+	                {
+	                	if (PopupService.isVisible() && PopupService.isPersistent())
+	                	{
+	                		PopupService.setPersistent(false);
+	                		PopupService.hidePopup();
+	                		
+	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+							scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+	                	}
+	                });
+				
+				
 				var xAxis = d3.svg.axis()
 		        	.scale(scope.xScale)
 		        	.orient("bottom");
@@ -570,13 +610,23 @@ function(
 	        	   		.attr("height", scope.RECT_HEIGHT)
 	        	   		.on("mouseover", function(d)
 		                {
-							var element = d3.select(this);
-							scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+	        	   			if (!PopupService.isPersistent())
+	                    	{
+		        	   			var element = d3.select(this);
+								scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+	                    	}
 		                })
 		                .on("mouseout", function(d)
 		                {
-		                	var element = d3.select(this);
-		                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+		                	if (!PopupService.isPersistent())
+	                    	{
+			                	var element = d3.select(this);
+			                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+	                    	}
+		                })
+		                .on("click", function() 
+		                {
+		                	scope.$apply(function() {PopupService.setPersistent(true);});
 		                });
 			    }
 			};
@@ -660,13 +710,23 @@ function(
         	   		.attr("height", scope.RECT_HEIGHT)
         	   		.on("mouseover", function(d)
 	                {
-						var element = d3.select(this);
-						scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+        	   			if (!PopupService.isPersistent())
+                    	{
+        	   				var element = d3.select(this);
+							scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+                    	}
 	                })
 	                .on("mouseout", function(d)
 	                {
-	                	var element = d3.select(this);
-	                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+	                	if (!PopupService.isPersistent())
+                    	{
+		                	var element = d3.select(this);
+		                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+                    	}
+	                })
+	                .on("click", function() 
+	                {
+	                	scope.$apply(function() {PopupService.setPersistent(true);});
 	                });
         	};
 			

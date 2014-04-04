@@ -514,7 +514,7 @@ a {
 	height: 240px;
 	padding-top: 5px;
 	padding-bottom: 5px;
-	overflow-y: auto; 
+	/*overflow-y: auto;*/ 
 	overflow-x: hidden;
 }
 

@@ -88,7 +88,8 @@ function(
 			{
 				CanvasService.initOnContainer('viewer-contents');
 				HighlightService.setPersistent(false);
-				
+				PopupService.setPersistent(false);
+				PopupService.hidePopup();
 				
 				var orderType = $routeParams.orderType;
 				if (!orderType) orderType = SymbolsService.orderTopic;
@@ -195,7 +196,6 @@ function(
 			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			                    .on("click", function(d)
 			                    {
-			                    	var element = d3.select(this);
 			                    	scope.$apply(function() {PopupService.setPersistent(true);});
 			                    })
 			                    .on("mouseover", function(d)
