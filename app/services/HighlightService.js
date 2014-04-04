@@ -23,7 +23,16 @@ emmetApp.factory('HighlightService', function()
 		getYearId: function() {return yearHoverId;},
 		
 		setTopicHoverId: function(topicId) {topicHoverId = topicId;},
-		getTopicId: function() {return topicHoverId;}
+		getTopicId: function() {return topicHoverId;},
+		
+		reset: function() {
+			letterHoverId = null;
+			personHoverId = null;
+			yearHoverId = null;
+			topicHoverId = null;
+			
+			highlightIsPersistent = false;
+		}
 
 	};
 });

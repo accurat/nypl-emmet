@@ -36,6 +36,12 @@ emmetApp.factory('PopupService', ['$window', function($window)
 		hidePopup: function() {
 			d3.select(".popup-container").style("visibility", "hidden");
 			popupIsVisible = false;
+		},
+		
+		reset: function() {
+			popupIsPersistent = false;
+			d3.select(".popup-container").style("visibility", "hidden");
+			popupIsVisible = false;
 		}
 		
 	};

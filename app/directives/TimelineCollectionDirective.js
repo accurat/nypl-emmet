@@ -52,7 +52,7 @@ function(
 					function() {return HighlightService.getPersonId();}, 
 					function (newValue, oldValue) 
 					{
-						if (!HighlightService.isPersistent())
+						if (!HighlightService.isPersistent() && !PopupService.isPersistent())
 						{
 							if (newValue) 
 							{
@@ -70,7 +70,7 @@ function(
 					function() {return HighlightService.getTopicId();}, 
 					function (newValue, oldValue) 
 					{
-						if (!HighlightService.isPersistent())
+						if (!HighlightService.isPersistent() && !PopupService.isPersistent())
 						{
 							if (newValue) 
 							{
@@ -87,9 +87,8 @@ function(
 			scope.draw = function() 
 			{
 				CanvasService.initOnContainer('viewer-contents');
-				HighlightService.setPersistent(false);
-				PopupService.setPersistent(false);
-				PopupService.hidePopup();
+				HighlightService.reset();
+				PopupService.reset();
 				
 				var orderType = $routeParams.orderType;
 				if (!orderType) orderType = SymbolsService.orderTopic;

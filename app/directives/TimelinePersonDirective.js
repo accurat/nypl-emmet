@@ -118,7 +118,7 @@ function(
 					function() {return HighlightService.getPersonId();}, 
 					function (newValue, oldValue) 
 					{
-						if (!PopupService.isPersistent())
+						if (!HighlightService.isPersistent() && !PopupService.isPersistent())
                     	{
 							if (newValue) 
 							{
@@ -163,7 +163,7 @@ function(
 					function() {return HighlightService.getLetterId();}, 
 					function (newValue, oldValue) 
 					{
-						if (!PopupService.isPersistent())
+						if (!HighlightService.isPersistent() && !PopupService.isPersistent())
                     	{
 							if (newValue) 
 							{
@@ -208,7 +208,7 @@ function(
 					function() {return HighlightService.getTopicId();}, 
 					function (newValue, oldValue) 
 					{
-						if (!PopupService.isPersistent())
+						if (!HighlightService.isPersistent() && !PopupService.isPersistent())
                     	{
 							if (newValue) 
 							{
@@ -220,6 +220,17 @@ function(
 								d3.selectAll(".person-name-token").filter(".t" + newValue).classed("opacized", false);
 								d3.selectAll(".expansion-text").classed("opacized", true);
 								d3.selectAll(".expansion-text").filter(".t" + newValue).classed("opacized", false);
+								
+								d3.selectAll(".horizontal-line").filter("#static").classed("opacized", true);
+								d3.selectAll(".horizontal-line").classed("opacized", true);
+								//d3.selectAll(".horizontal-line").filter(".t" + newValue).classed({"hidden": true, "opacized": false});
+								
+								d3.selectAll(".vertical-line").filter("#static").classed("opacized", true);
+								d3.selectAll(".vertical-line").classed("opacized", true);
+								d3.selectAll(".vertical-line").filter(".t" + newValue).classed({"hidden": false, "opacized": false});
+								
+								d3.selectAll(".bezier-curve").classed("opacized", true);
+								d3.selectAll(".bezier-curve").filter(".t" + newValue).classed("opacized", false);
 							}	
 							else
 							{
@@ -227,6 +238,13 @@ function(
 								d3.selectAll(".placemark").classed("opacized", false);
 								d3.selectAll(".person-name-token").classed("opacized", false);
 								d3.selectAll(".expansion-text").classed("opacized", false);
+								
+								d3.selectAll(".horizontal-line").classed({'opacized': false, 'hidden': true});
+								d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".vertical-line").classed({'opacized': false, 'hidden': true});
+								d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".bezier-curve").classed("opacized", false);
+								
 							}
                     	}
 					}, true);
@@ -240,9 +258,8 @@ function(
 			scope.draw = function() 
 			{
 				CanvasService.initOnContainer('viewer-contents');
-				HighlightService.setPersistent(false);
-				PopupService.setPersistent(false);
-				PopupService.hidePopup();
+				HighlightService.reset();
+				PopupService.reset();
 				
 				scope.xScale = d3.scale.ordinal()
 	    			.rangeBands([0, CanvasService.getWidth()], .75)
@@ -280,6 +297,22 @@ function(
 	                		
 	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
 							scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+							
+							if (!HighlightService.isPersistent())
+							{
+								d3.selectAll(".letter-rect").classed("opacized", false);
+								d3.selectAll(".placemark").classed("opacized", false);
+								d3.selectAll(".expansion-text").classed("highlighted", false);
+								d3.selectAll(".expansion-text").classed("opacized", false);
+								d3.selectAll(".person-name-token").classed("highlighted", false);
+								d3.selectAll(".person-name-token").classed("opacized", false);
+								
+								d3.selectAll(".horizontal-line").classed({"highlighted": false, 'opacized': false, 'hidden': true});
+								d3.selectAll(".horizontal-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".vertical-line").classed({"highlighted": false, 'opacized': false, 'hidden': true});
+								d3.selectAll(".vertical-line").filter("#static").classed("hidden", false);
+								d3.selectAll(".bezier-curve").classed({"highlighted": false, "opacized": false});
+							}
 	                	}
 	                });
 				
@@ -533,8 +566,29 @@ function(
 			    var isAuthor = DataService.isPersonAuthorById($routeParams.personId, yearLetters[0]); 
 			    if (isAuthor) for (var i = 0; i < yearLetters[0].recipients.length; i++) textComposedClass += " p" + yearLetters[0].recipients[i].id;
 			    else for (var i = 0; i < yearLetters[0].authors.length; i++) textComposedClass += " p" + yearLetters[0].authors[i].id;
+			    
 			    // add letters id
 			    for (var i = 0; i < yearLetters.length; i++) textComposedClass += " l" + yearLetters[i].id + " t" + yearLetters[i].chapterId;				    
+			    
+			    // add opacized if needed
+		    	if (HighlightService.isPersistent())
+		    	{
+		    		var highlightedTopicId = HighlightService.getTopicId();
+		    		if (highlightedTopicId != null)
+		    		{
+			    		var found = false;
+			    		for (var i = 0; i < yearLetters.length; i++)
+			    		{
+			    			if (yearLetters[i].chapterId == highlightedTopicId)
+			    			{
+			    				found = true;
+			    				break;
+			    			}
+			    		}
+			    		
+			    		if (!found) textComposedClass += " opacized";
+		    		}
+		    	}
 			    
 			    expansionContainer.append("text")
 			    	.attr("class", "expansion-text " + textComposedClass)
@@ -573,6 +627,13 @@ function(
 			    		for (var k = 0; k < letter.authors.length; k++) personComposedClass += " p" + letter.authors[k].id;
 			    	}
 			    	
+			    	var opacizedClass = "";
+			    	if (HighlightService.isPersistent())
+			    	{
+			    		var highlightedTopicId = HighlightService.getTopicId();
+			    		if (highlightedTopicId != null && letter.chapterId != highlightedTopicId) opacizedClass = " opacized";
+			    	}
+			    	
 				    // ================================================================================================
 			       	// QUADRATIC BEZIER
 			       	//var xBezierCurveStart = placemarkOffset + xPlacemark;
@@ -596,12 +657,12 @@ function(
 			       	var dCubic = "M" + xBezierCurveStart + "," + yBezierCurveStart + " C" + xBezierCurveControl1 + "," + yBezierCurveControl1 + " " + xBezierCurveControl2 + "," + yBezierCurveControl2 + " " + xBezierCurveEnd + "," + yBezierCurveEnd;
 			       					       	
 		        	expansionContainer.append("path")
-		        		.attr("class", "bezier-curve " + lineComposedClass + personComposedClass)
+		        		.attr("class", "bezier-curve " + lineComposedClass + personComposedClass + opacizedClass + " t" + letter.chapterId)
 		        		.attr("d", dCubic)
 		        		.style("stroke-dasharray", lineDasharray);
 					
 		        	expansionContainer.append("rect")
-		            	.attr("class", "letter-rect l" + letter.id + " t" + letter.chapterId + personComposedClass)
+		            	.attr("class", "letter-rect l" + letter.id + " t" + letter.chapterId + personComposedClass + opacizedClass)
 		        		.style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 		            	.attr("letter-id", letter.id)
 	        	   		.attr("letter-year", letter.accuratYear)
@@ -610,15 +671,16 @@ function(
 	        	   		.attr("height", scope.RECT_HEIGHT)
 	        	   		.on("mouseover", function(d)
 		                {
-	        	   			if (!PopupService.isPersistent())
+	        	   			var element = d3.select(this);
+	        	   			if (!element.classed("opacized"))
 	                    	{
-		        	   			var element = d3.select(this);
 								scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
 	                    	}
 		                })
 		                .on("mouseout", function(d)
 		                {
-		                	if (!PopupService.isPersistent())
+		                	var element = d3.select(this);
+	        	   			if (!element.classed("opacized"))
 	                    	{
 			                	var element = d3.select(this);
 			                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
@@ -626,7 +688,11 @@ function(
 		                })
 		                .on("click", function() 
 		                {
-		                	scope.$apply(function() {PopupService.setPersistent(true);});
+		                	var element = d3.select(this);
+	        	   			if (!element.classed("opacized"))
+	        	   			{
+	        	   				scope.$apply(function() {PopupService.setPersistent(true);});
+	        	   			}
 		                });
 			    }
 			};
@@ -710,15 +776,16 @@ function(
         	   		.attr("height", scope.RECT_HEIGHT)
         	   		.on("mouseover", function(d)
 	                {
-        	   			if (!PopupService.isPersistent())
+        	   			var element = d3.select(this);
+        	   			if (!element.classed("opacized"))
                     	{
-        	   				var element = d3.select(this);
 							scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
                     	}
 	                })
 	                .on("mouseout", function(d)
 	                {
-	                	if (!PopupService.isPersistent())
+	                	var element = d3.select(this);
+        	   			if (!element.classed("opacized"))
                     	{
 		                	var element = d3.select(this);
 		                	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
@@ -726,7 +793,11 @@ function(
 	                })
 	                .on("click", function() 
 	                {
-	                	scope.$apply(function() {PopupService.setPersistent(true);});
+	                	var element = d3.select(this);
+        	   			if (!element.classed("opacized"))
+	                	{
+        	   				scope.$apply(function() {PopupService.setPersistent(true);});
+	                	}
 	                });
         	};
 			
@@ -796,7 +867,11 @@ function(
         	   		.attr("height", scope.PLACEMARK_HEIGHT)
         	   		.on("click", function(d)
 	                {
-        	   			scope.handleClickOnPlacemark(parseInt(d3.select(this).attr("recipient-container-id")), parseInt(d3.select(this).attr("year")));
+        	   			var element = d3.select(this);
+        	   			if (!element.classed("opacized"))
+        	   			{
+        	   				scope.handleClickOnPlacemark(parseInt(d3.select(this).attr("recipient-container-id")), parseInt(d3.select(this).attr("year")));
+        	   			}
 	                });
 				
 				d3.selectAll("text").filter(".y" + year).classed("expand-all", true);
@@ -836,7 +911,7 @@ function(
 				            var length = x2-x1;
 				            
 			        		var horizontalLine = horizontalLinesContainer.insert("line", ":first-child")
-			        			.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex)
+			        			.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex + " t" + letter.chapterId)
 			        			.attr("length", length)
 			        			.attr("x1", x1)
 				                .attr("y1", scope.HORIZONTAL_LINES_OFFSET_VERTICAL)
@@ -901,7 +976,7 @@ function(
 			    }
 				
 				var verticalLine = container.insert("line", ":first-child")
-					.attr("class", "vertical-line " + composedClass + " l" + letter.id + " rc" + sliceIndex)
+					.attr("class", "vertical-line " + composedClass + " l" + letter.id + " rc" + sliceIndex + " t" + letter.chapterId)
 					.attr("length", sliceOffset)
 	                .style("stroke-dasharray", verticalLineDasharray)
 	                .attr("transform", "translate(0," + (CanvasService.getHeight()/3 + scope.X_AXIS_HEIGHT + sliceOffset) + ")")
@@ -957,14 +1032,14 @@ function(
 			    	drawnBezierCurvesByYear = scope.drawnBezierCurvesAuthorByYear;
 			    	verticalLineOffsetActual = scope.VERTICAL_LINES_OFFSET_AUTHOR;
     				verticalLineDasharray = scope.VERTICAL_LINES_DASHARRAY_AUTHOR;
-    				composedClass = DataService.getComposedRecipientClass(letter) + " l" + letter.id;
+    				composedClass = DataService.getComposedRecipientClass(letter) + " l" + letter.id + " t" + letter.chapterId;
 			    }
 			    else
 			    {
 			    	drawnBezierCurvesByYear = scope.drawnBezierCurvesRecipientByYear;
 			    	verticalLineOffsetActual = scope.VERTICAL_LINES_OFFSET_RECIPIENT;
     				verticalLineDasharray = scope.VERTICAL_LINES_DASHARRAY_RECIPIENT;
-    				composedClass = DataService.getComposedAuthorClass(letter) + " l" + letter.id;
+    				composedClass = DataService.getComposedAuthorClass(letter) + " l" + letter.id + " t" + letter.chapterId;
 			    }
 			    
 			    var existingBezierCurve = drawnBezierCurvesByYear[letter.accuratYear];
@@ -1038,10 +1113,14 @@ function(
 		        			.attr("person-id", peopleCollection[i].id)
 		        			.on("click", function(d) 
 			                {
-		        				HighlightService.setPersonHoverId(null);
-		        				var url = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWho);
-		                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, d3.select(this).attr("person-id"));
-		                    	window.location = url;
+		        				var element = d3.select(this);
+		        				if (!element.classed("opacized"))
+		        				{
+			        				HighlightService.setPersonHoverId(null);
+			        				var url = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWho);
+			                    	url = LocationService.setUrlParameter(SymbolsService.urlTokenPerson, element.attr("person-id"));
+			                    	window.location = url;
+		        				}
 			                })
 			                .on("mouseover", function(d)
 			                {

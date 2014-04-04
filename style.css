@@ -126,7 +126,7 @@ a {
 .bezier-curve {
 	fill: none;
 	stroke: #ACA195;
-	
+	stroke-opacity: 1.0;
 	-webkit-transition: stroke .2s ease-in-out;
   	-moz-transition: stroke .2s ease-in-out;
   	-ms-transition: stroke .2s ease-in-out;
@@ -138,11 +138,15 @@ a {
 	stroke: rgb(0,0,0);
 }
 
+.bezier-curve.opacized {
+	stroke-opacity: 0.2;
+}
+
 .vertical-line {
 	fill: none;
 	stroke: #ACA195;
 	stroke-width: 1px;
-	
+	stroke-opacity: 1.0;
 	-webkit-transition: stroke .2s ease-in-out;
   	-moz-transition: stroke .2s ease-in-out;
   	-ms-transition: stroke .2s ease-in-out;
@@ -154,11 +158,15 @@ a {
 	stroke: rgb(0,0,0);
 }
 
+.vertical-line.opacized {
+	stroke-opacity: 0.2;
+}
+
 .horizontal-line {
 	fill: none;
 	stroke: #ACA195;
 	stroke-width: 1px;
-	
+	stroke-opacity: 1.0;
 	-webkit-transition: stroke .2s ease-in-out;
   	-moz-transition: stroke .2s ease-in-out;
   	-ms-transition: stroke .2s ease-in-out;
@@ -168,6 +176,10 @@ a {
 
 .horizontal-line.highlighted {
 	stroke: rgb(0,0,0);
+}
+
+.horizontal-line.opacized {
+	stroke-opacity: 0.2;
 }
 
 .corresponding-person-container {
