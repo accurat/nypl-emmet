@@ -3,8 +3,8 @@ emmetApp.factory('PopupService', ['$window', function($window)
 	var popupIsVisible = false;
 	var popupIsPersistent = false;
 	
-	var popupWidth = 727;
-	var popupHeight = 463;
+	var popupWidth = 540;
+	var popupHeight = 340;
 	var spacingHorizontal = 10;
 	var spacingVertical = 10;
 	var padding = 40;

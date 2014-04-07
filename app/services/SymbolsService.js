@@ -6,6 +6,7 @@ emmetApp.factory('SymbolsService', function()
 		urlTokenView: 'view',
 		urlTokenOrder: 'order',
 		urlTokenPerson: 'person',
+		urlTokenMap: 'map',
 		
 		dataAccurat: 'accurat',
 		dataEmmet: 'emmet',
@@ -20,6 +21,9 @@ emmetApp.factory('SymbolsService', function()
 		
 		dataTimelineCollection: 'data-timeline-collection',
 		dataTimelineAuthor: 'data-timeline-author',
+		
+		mapSnake: 'snake',
+		mapContemporary: 'contemporary',
 		
 		appTitle: "Founding Fathers' Correspondence",
 		appSubTitle: "Visualizing the Emmet Collection"

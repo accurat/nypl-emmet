@@ -9,24 +9,7 @@ emmetApp.directive('personselection', ['SymbolsService', 'LocationService', func
 			
 		},
 		controller: 'PersonSelectionController',
-		template: function()
-		{
-			var label = "people";
-			var personUrl = LocationService.getUrlToToken(SymbolsService.urlTokenData) + '/' + SymbolsService.urlTokenView + '/' + SymbolsService.viewWho + '/' + SymbolsService.urlTokenPerson + '/';
-			
-			var directiveTemplate;
-			directiveTemplate  = '<div class="person-selection-container">';
-				directiveTemplate += '<div><span class="view who">' + label + '</span><img src="img/chevron_down.png" width="12" style="margin-left: 10px;"></div>';
-				directiveTemplate += '<div><input class="person-selection-input" type="text" ng-model="personName" placeholder=""></div>';
-				directiveTemplate += '<div class="person-selection-list" ng-hide="!matchingPeople.length">'; 
-					directiveTemplate += '<ul class="person-list">';						
-						directiveTemplate += '<li ng-repeat="person in matchingPeople"><a class="person-item" ng-mouseenter="setHighlightPerson(person.id)" ng-mouseleave="setHighlightPerson(null)" href="' + personUrl +'{{person.id}}">{{person.name}}</a></li>';
-					directiveTemplate += '</ul>';
-				directiveTemplate += '</div>';
-			directiveTemplate += '</div>';
-			
-			return directiveTemplate;
-		},
+		templateUrl: 'app/templates/PersonSelection.tpl.html',
 		link: function (scope, element) 
 		{
 			

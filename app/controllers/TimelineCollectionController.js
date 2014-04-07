@@ -1,4 +1,4 @@
-emmetApp.controller('TimelineCollectionController', ['$scope', 'DataService', 'TimeService', function ($scope, DataService, TimeService) 
+emmetApp.controller('TimelineCollectionController', ['$scope', function ($scope) 
 {
 	
 	

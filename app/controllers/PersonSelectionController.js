@@ -1,7 +1,12 @@
-emmetApp.controller('PersonSelectionController', ['$scope', '$filter', '$routeParams', 'DataService', 'SymbolsService', 'HighlightService', function ($scope, $filter, $routeParams, DataService, SymbolsService, HighlightService) 
+emmetApp.controller('PersonSelectionController', ['$scope', '$filter', '$routeParams', 'DataService', 'SymbolsService', 'HighlightService', 'LocationService', function ($scope, $filter, $routeParams, DataService, SymbolsService, HighlightService, LocationService) 
 {
 	$scope.personName = null;
+	$scope.label = "people";
+	$scope.personUrl = LocationService.getUrlToToken(SymbolsService.urlTokenData) + '/' + SymbolsService.urlTokenView + '/' + SymbolsService.viewWho + '/' + SymbolsService.urlTokenPerson + '/';
 	$scope.matchingPeople = new Array();
+	
+	
+	
 	
 	$scope.$watch('personName', 
 		function (newValue, oldValue) 
@@ -23,5 +28,12 @@ emmetApp.controller('PersonSelectionController', ['$scope', '$filter', '$routePa
 	{
 		HighlightService.setPersonHoverId(personId);
 	};
+	
+	$scope.openPersonTimeline = function(personId)
+	{
+		var url = $scope.personUrl + personId;
+		window.location = url;
+	};
+	
 
 }]);

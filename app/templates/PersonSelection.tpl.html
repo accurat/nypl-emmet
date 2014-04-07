@@ -1,0 +1,18 @@
+<div class="container-fluid person-container no-padding">
+	<div class="row person">
+		<div class="col-md-10 menu-item person ">{{label}}</div>
+		<div class="col-md-2 menu-image topic"><img src="img/chevron_down.png" width="12px"></div>
+	</div>
+	<div class="row input-container person">	
+		<div class="col-md-12"><input class="person-selection-input" type="text" ng-model="personName"/></div>
+	</div>
+	<div class="row list-container person" ng-hide="!matchingPeople.length"> 
+		<div class="col-md-12 no-padding">
+			<div class="container-fluid no-padding"  style="width: 400px; height: 400px; overflow-y: auto; overflow-x: hidden;">				
+				<div class="row list-element person" ng-repeat="person in matchingPeople">
+					<div class="col-md-12 list-element-text person p{{person.id}}" ng-click="openPersonTimeline(person.id)" ng-mouseenter="setHighlightPerson(person.id)" ng-mouseleave="setHighlightPerson(null)">{{person.name}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

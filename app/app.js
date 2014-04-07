@@ -14,5 +14,10 @@ var emmetApp = angular
 				controller: 'WhoController',
 				templateUrl: 'app/templates/Who.tpl.html'
 			})
+			.when('/data/:dataType/view/:viewType/map/:whereType',
+			{
+				controller: 'WhereController',
+				templateUrl: 'app/templates/Where.tpl.html'
+			})
 			.otherwise({redirectTo:'/'});
 	});

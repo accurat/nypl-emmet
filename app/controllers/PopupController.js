@@ -5,7 +5,7 @@ emmetApp.controller('PopupController', ['$scope', '$routeParams', 'DataService',
 		var placeHeight = (Math.floor($scope.letter.place.name.length / 30) + 1) * 22;
 		var topicHeight = (Math.floor($scope.letter.chapterName.length / 30) + 1) * 22;
 		var totalHeight = (2 * 18) + placeHeight + topicHeight; 
-		var margin = 250 - totalHeight;
+		var margin = 170 - totalHeight;
 		$('.pull-down').each(function() {$(this).css('margin-top', margin);});
 	};
 	

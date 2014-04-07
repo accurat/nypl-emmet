@@ -4,6 +4,7 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 	var viewType = null;
 	var orderType = null;
 	var personId = null;
+	var mapType = null;
 	
 	
 	return {
@@ -16,6 +17,7 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 				viewType = $routeParams.viewType;
 				orderType = $routeParams.orderType;
 				personId = $routeParams.personId;
+				mapType = $routeParams.whereType;
 			}
 			else if (parameter == SymbolsService.urlTokenView)
 			{
@@ -23,6 +25,7 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 				viewType = value;
 				orderType = null;
 				personId = null;
+				mapType = null;
 				
 				// default order for when
 				if (value == SymbolsService.viewWhen) orderType = SymbolsService.orderAuthorYear;
@@ -34,6 +37,7 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 				viewType = $routeParams.viewType;
 				orderType = value;
 				personId = null;
+				mapType = null;
 			}
 			else if (parameter == SymbolsService.urlTokenPerson)
 			{
@@ -41,6 +45,16 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 				viewType = SymbolsService.viewWho;
 				orderType = null;
 				personId = value;
+				mapType = null;
+			}
+			else if (parameter == SymbolsService.urlTokenMap)
+			{
+				dataType = $routeParams.dataType;
+				viewType = SymbolsService.viewWhere;
+				orderType = null;
+				personId = null;
+				mapType = value;
+				
 			}
 			
 			return this.getUrl();
@@ -54,6 +68,7 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 			if (viewType) url += this.getViewToken();
 			if (orderType) url += this.getOrderToken();
 			if (personId) url += this.getPersonToken();
+			if (mapType) url += this.getMapToken();
 			
 			return url;
 		},
@@ -83,6 +98,12 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 				if (viewType) url += this.getViewToken();
 				if (personId) url += this.getPersonToken();
 			}
+			else if (urlToken == SymbolsService.urlTokenMap)
+			{
+				if (dataType) url += this.getDataToken();
+				if (viewType) url += this.getViewToken();
+				if (mapType) url += this.getMapToken();
+			}
 			
 			return url;
 		},
@@ -109,6 +130,12 @@ emmetApp.factory('LocationService', ['SymbolsService', '$routeParams', function(
 		{
 			if (!personId) return '';
 			else return '/' + SymbolsService.urlTokenPerson + '/' + personId;
+		},
+		
+		getMapToken: function()
+		{
+			if (!mapType) return '';
+			else return '/' + SymbolsService.urlTokenMap + '/' + mapType;
 		}
 		
 		

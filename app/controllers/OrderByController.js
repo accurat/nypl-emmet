@@ -6,7 +6,7 @@ emmetApp.controller('OrderByController', ['$scope', '$filter', '$routeParams', '
 	
 	$scope.authorYearUrl = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWhen);
 	$scope.authorYearUrl = LocationService.setUrlParameter(SymbolsService.urlTokenOrder, SymbolsService.orderAuthorYear);
-	$scope.authorYearLabel = 'Author volumes (per year)'; 
+	$scope.authorYearLabel = 'Author volumes (year)'; 
 	
 	$scope.authorTotalUrl = LocationService.setUrlParameter(SymbolsService.urlTokenView, SymbolsService.viewWhen); 
 	$scope.authorTotalUrl = LocationService.setUrlParameter(SymbolsService.urlTokenOrder, SymbolsService.orderAuthorTotal);
