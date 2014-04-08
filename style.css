@@ -645,7 +645,12 @@ a {
 	text-decoration: underline;
 }
 
-
+.group-name {
+	fill: #716558;
+	font-family: 'Gentium Basic', serif;
+	font-weight: 700;
+	font-size: 18px;
+}
 
 
 

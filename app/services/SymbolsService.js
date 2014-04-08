@@ -21,6 +21,7 @@ emmetApp.factory('SymbolsService', function()
 		
 		dataTimelineCollection: 'data-timeline-collection',
 		dataTimelineAuthor: 'data-timeline-author',
+		dataPlaceCollection: 'data-place-collection',
 		
 		mapSnake: 'snake',
 		mapContemporary: 'contemporary',

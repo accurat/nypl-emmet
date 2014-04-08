@@ -5,6 +5,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 	
 	var dataTimelineCollection = null;
 	var dataTimelineAuthor = null;
+	var dataPlaceCollection = null;
 	
 	return {
 		
@@ -16,11 +17,6 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			this.processLetters();
 			this.processChapters();
 			hasData = true;
-			
-			console.log(data);
-			
-			//this.prepareDataWhere();
-			
 		},
 		
 		processPeople: function()
@@ -262,20 +258,23 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			{
 				return this.prepareDataPerson(dataType, param);
 			}
+			else if (viewType == SymbolsService.dataPlaceCollection)
+			{
+				return this.prepareDataPlaceCollection(dataType);
+			}
 		},
 		
-		prepareDataWhere: function(dataType)
+		prepareDataPlaceCollection: function(dataType)
 		{
-			var dataWhere = {};
+			var dataPlaceCollection = {};
+			dataPlaceCollection.lettersByForeignCountry = new Array();
+			dataPlaceCollection.lettersByUSState = new Array();
+			dataPlaceCollection.lettersWithUnknownPlace = new Array();
+			dataPlaceCollection.lettersWithUndeterminedPlace = new Array();
 			
 			var collection = null;
 			if (dataType == SymbolsService.dataAccurat) collection = data.accuratLetters;
 			else collection = data.emmetLetters;
-			
-			var lettersByForeignCountry = []; // group letters by country (foreign)
-			var lettersByState = []; // group letters by state (US)
-			var lettersUnknownPlace = [];
-			var lettersUndeterminedPlace = [];
 			
 			collection.forEach(function(letter) 
 			{
@@ -283,62 +282,23 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				{
 					var place = letter.place;
 					
-					
-					if (place.id == 0) lettersUnknownPlace.push(letter);
-					else if (place.state == "" && place.country == "") lettersUndeterminedPlace.push(letter);
+					if (place.id == 0) dataPlaceCollection.lettersWithUnknownPlace.push(letter);
+					else if (place.state == "" && place.country == "") dataPlaceCollection.lettersWithUndeterminedPlace.push(letter);
 					else if (place.state == "")
 					{
-						if (!lettersByForeignCountry[place.country] || lettersByForeignCountry[place.country] == null) lettersByForeignCountry[place.country] = new Array();
-						lettersByForeignCountry[place.country].push(letter);
+						if (!dataPlaceCollection.lettersByForeignCountry[place.country] || dataPlaceCollection.lettersByForeignCountry[place.country] == null) dataPlaceCollection.lettersByForeignCountry[place.country] = new Array();
+						dataPlaceCollection.lettersByForeignCountry[place.country].push(letter);
 					}
 					else
 					{
-						if (!lettersByState[place.state] || lettersByState[place.state] == null) lettersByState[place.state] = new Array();
-						lettersByState[place.state].push(letter);
+						if (!dataPlaceCollection.lettersByUSState[place.state] || dataPlaceCollection.lettersByUSState[place.state] == null) dataPlaceCollection.lettersByUSState[place.state] = new Array();
+						dataPlaceCollection.lettersByUSState[place.state].push(letter);
 					}
 					
 				}				
 			});
 			
-			
-			console.log("LETTERS BY: <FOREIGN COUNTRY>");
-			console.log(lettersByForeignCountry);
-			console.log("LETTERS BY: <STATE>");
-			console.log(lettersByState);
-			console.log("LETTERS WITH: <UNKNOWN PLACE> (" + lettersUnknownPlace.length + ")");
-			console.log(lettersUnknownPlace);
-			console.log("LETTERS WITH: <UNDETERMINED PLACE> (" + lettersUndeterminedPlace.length + ")");
-			console.log(lettersUndeterminedPlace);
-			
-			var lettersByStateAndPlace = new Array();
-			
-			
-			for (stateId in lettersByState)
-			{
-				var lettersOfState = lettersByState[stateId];
-				lettersByStateAndPlace[stateId] = new Array();
-				lettersOfState.forEach(function(letter) 
-				{
-					var place = letter.place;
-					if (!lettersByStateAndPlace[stateId][place.name] || lettersByStateAndPlace[stateId][place.name] == null) lettersByStateAndPlace[stateId][place.name] = new Array();
-					lettersByStateAndPlace[stateId][place.name].push(letter);
-					
-				});
-			}
-			
-			//console.log("LETTERS BY: <STATE AND PLACE>");
-			//console.log(lettersByStateAndPlace);
-			
-			for (stateId in lettersByStateAndPlace)
-			{
-				var lettersOfState = lettersByStateAndPlace[stateId];
-				lettersByStateAndPlace[stateId] = this.sortAssociativeArray(lettersOfState);
-			}
-			
-			console.log("LETTERS BY: <STATE AND PLACE>");
-			console.log(lettersByStateAndPlace);
-			
-			return dataWhere;
+			return dataPlaceCollection;
 		},
 		
 		

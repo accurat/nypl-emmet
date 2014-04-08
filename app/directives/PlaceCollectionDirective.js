@@ -8,6 +8,7 @@ emmetApp.directive('placecollection', [
 '$routeParams', 
 'HighlightService', 
 'PopupService', 
+'MetricsService',
 function(
 	DataService, 
 	TimeService, 
@@ -17,7 +18,8 @@ function(
 	LocationService, 
 	$routeParams, 
 	HighlightService, 
-	PopupService) 
+	PopupService,
+	MetricsService) 
 {
 	return {
 		restrict: 'E',
@@ -32,6 +34,9 @@ function(
 		{
 			d3.selectAll(".menu-item").filter(".view").classed("active", false);
 			d3.selectAll(".menu-item").filter(".view").filter(".view-where").classed("active", true);
+			
+			scope.HORIZONTAL_LINES_OFFSET_VERTICAL = -5;
+			
 			
 			scope.$watch(
 					function() {return DataService.hasData();}, 
@@ -62,6 +67,8 @@ function(
 				
 				d3.select("svg").remove();
 			    
+				var dataPlaceCollection = DataService.getData($routeParams.dataType, SymbolsService.dataPlaceCollection, null);
+				
 			    var svg = d3.select(".place-collection").append("svg")
 			        .attr("class", "viewer")
 			        .attr("width", CanvasService.getWidth())
@@ -89,25 +96,156 @@ function(
 	                	}
 	                });
 			    
-			    scope.chartArea = svg.append("g")
+			    var chartArea = svg.append("g")
 		    		.attr("class", "chartArea")
 		    		.attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top) + ")");
 			    
 			    var whereType = $routeParams.whereType;
-			    if (whereType == SymbolsService.mapSnake) scope.drawMapSnake();
-			    else scope.drawMapContemporary();
+			    if (whereType == SymbolsService.mapSnake) scope.drawMapSnake(chartArea, dataPlaceCollection);
+			    else scope.drawMapContemporary(chartArea, dataPlaceCollection);
 			    
 			};
 			
-			scope.drawMapSnake = function()
+			scope.drawMapSnake = function(chartArea, dataPlaceCollection)
 			{
-				scope.chartArea.append("image")
+				console.log(dataPlaceCollection);
+				
+				var m = MetricsService.getMetrics(SymbolsService.mapSnake);
+				
+				chartArea.append("image")
 				    .attr("xlink:href","img/snake.svg")
-				    .attr("width", 415)
-				    .attr("height", 464);
+				    .attr("width", CanvasService.getWidth() * m.snake.width)
+				    .attr("height", (CanvasService.getWidth() * m.snake.width)/m.snake.ratio)
+				    .attr("transform", "translate(" + CanvasService.getWidth() * m.snake.left + "," + CanvasService.getHeight() * m.snake.top + ")");
+				
+				for (var groupId in m.groups)
+				{
+					var group = m.groups[groupId];
+					
+					var groupContainer = chartArea.append("g")
+						.attr("class", "letter-container " + group.name)
+						.attr("transform", "translate(" + CanvasService.getWidth() * group.left + "," + CanvasService.getHeight() * group.top + ")");
+					
+					var groupLetters = null;
+					if (group.id == 'ca' || group.id == 'uk' || group.id == 'fr')
+					{
+						groupLetters = dataPlaceCollection.lettersByForeignCountry[group.name];
+					}
+					else if (group.id == 'md' || group.id == 'nh' || group.id == 'nj' || group.id == 'ny' || group.id == 'nc' || group.id == 'pa' || group.id == 'sc' || group.id == 'va')
+					{
+						groupLetters = dataPlaceCollection.lettersByUSState[group.name];
+					}
+					else if (group.id == 'ne')
+					{
+						groupLetters = new Array();
+						
+						for (var stateName in dataPlaceCollection.lettersByUSState)
+						{
+							if (stateName == 'Vermont' || 
+								stateName == 'New Hampshire' || 
+								stateName == 'Massachusetts' ||
+								stateName == 'Connecticut') groupLetters = groupLetters.concat(dataPlaceCollection.lettersByUSState[stateName]);
+						}
+					}
+					else if (group.id == 'us')
+					{
+						groupLetters = new Array();
+					
+						for (var stateName in dataPlaceCollection.lettersByUSState)
+						{
+							if (stateName != 'Maryland' && 
+								stateName != 'New Hampshire' &&
+								stateName != 'Vermont' &&
+								stateName != 'Massachusetts' &&
+								stateName != 'Connecticut' &&
+								stateName != 'New Jersey' &&
+								stateName != 'New York' &&
+								stateName != 'North Carolina' &&
+								stateName != 'Pennsylvania' &&
+								stateName != 'South Carolina' && 
+								stateName != 'Virginia') groupLetters = groupLetters.concat(dataPlaceCollection.lettersByUSState[stateName]);
+						}
+					}
+					else if (group.id == 'other')
+					{
+						groupLetters = new Array();
+						
+						for (var countryName in dataPlaceCollection.lettersByForeignCountry)
+						{
+							if (countryName != 'Canada' && 
+								countryName != 'United Kingdom' && 
+								countryName != 'France') groupLetters = groupLetters.concat(dataPlaceCollection.lettersByForeignCountry[countryName]);
+						}
+					}
+					else if (group.id == 'unknown')
+					{
+						groupLetters = dataPlaceCollection.lettersWithUnknownPlace;
+					}
+					else if (group.id == 'undetermined')
+					{
+						groupLetters = dataPlaceCollection.lettersWithUndeterminedPlace;
+					}
+					
+					if (groupLetters != null)
+					{
+						var line = -1;
+						
+						for (var i = 0; i < groupLetters.length; i++)
+						{
+							var letter = groupLetters[i];
+						
+							if (i % group.elem == 0) line++;
+							
+							var x = ((i % group.elem) * CanvasService.getWidth() * 0.004) + 1;
+							var y = (line * CanvasService.getWidth() * 0.004) + 1;
+
+							groupContainer.append("rect")
+			                    //.attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass + " y" + yearNum)
+			                	//.attr("person-id", letter.authors[0].id)
+			                    //.attr("letter-id", letter.id)
+			                    //.attr("letter-year", yearNum)
+			                    //.attr("letter-topic", letter.chapterId)
+			                    .attr("width", CanvasService.getWidth() * 0.003)
+			                    .attr("height", CanvasService.getWidth() * 0.003)
+			                    .attr("y", y)
+			                    .attr("x", x)
+			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId));
+						}
+					
+						if (group.displayName)
+						{
+							groupContainer.append("line")
+			        			//.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex + " t" + letter.chapterId)
+			        			.attr("class", "horizontal-line")
+			        			.attr("x1", 0)
+				                .attr("y1", 0)
+				                .attr("x2", group.elem * 7 + 10)
+				                .attr("y2", 0)
+				                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
+							
+							groupContainer.append("text")
+						    	.text(group.name)
+						    	.attr("class", "group-name")
+						    	.attr("text-anchor", "left")
+						    	.attr("transform", "translate(0, -10)");
+						}
+					
+					}
+					
+					
+					
+					
+					
+					
+					
+				}
+				
+				
+				
+				
 			};
 			
-			scope.drawMapContemporary = function()
+			scope.drawMapContemporary = function(dataPlaceCollection)
 			{
 				
 			};
