@@ -92,7 +92,7 @@ function(
 	                		PopupService.setPersistent(false);
 	                		PopupService.hidePopup();
 	                		
-	                		//scope.$apply(function() {HighlightService.setLetterHoverId(null);}); //TODO
+	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
 	                	}
 	                });
 			    
@@ -196,26 +196,53 @@ function(
 						
 							if (i % group.elem == 0) line++;
 							
-							var x = ((i % group.elem) * CanvasService.getWidth() * 0.004) + 1;
-							var y = (line * CanvasService.getWidth() * 0.004) + 1;
+							var x = ((i % group.elem) * CanvasService.getWidth() * 0.004);
+							var y = (line * CanvasService.getWidth() * 0.004);
 
+							var composedClass = "";
+			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
+							
 							groupContainer.append("rect")
-			                    //.attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass + " y" + yearNum)
-			                	//.attr("person-id", letter.authors[0].id)
-			                    //.attr("letter-id", letter.id)
-			                    //.attr("letter-year", yearNum)
-			                    //.attr("letter-topic", letter.chapterId)
+			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass + " y" + letter.accuratYear)
+			                	.attr("person-id", letter.authors[0].id)
+			                    .attr("letter-id", letter.id)
+			                    .attr("letter-year", letter.accuratYear)
+			                    .attr("letter-topic", letter.chapterId)
 			                    .attr("width", CanvasService.getWidth() * 0.003)
 			                    .attr("height", CanvasService.getWidth() * 0.003)
 			                    .attr("y", y)
 			                    .attr("x", x)
-			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId));
+			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
+			                    .on("click", function(d)
+			                    {
+			                    	scope.$apply(function() {PopupService.setPersistent(true);});
+			                    })
+			                    .on("mouseover", function(d)
+			                    {
+			                    	if (!PopupService.isPersistent())
+			                    	{
+				                    	var element = d3.select(this);
+				                    	
+				                    	if (!HighlightService.isPersistent() || (HighlightService.isPersistent() && HighlightService.getTopicId() == element.attr("letter-topic")))
+				                    	{
+					                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+											scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
+				                    	}
+			                    	}
+			                    })
+			                    .on("mouseout", function(d)
+			                    {
+									if (!PopupService.isPersistent())
+									{
+				                    	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+										scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+									}
+			                    });
 						}
 					
 						if (group.displayName)
 						{
 							groupContainer.append("line")
-			        			//.attr("class", "horizontal-line " + sliceClass + " l" + letter.id + " rc" + sliceIndex + " t" + letter.chapterId)
 			        			.attr("class", "horizontal-line")
 			        			.attr("x1", 0)
 				                .attr("y1", 0)
@@ -228,6 +255,23 @@ function(
 						    	.attr("class", "group-name")
 						    	.attr("text-anchor", "left")
 						    	.attr("transform", "translate(0, -10)");
+						}
+						else
+						{
+							groupContainer.append("line")
+		        			.attr("class", "horizontal-line")
+		        			.attr("x1", 0)
+			                .attr("y1", 0)
+			                .attr("x2", (CanvasService.getWidth() * group.labelLeft))
+			                .attr("y2", 0)
+			                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
+						
+						groupContainer.append("text")
+					    	.text(group.shortName)
+					    	.attr("class", "group-name")
+					    	.attr("text-anchor", "end")
+					    	.attr("transform", "translate(" + (CanvasService.getWidth() * group.labelLeft) + ", -10)");
+							
 						}
 					
 					}
