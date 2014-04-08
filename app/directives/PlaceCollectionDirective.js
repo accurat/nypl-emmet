@@ -50,11 +50,12 @@ function(
 						{
 							if (newValue) 
 							{
-								// TODO
+								d3.selectAll(".letter").classed("opacized", true);
+								d3.selectAll(".letter").filter(".t" + newValue).classed("opacized", false);
 							}	
 							else
 							{
-								// TODO
+								d3.selectAll(".letter").classed("opacized", false);
 							}
 						}
 					}, true);
