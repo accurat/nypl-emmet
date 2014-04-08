@@ -39,27 +39,45 @@ function(
 			
 			
 			scope.$watch(
-					function() {return DataService.hasData();}, 
-					function (newValue, oldValue) {if (newValue) {scope.draw();}}, true);
+				function() {return DataService.hasData();}, 
+				function (newValue, oldValue) {if (newValue) {scope.draw();}}, true);
+		
+			scope.$watch(
+				function() {return HighlightService.getPersonId();}, 
+				function (newValue, oldValue) 
+				{
+					if (!HighlightService.isPersistent() && !PopupService.isPersistent())
+					{
+						if (newValue) 
+						{
+							d3.selectAll(".letter").classed("opacized", true);
+							d3.selectAll(".letter").filter(".p" + newValue).classed("opacized", false);
+						}	
+						else
+						{
+							d3.selectAll(".letter").classed("opacized", false);
+						}
+					}
+				}, true);
 			
 			scope.$watch(
-					function() {return HighlightService.getTopicId();}, 
-					function (newValue, oldValue) 
+				function() {return HighlightService.getTopicId();}, 
+				function (newValue, oldValue) 
+				{
+					if (!HighlightService.isPersistent() && !PopupService.isPersistent())
 					{
-						if (!HighlightService.isPersistent() && !PopupService.isPersistent())
+						if (newValue) 
 						{
-							if (newValue) 
-							{
-								d3.selectAll(".letter").classed("opacized", true);
-								d3.selectAll(".letter").filter(".t" + newValue).classed("opacized", false);
-							}	
-							else
-							{
-								d3.selectAll(".letter").classed("opacized", false);
-							}
+							d3.selectAll(".letter").classed("opacized", true);
+							d3.selectAll(".letter").filter(".t" + newValue).classed("opacized", false);
+						}	
+						else
+						{
+							d3.selectAll(".letter").classed("opacized", false);
 						}
-					}, true);
-			
+					}
+				}, true);
+		
 			scope.draw = function() 
 			{
 				CanvasService.initOnContainer('viewer-contents');
@@ -94,6 +112,7 @@ function(
 	                		PopupService.hidePopup();
 	                		
 	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+	                		scope.$apply(function() {HighlightService.setPersonHoverId(null);});
 	                	}
 	                });
 			    

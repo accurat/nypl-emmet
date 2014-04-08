@@ -67,6 +67,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			accuratLetter.chapterName = chapter.name;
 			// common fields
 			accuratLetter.uuid = letter.uuid;
+			accuratLetter.accuratDate = letter.aDate;
 			accuratLetter.accuratYear = letter.aYear;
 			accuratLetter.accuratChapter = chapter;
 			accuratLetter.emmetAuthorString = letter.eAutSt;
@@ -96,6 +97,7 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			emmetLetter.chapterName = chapter.name;
 			// common fields
 			emmetLetter.uuid = letter.uuid;
+			emmetLetter.accuratDate = letter.aDate;
 			emmetLetter.accuratYear = letter.aYear;
 			emmetLetter.accuratChapter = this.getChapterById(SymbolsService.dataAccurat, letter.aChapId);
 			emmetLetter.emmetAuthorString = letter.eAutSt;
@@ -275,6 +277,8 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 			var collection = null;
 			if (dataType == SymbolsService.dataAccurat) collection = data.accuratLetters;
 			else collection = data.emmetLetters;
+			
+			this.sortLettersByTime(collection);
 			
 			collection.forEach(function(letter) 
 			{
@@ -696,6 +700,15 @@ emmetApp.factory('DataService', ['TimeService', 'SymbolsService', function(TimeS
 				}
 			});
 			return ret;
+		},
+		
+		sortLettersByTime: function(letterCollection)
+		{
+			letterCollection.sort(function(a,b)
+			{
+				var x = a.accuratDate, y = b.accuratDate;
+				return x < y ? -1 : x > y ? 1 : 0;
+			});
 		},
 		
 		sortLetters: function(lettersByYear, sortType)
