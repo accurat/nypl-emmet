@@ -136,7 +136,18 @@ function(
 				    .attr("xlink:href","img/snake.svg")
 				    .attr("width", CanvasService.getWidth() * m.snake.width)
 				    .attr("height", (CanvasService.getWidth() * m.snake.width)/m.snake.ratio)
-				    .attr("transform", "translate(" + CanvasService.getWidth() * m.snake.left + "," + CanvasService.getHeight() * m.snake.top + ")");
+				    .attr("transform", "translate(" + CanvasService.getWidth() * m.snake.left + "," + CanvasService.getHeight() * m.snake.top + ")")
+				    .on("click", function() 
+	                {
+	                	if (PopupService.isVisible() && PopupService.isPersistent())
+	                	{
+	                		PopupService.setPersistent(false);
+	                		PopupService.hidePopup();
+	                		
+	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+	                		scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+	                	}
+	                });;
 				
 				for (var groupId in m.groups)
 				{
@@ -209,15 +220,28 @@ function(
 					if (groupLetters != null)
 					{
 						var line = -1;
+						var rectangleSize = CanvasService.getWidth() * 0.003;
+						
+						var baseX = 0;
 						
 						for (var i = 0; i < groupLetters.length; i++)
 						{
 							var letter = groupLetters[i];
 						
-							if (i % group.elem == 0) line++;
+							if (i % group.elem == 0)
+							{
+								line++;
+								baseX = 0;
+							}
 							
-							var x = ((i % group.elem) * CanvasService.getWidth() * 0.004);
-							var y = (line * CanvasService.getWidth() * 0.004);
+							var groupSpacer = 0;
+							if (i % 5 == 0) groupSpacer = 2;
+							
+							//var x = ((i % group.elem) * (rectangleSize + 1)) + groupSpacer;
+							var x = baseX + (rectangleSize + 1) + groupSpacer;
+							baseX += (rectangleSize + 1) + groupSpacer;
+							var y = (line * (rectangleSize + 1));
+							
 
 							var composedClass = "";
 			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
@@ -228,8 +252,8 @@ function(
 			                    .attr("letter-id", letter.id)
 			                    .attr("letter-year", letter.accuratYear)
 			                    .attr("letter-topic", letter.chapterId)
-			                    .attr("width", CanvasService.getWidth() * 0.003)
-			                    .attr("height", CanvasService.getWidth() * 0.003)
+			                    .attr("width", rectangleSize)
+			                    .attr("height", rectangleSize)
 			                    .attr("y", y)
 			                    .attr("x", x)
 			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
