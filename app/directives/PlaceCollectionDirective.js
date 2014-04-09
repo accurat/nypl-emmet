@@ -36,7 +36,8 @@ function(
 			d3.selectAll(".menu-item").filter(".view").filter(".view-where").classed("active", true);
 			
 			scope.HORIZONTAL_LINES_OFFSET_VERTICAL = -5;
-			
+			scope.RECTANGLE_RATIO = 0.003;
+			scope.RECTANGLE_GROUP_SPACER = 2;
 			
 			scope.$watch(
 				function() {return DataService.hasData();}, 
@@ -144,7 +145,7 @@ function(
 				var m = MetricsService.getMetrics(SymbolsService.mapSnake);
 				
 				chartArea.append("image")
-				    .attr("xlink:href","img/snake.svg")
+				    .attr("xlink:href","img/map-snake.svg")
 				    .attr("width", viewPort.width * m.snake.width)
 				    .attr("height", (viewPort.width * m.snake.width)/m.snake.ratio)
 				    .attr("transform", "translate(" + viewPort.width * m.snake.left + "," + viewPort.height * m.snake.top + ")")
@@ -231,27 +232,25 @@ function(
 					if (groupLetters != null)
 					{
 						var line = -1;
-						var rectangleSize = viewPort.width * 0.003;
-						
+						var rectangleSize = viewPort.width * scope.RECTANGLE_RATIO;
 						var baseX = 0;
 						
 						for (var i = 0; i < groupLetters.length; i++)
 						{
 							var letter = groupLetters[i];
 						
+							var groupSpacer = 0;
+							if ((i+1) % 5 == 0) groupSpacer = scope.RECTANGLE_GROUP_SPACER;
+							
 							if (i % group.elem == 0)
 							{
 								line++;
 								baseX = 0;
 							}
 							
-							var groupSpacer = 0;
-							if (i % 5 == 0) groupSpacer = 2;
-							
-							//var x = ((i % group.elem) * (rectangleSize + 1)) + groupSpacer;
-							var x = baseX + (rectangleSize + 1) + groupSpacer;
+							var xRectangle = baseX;
 							baseX += (rectangleSize + 1) + groupSpacer;
-							var y = (line * (rectangleSize + 1));
+							var yRectangle = (line * (rectangleSize + 1));
 							
 
 							var composedClass = "";
@@ -265,8 +264,8 @@ function(
 			                    .attr("letter-topic", letter.chapterId)
 			                    .attr("width", rectangleSize)
 			                    .attr("height", rectangleSize)
-			                    .attr("y", y)
-			                    .attr("x", x)
+			                    .attr("y", yRectangle)
+			                    .attr("x", xRectangle)
 			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
 			                    .on("click", function(d)
 			                    {
@@ -301,7 +300,7 @@ function(
 			        			.attr("class", "horizontal-line")
 			        			.attr("x1", 0)
 				                .attr("y1", 0)
-				                .attr("x2", group.elem * 7 + 10)
+				                .attr("x2", (group.elem)  * (rectangleSize + 1) + scope.RECTANGLE_GROUP_SPACER * (group.elem / 5))
 				                .attr("y2", 0)
 				                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
 							
@@ -326,27 +325,163 @@ function(
 					    	.attr("class", "group-name")
 					    	.attr("text-anchor", "end")
 					    	.attr("transform", "translate(" + (viewPort.width * group.labelLeft) + ", -10)");
-							
 						}
-					
 					}
-					
-					
-					
-					
-					
-					
-					
 				}
-				
-				
-				
-				
 			};
 			
-			scope.drawMapContemporary = function(dataPlaceCollection)
+			scope.drawMapContemporary = function(viewPort, chartArea, dataPlaceCollection)
 			{
+				var m = MetricsService.getMetrics(SymbolsService.mapContemporary);
 				
+				console.log(dataPlaceCollection);
+				
+				chartArea.append("image")
+				    .attr("xlink:href","img/map-contemporary.svg")
+				    .attr("width", viewPort.width * m.usa.width)
+				    .attr("height", (viewPort.width * m.usa.width)/m.usa.ratio)
+				    .attr("transform", "translate(" + viewPort.width * m.usa.left + "," + viewPort.height * m.usa.top + ")")
+				    .on("click", function() 
+	                {
+	                	if (PopupService.isVisible() && PopupService.isPersistent())
+	                	{
+	                		PopupService.setPersistent(false);
+	                		PopupService.hidePopup();
+	                		
+	                		scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+	                		scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+	                	}
+	                });;
+				
+				for (var groupId in m.groups)
+				{
+					var group = m.groups[groupId];
+					
+					var groupContainer = chartArea.append("g")
+						.attr("class", "letter-container " + group.name)
+						.attr("transform", "translate(" + viewPort.width * group.left + "," + viewPort.height * group.top + ")");
+					
+					var groupLetters = null;
+					if (group.id == 'ca' || group.id == 'uk' || group.id == 'fr')
+					{
+						groupLetters = dataPlaceCollection.lettersByForeignCountry[group.name];
+					}
+					else if (group.id == 'other')
+					{
+						groupLetters = new Array();
+						
+						for (var countryName in dataPlaceCollection.lettersByForeignCountry)
+						{
+							if (countryName != 'Canada' && 
+								countryName != 'United Kingdom' && 
+								countryName != 'France') groupLetters = groupLetters.concat(dataPlaceCollection.lettersByForeignCountry[countryName]);
+						}
+					}
+					else if (group.id == 'unknown')
+					{
+						groupLetters = dataPlaceCollection.lettersWithUnknownPlace;
+					}
+					else if (group.id == 'undetermined')
+					{
+						groupLetters = dataPlaceCollection.lettersWithUndeterminedPlace;
+					}
+					else
+					{
+						groupLetters = dataPlaceCollection.lettersByUSState[group.name];
+					}
+					
+					console.log("Group: " + group.id);
+					console.log(groupLetters);
+					
+					if (group.displayName)
+					{
+						var line = -1;
+						var rectangleSize = viewPort.width * scope.RECTANGLE_RATIO;
+						var baseX = 0;
+						
+						for (var i = 0; i < groupLetters.length; i++)
+						{
+							var letter = groupLetters[i];
+						
+							var groupSpacer = 0;
+							if ((i+1) % 5 == 0) groupSpacer = scope.RECTANGLE_GROUP_SPACER;
+							
+							if (i % group.elem == 0)
+							{
+								line++;
+								baseX = 0;
+							}
+							
+							var xRectangle = baseX;
+							baseX += (rectangleSize + 1) + groupSpacer;
+							var yRectangle = (line * (rectangleSize + 1));
+							
+
+							var composedClass = "";
+			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
+							
+							groupContainer.append("rect")
+			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass + " y" + letter.accuratYear)
+			                	.attr("person-id", letter.authors[0].id)
+			                    .attr("letter-id", letter.id)
+			                    .attr("letter-year", letter.accuratYear)
+			                    .attr("letter-topic", letter.chapterId)
+			                    .attr("width", rectangleSize)
+			                    .attr("height", rectangleSize)
+			                    .attr("y", yRectangle)
+			                    .attr("x", xRectangle)
+			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
+			                    .on("click", function(d)
+			                    {
+			                    	scope.$apply(function() {PopupService.setPersistent(true);});
+			                    })
+			                    .on("mouseover", function(d)
+			                    {
+			                    	if (!PopupService.isPersistent())
+			                    	{
+				                    	var element = d3.select(this);
+				                    	
+				                    	if (!HighlightService.isPersistent() || (HighlightService.isPersistent() && HighlightService.getTopicId() == element.attr("letter-topic")))
+				                    	{
+					                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+											scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
+				                    	}
+			                    	}
+			                    })
+			                    .on("mouseout", function(d)
+			                    {
+									if (!PopupService.isPersistent())
+									{
+				                    	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+										scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+									}
+			                    });
+						}
+					
+						
+						groupContainer.append("line")
+		        			.attr("class", "horizontal-line")
+		        			.attr("x1", 0)
+			                .attr("y1", 0)
+			                .attr("x2", (group.elem)  * (rectangleSize + 1) + scope.RECTANGLE_GROUP_SPACER * (group.elem / 5))
+			                .attr("y2", 0)
+			                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
+						
+						groupContainer.append("text")
+					    	.text(group.name)
+					    	.attr("class", "group-name")
+					    	.attr("text-anchor", "left")
+					    	.attr("transform", "translate(0, -10)");
+					}
+					else
+					{
+						groupContainer.append("text")
+					    	.text(group.shortName + "\n" + groupLetters.length)
+					    	.attr("class", "group-name")
+					    	.attr("text-anchor", "left")
+					    	.attr("transform", "translate(" + (viewPort.width * group.labelLeft) + ", " + (viewPort.height * group.labelTop) + ")");
+					}
+				}
 			};
 		}
 	};
