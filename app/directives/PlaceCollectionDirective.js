@@ -88,18 +88,31 @@ function(
 			    
 				var dataPlaceCollection = DataService.getData($routeParams.dataType, SymbolsService.dataPlaceCollection, null);
 				
+				var viewPort = {
+					width : 1700,
+					height : 950
+				};
+				
+				var viewBox = {
+					width : CanvasService.getWidth(),
+					height : CanvasService.getHeight()
+				};
+				
+				
 			    var svg = d3.select(".place-collection").append("svg")
 			        .attr("class", "viewer")
-			        .attr("width", CanvasService.getWidth())
-			        .attr("height", CanvasService.getHeight());
+			        .attr("width", viewBox.width)
+			        .attr("height", viewBox.height)
+			        .attr("viewBox", "0 0 " + viewPort.width + " " + viewPort.height)
+			        .attr("preserveAspectRatio", "xMinYMin meet");
 			      
 			    var chartBackground = svg.append("g")
 			    	.attr("class", "chartBackground");
 			    
 			    chartBackground.append("rect")
 			    	.attr("class", "background")
-			    	.attr("width", CanvasService.getWidth())
-			        .attr("height", CanvasService.getHeight())
+			    	.attr("width", viewPort.width)
+			        .attr("height", viewPort.height)
 	                .attr("y", 0)
 	                .attr("x", 0)
 	                .style("fill", ColorService.getColorFor("pageBackground"))
@@ -121,22 +134,20 @@ function(
 		    		.attr("transform", "translate(" + CanvasService.getMargin().left + "," + (CanvasService.getMargin().top) + ")");
 			    
 			    var whereType = $routeParams.whereType;
-			    if (whereType == SymbolsService.mapSnake) scope.drawMapSnake(chartArea, dataPlaceCollection);
-			    else scope.drawMapContemporary(chartArea, dataPlaceCollection);
+			    if (whereType == SymbolsService.mapSnake) scope.drawMapSnake(viewPort, chartArea, dataPlaceCollection);
+			    else scope.drawMapContemporary(viewPort, chartArea, dataPlaceCollection);
 			    
 			};
 			
-			scope.drawMapSnake = function(chartArea, dataPlaceCollection)
+			scope.drawMapSnake = function(viewPort, chartArea, dataPlaceCollection)
 			{
-				console.log(dataPlaceCollection);
-				
 				var m = MetricsService.getMetrics(SymbolsService.mapSnake);
 				
 				chartArea.append("image")
 				    .attr("xlink:href","img/snake.svg")
-				    .attr("width", CanvasService.getWidth() * m.snake.width)
-				    .attr("height", (CanvasService.getWidth() * m.snake.width)/m.snake.ratio)
-				    .attr("transform", "translate(" + CanvasService.getWidth() * m.snake.left + "," + CanvasService.getHeight() * m.snake.top + ")")
+				    .attr("width", viewPort.width * m.snake.width)
+				    .attr("height", (viewPort.width * m.snake.width)/m.snake.ratio)
+				    .attr("transform", "translate(" + viewPort.width * m.snake.left + "," + viewPort.height * m.snake.top + ")")
 				    .on("click", function() 
 	                {
 	                	if (PopupService.isVisible() && PopupService.isPersistent())
@@ -155,7 +166,7 @@ function(
 					
 					var groupContainer = chartArea.append("g")
 						.attr("class", "letter-container " + group.name)
-						.attr("transform", "translate(" + CanvasService.getWidth() * group.left + "," + CanvasService.getHeight() * group.top + ")");
+						.attr("transform", "translate(" + viewPort.width * group.left + "," + viewPort.height * group.top + ")");
 					
 					var groupLetters = null;
 					if (group.id == 'ca' || group.id == 'uk' || group.id == 'fr')
@@ -220,7 +231,7 @@ function(
 					if (groupLetters != null)
 					{
 						var line = -1;
-						var rectangleSize = CanvasService.getWidth() * 0.003;
+						var rectangleSize = viewPort.width * 0.003;
 						
 						var baseX = 0;
 						
@@ -306,7 +317,7 @@ function(
 		        			.attr("class", "horizontal-line")
 		        			.attr("x1", 0)
 			                .attr("y1", 0)
-			                .attr("x2", (CanvasService.getWidth() * group.labelLeft))
+			                .attr("x2", (viewPort.width * group.labelLeft))
 			                .attr("y2", 0)
 			                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
 						
@@ -314,7 +325,7 @@ function(
 					    	.text(group.shortName)
 					    	.attr("class", "group-name")
 					    	.attr("text-anchor", "end")
-					    	.attr("transform", "translate(" + (CanvasService.getWidth() * group.labelLeft) + ", -10)");
+					    	.attr("transform", "translate(" + (viewPort.width * group.labelLeft) + ", -10)");
 							
 						}
 					
