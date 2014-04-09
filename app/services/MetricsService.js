@@ -7,11 +7,11 @@ emmetApp.factory('MetricsService', ['SymbolsService', function(SymbolsService)
 	s.groups = {};
 	
 	s.groups.ne = {id: 'ne', name: 'New England', shortName: 'N.E.', top: 0.40, left: 0.05, elem: 65, displayName: false, labelLeft: 0.50};
-	s.groups.ny = {id: 'ny', name: 'New York', shortName: 'N.Y.', top: 0.485, left: 0.05, elem: 80, displayName: false, labelLeft: 0.465};
-	s.groups.pa = {id: 'pa', name: 'Pennsylvania', shortName: 'Pa.', top: 0.545, left: 0.05, elem: 80, displayName: false, labelLeft: 0.38};
-	s.groups.nj = {id: 'nj', name: 'New Jersey', shortName: 'N.J.', top: 0.605, left: 0.05, elem: 50, displayName: false, labelLeft: 0.47};
+	s.groups.ny = {id: 'ny', name: 'New York', shortName: 'N.Y.', top: 0.48, left: 0.05, elem: 80, displayName: false, labelLeft: 0.46};
+	s.groups.pa = {id: 'pa', name: 'Pennsylvania', shortName: 'Pa.', top: 0.55, left: 0.05, elem: 80, displayName: false, labelLeft: 0.40};
+	s.groups.nj = {id: 'nj', name: 'New Jersey', shortName: 'N.J.', top: 0.61, left: 0.05, elem: 50, displayName: false, labelLeft: 0.47};
 	s.groups.md = {id: 'md', name: 'Maryland', shortName: 'Md.', top: 0.69, left: 0.05, elem: 50, displayName: false, labelLeft: 0.40};
-	s.groups.nh = {id: 'va', name: 'Virginia', shortName: 'Va.', top: 0.78, left: 0.05, elem: 60, displayName: false, labelLeft: 0.405};
+	s.groups.nh = {id: 'va', name: 'Virginia', shortName: 'Va.', top: 0.752, left: 0.05, elem: 60, displayName: false, labelLeft: 0.42};
 	s.groups.sc = {id: 'sc', name: 'South Carolina', shortName: 'S.C.', top: 0.84, left: 0.05, elem: 65, displayName: false, labelLeft: 0.347};
 	s.groups.nc = {id: 'nc', name: 'North Carolina', shortName: 'N.C.', top: 0.90, left: 0.05, elem: 60, displayName: false, labelLeft: 0.40};
 	
