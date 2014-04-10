@@ -340,7 +340,7 @@ function(
 				console.log(dataPlaceCollection);
 				
 				chartArea.append("image")
-				    .attr("xlink:href","img/map-contemporary.svg")
+				    .attr("xlink:href","img/map-eastcoast.svg")
 				    .attr("width", viewPort.width * m.usa.width)
 				    .attr("height", (viewPort.width * m.usa.width)/m.usa.ratio)
 				    .attr("transform", "translate(" + viewPort.width * m.usa.left + "," + viewPort.height * m.usa.top + ")")
@@ -359,45 +359,14 @@ function(
 				for (var groupId in m.groups)
 				{
 					var group = m.groups[groupId];
+					var groupLetters = dataPlaceCollection.lettersByUSState[group.name];
 					
-					var groupContainer = chartArea.append("g")
-						.attr("class", "letter-container " + group.name)
-						.attr("transform", "translate(" + viewPort.width * group.left + "," + viewPort.height * group.top + ")");
-					
-					var groupLetters = null;
-					if (group.id == 'ca' || group.id == 'uk' || group.id == 'fr')
+					if (group.displayOn == 'left')
 					{
-						groupLetters = dataPlaceCollection.lettersByForeignCountry[group.name];
-					}
-					else if (group.id == 'other')
-					{
-						groupLetters = new Array();
+						var groupContainer = chartArea.append("g")
+							.attr("class", "letter-container " + group.name)
+							.attr("transform", "translate(" + viewPort.width * group.left + "," + viewPort.height * group.top + ")");
 						
-						for (var countryName in dataPlaceCollection.lettersByForeignCountry)
-						{
-							if (countryName != 'Canada' && 
-								countryName != 'United Kingdom' && 
-								countryName != 'France') groupLetters = groupLetters.concat(dataPlaceCollection.lettersByForeignCountry[countryName]);
-						}
-					}
-					else if (group.id == 'unknown')
-					{
-						groupLetters = dataPlaceCollection.lettersWithUnknownPlace;
-					}
-					else if (group.id == 'undetermined')
-					{
-						groupLetters = dataPlaceCollection.lettersWithUndeterminedPlace;
-					}
-					else
-					{
-						groupLetters = dataPlaceCollection.lettersByUSState[group.name];
-					}
-					
-					console.log("Group: " + group.id);
-					console.log(groupLetters);
-					
-					if (group.displayName)
-					{
 						var line = -1;
 						var rectangleSize = viewPort.width * scope.RECTANGLE_RATIO;
 						var baseX = 0;
@@ -466,7 +435,7 @@ function(
 		        			.attr("class", "horizontal-line")
 		        			.attr("x1", 0)
 			                .attr("y1", 0)
-			                .attr("x2", (group.elem)  * (rectangleSize + 1) + scope.RECTANGLE_GROUP_SPACER * (group.elem / 5))
+			                .attr("x2", (viewPort.width * group.label))
 			                .attr("y2", 0)
 			                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
 						
@@ -475,14 +444,111 @@ function(
 					    	.attr("class", "group-name")
 					    	.attr("text-anchor", "left")
 					    	.attr("transform", "translate(0, -10)");
-					}
-					else
-					{
+						
+						var labelPosition = (viewPort.width * group.label);
+						if (group.labelOffset) labelPosition = (viewPort.width * group.label) - (viewPort.width * group.labelOffset);
+						
 						groupContainer.append("text")
-					    	.text(group.shortName + "\n" + groupLetters.length)
+					    	.text(groupLetters.length)
+					    	.attr("class", "group-name")
+					    	.attr("text-anchor", "end")
+					    	.attr("transform", "translate(" + labelPosition + ", -10)");
+					}
+					else // displayOn: 'right'
+					{
+						var containerWidth = (viewPort.width * (1 - group.right)) - (viewPort.width * group.label);
+						
+						
+						var groupContainer = chartArea.append("g")
+							.attr("class", "letter-container " + group.name)
+							.attr("transform", "translate(" + (viewPort.width * (1 - group.right) - containerWidth) + "," + viewPort.height * group.top + ")");
+							
+						var line = -1;
+						var rectangleSize = viewPort.width * scope.RECTANGLE_RATIO;
+						var baseX = containerWidth - rectangleSize;
+						
+						for (var i = 0; i < groupLetters.length; i++)
+						{
+							var letter = groupLetters[i];
+						
+							var groupSpacer = 0;
+							if ((i+1) % 5 == 0) groupSpacer = scope.RECTANGLE_GROUP_SPACER;
+							
+							if (i % group.elem == 0)
+							{
+								line++;
+								baseX = containerWidth - rectangleSize;
+							}
+							
+							var xRectangle = baseX;
+							baseX -= (rectangleSize + 1) + groupSpacer;
+							var yRectangle = (line * (rectangleSize + 1));
+							
+
+							var composedClass = "";
+			                for (var j = 0; j < letter.authors.length; j++) composedClass += " p" + letter.authors[j].id;
+							
+							groupContainer.append("rect")
+			                    .attr("class", "letter l" + letter.id + " t" + letter.chapterId + composedClass + " y" + letter.accuratYear)
+			                	.attr("person-id", letter.authors[0].id)
+			                    .attr("letter-id", letter.id)
+			                    .attr("letter-year", letter.accuratYear)
+			                    .attr("letter-topic", letter.chapterId)
+			                    .attr("width", rectangleSize)
+			                    .attr("height", rectangleSize)
+			                    .attr("y", yRectangle)
+			                    .attr("x", xRectangle)
+			                    .style("fill", ColorService.getChapterColor($routeParams.dataType, letter.chapterId))
+			                    .on("click", function(d)
+			                    {
+			                    	scope.$apply(function() {PopupService.setPersistent(true);});
+			                    })
+			                    .on("mouseover", function(d)
+			                    {
+			                    	if (!PopupService.isPersistent())
+			                    	{
+				                    	var element = d3.select(this);
+				                    	
+				                    	if (!HighlightService.isPersistent() || (HighlightService.isPersistent() && HighlightService.getTopicId() == element.attr("letter-topic")))
+				                    	{
+					                    	scope.$apply(function() {HighlightService.setLetterHoverId(element.attr("letter-id"));});
+											scope.$apply(function() {HighlightService.setPersonHoverId(element.attr("person-id"));});
+				                    	}
+			                    	}
+			                    })
+			                    .on("mouseout", function(d)
+			                    {
+									if (!PopupService.isPersistent())
+									{
+				                    	scope.$apply(function() {HighlightService.setLetterHoverId(null);});
+										scope.$apply(function() {HighlightService.setPersonHoverId(null);});
+									}
+			                    });
+						}
+					
+						
+						groupContainer.append("line")
+		        			.attr("class", "horizontal-line")
+		        			.attr("x1", 0)
+			                .attr("y1", 0)
+			                .attr("x2", containerWidth)
+			                .attr("y2", 0)
+			                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
+						
+						groupContainer.append("text")
+					    	.text(group.name)
+					    	.attr("class", "group-name")
+					    	.attr("text-anchor", "end")
+					    	.attr("transform", "translate(" + containerWidth + ", -10)");
+						
+						var labelPosition = 0;
+						if (group.labelOffset) labelPosition = (viewPort.width * group.labelOffset);
+						
+						groupContainer.append("text")
+					    	.text(groupLetters.length)
 					    	.attr("class", "group-name")
 					    	.attr("text-anchor", "left")
-					    	.attr("transform", "translate(" + (viewPort.width * group.labelLeft) + ", " + (viewPort.height * group.labelTop) + ")");
+					    	.attr("transform", "translate(" + labelPosition + ", -10)");
 					}
 				}
 			};
