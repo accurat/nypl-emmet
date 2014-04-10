@@ -54,14 +54,14 @@ a {
 	z-index: 1000;
 	position: absolute;
 	top: 0%;
-	right: 50%;
+	right: 55%;
 }
 
 .person-container {
 	z-index: 1000;
 	position: absolute;
 	top: 6%;
-	right: 50%;
+	right: 55%;
 }
 
 .view-container {
@@ -116,8 +116,8 @@ a {
 }
 
 .person-selection-list {
-	height: 300px;
-	width: 700px;
+	height: 150px;
+	width: 500px;
 	overflow-y: auto;
 	overflow-x: visible;
 	background-color: #F5EEDF;

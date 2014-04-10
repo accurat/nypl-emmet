@@ -294,7 +294,32 @@ function(
 			                    });
 						}
 					
-						if (group.displayName)
+						
+						groupContainer.append("text")
+					    	.text(group.name)
+					    	.attr("class", "group-name")
+					    	.attr("text-anchor", "left")
+					    	.attr("transform", "translate(0, -10)");
+						
+						if (group.isColony)
+						{
+							
+							groupContainer.append("line")
+			        			.attr("class", "horizontal-line")
+			        			.attr("x1", 0)
+				                .attr("y1", 0)
+				                .attr("x2", (viewPort.width * group.labelLeft))
+				                .attr("y2", 0)
+				                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
+						
+							groupContainer.append("text")
+						    	.text(group.shortName)
+						    	.attr("class", "group-name")
+						    	.attr("text-anchor", "end")
+						    	.attr("transform", "translate(" + (viewPort.width * group.labelLeft) + ", -10)");
+							
+						}
+						else
 						{
 							groupContainer.append("line")
 			        			.attr("class", "horizontal-line")
@@ -303,28 +328,6 @@ function(
 				                .attr("x2", (group.elem)  * (rectangleSize + 1) + scope.RECTANGLE_GROUP_SPACER * (group.elem / 5))
 				                .attr("y2", 0)
 				                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
-							
-							groupContainer.append("text")
-						    	.text(group.name)
-						    	.attr("class", "group-name")
-						    	.attr("text-anchor", "left")
-						    	.attr("transform", "translate(0, -10)");
-						}
-						else
-						{
-							groupContainer.append("line")
-		        			.attr("class", "horizontal-line")
-		        			.attr("x1", 0)
-			                .attr("y1", 0)
-			                .attr("x2", (viewPort.width * group.labelLeft))
-			                .attr("y2", 0)
-			                .attr("transform", "translate(0," + scope.HORIZONTAL_LINES_OFFSET_VERTICAL + ")");
-						
-						groupContainer.append("text")
-					    	.text(group.shortName)
-					    	.attr("class", "group-name")
-					    	.attr("text-anchor", "end")
-					    	.attr("transform", "translate(" + (viewPort.width * group.labelLeft) + ", -10)");
 						}
 					}
 				}
