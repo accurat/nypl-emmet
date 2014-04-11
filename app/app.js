@@ -1,5 +1,5 @@
 var emmetApp = angular
-	.module('emmet',['ngRoute'])
+	.module('emmet', ['ngRoute', 'ngScrollbar'])
 	.config(function($routeProvider) 
 	{
 		$routeProvider

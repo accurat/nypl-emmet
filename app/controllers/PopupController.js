@@ -30,11 +30,13 @@ emmetApp.controller('PopupController', ['$scope', '$routeParams', 'DataService',
 						
 						$scope.formattedLetterDate = date.toLocaleDateString("en-us", options);
 						$scope.alignElements();
+						$scope.$broadcast('rebuild:me');
 					}
 					else 
 					{
 						$scope.letter = null;
 						$scope.formattedLetterDate = null;
+						$scope.$broadcast('rebuild:me');
 					}
 				}
 			}, true);

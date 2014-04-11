@@ -21,12 +21,13 @@ emmetApp.controller('PersonSelectionController', ['$scope', '$filter', '$routePa
 				else peopleCollection = data.emmetPeople;
 				
 				$scope.matchingPeople = $filter('personFilter')(peopleCollection, newValue);
-				
+				$scope.$broadcast('rebuild:me');
 			}
 			else
 			{
 				d3.selectAll(".menu-item").filter(".person").classed("active", false);
 				$scope.matchingPeople = new Array();
+				$scope.$broadcast('rebuild:me');
 			}
 		}, true);
 	
