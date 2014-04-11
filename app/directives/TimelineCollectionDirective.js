@@ -30,8 +30,8 @@ function(
 		templateUrl: 'app/templates/TimelineCollection.tpl.html',
 		link: function(scope, element, attrs)
 		{
-			d3.selectAll(".menu-item").filter(".view").classed("active", false);
-			d3.selectAll(".menu-item").filter(".view").filter(".view-when").classed("active", true);
+			d3.selectAll(".menu-item").classed("active", false);
+			d3.selectAll(".menu-item").filter(".view-when").classed("active", true);
 			
 			d3.selectAll(".menu-element").filter(".orderby").classed("active", false);
 			d3.selectAll(".menu-element").filter(".orderby").filter(".orderby-" + $routeParams.orderType).classed("active", true);

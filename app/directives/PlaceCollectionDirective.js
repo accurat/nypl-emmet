@@ -32,8 +32,12 @@ function(
 		templateUrl: 'app/templates/PlaceCollection.tpl.html',
 		link: function(scope, element, attrs)
 		{
-			d3.selectAll(".menu-item").filter(".view").classed("active", false);
+			d3.selectAll(".menu-item").classed("active", false);
 			d3.selectAll(".menu-item").filter(".view").filter(".view-where").classed("active", true);
+			
+			d3.selectAll(".menu-element").filter(".where").classed("active", false);
+			if ($routeParams.whereType == SymbolsService.mapSnake) d3.selectAll(".menu-element").filter(".where").filter(".where-snake").classed("active", true);
+			else d3.selectAll(".menu-element").filter(".where").filter(".where-contemporary").classed("active", true);
 			
 			scope.HORIZONTAL_LINES_OFFSET_VERTICAL = -5;
 			scope.RECTANGLE_RATIO = 0.003;
@@ -336,8 +340,6 @@ function(
 			scope.drawMapContemporary = function(viewPort, chartArea, dataPlaceCollection)
 			{
 				var m = MetricsService.getMetrics(SymbolsService.mapContemporary);
-				
-				console.log(dataPlaceCollection);
 				
 				chartArea.append("image")
 				    .attr("xlink:href","img/map-eastcoast.svg")

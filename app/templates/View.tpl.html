@@ -1,5 +1,17 @@
-<div class="menu-item-container view-container">
-	<span class="menu-item view view-when" ng-click="displayView('when')">{{whenLabel}}</span>
-	<span> &#47; </span>
-	<span class="menu-item view view-where" ng-click="displayView('where')">{{whereLabel}}</span>
+<div class="container-fluid view-container">
+	<div class="row">
+		<div class="col-md-6 text-right"><span class="menu-item view view-when" ng-click="displayView('when')">{{whenLabel}}</span>&#47;</div>
+	
+		<div class="col-md-6">
+			<div class="row"><div class="col-md-12 text-left menu-item view view-where" ng-click="displayWhereList()">{{whereLabel}}</div></div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row"><div class="col-md-12 text-left menu-element where where-snake" ng-click="displayView('where-snake')">{{whereSnakeLabel}}</div></div>
+					<div class="row"><div class="col-md-12 text-left menu-element where where-contemporary" ng-click="displayView('where-contemporary')">{{whereContemporaryLabel}}</div></div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
+
+

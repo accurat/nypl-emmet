@@ -18,56 +18,28 @@
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-4 popup-date popup-bordered-element">{{formattedLetterDate}}</div>
-		<div class="col-md-1"></div>
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-12 popup-bordered-element popup-col-right">
-					<div class="popup-title-left">content</div>
-				</div>
-			</div>
-		</div>
+		<div class="col-md-1 popup-col-spacer"></div>
+		<div class="col-md-5 popup-bordered-element popup-title-left popup-col-right">content</div>
 	</div>
 	
 	
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-4 pull-down">
-			<div class="row">
-				<div class="col-md-12 popup-title-left">place</div>
-			</div>
-			<div class="row">
-				<div class="col-md-12 popup-place">{{letter.place.name}}</div>
-			</div>
-			
-			<div class="row">
-				<div class="col-md-12 popup-title-left">topic</div>
-			</div>
-			<div class="row">
-				<div class="col-md-12 popup-topic">{{letter.chapterName}}</div>
-			</div>
+			<div class="row"><div class="col-md-12 popup-title-left">place</div></div>
+			<div class="row"><div class="col-md-12 popup-place">{{letter.place.name}}</div></div>
+			<div class="row"><div class="col-md-12 popup-title-left">topic</div></div>
+			<div class="row"><div class="col-md-12 popup-topic">{{letter.chapterName}}</div></div>
 		</div>
-		<div class="col-md-1"></div>
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-12 popup-contents-container popup-col-right">
-					<div class="popup-contents">{{letter.emmetContent}}</div>
-				</div>
-			</div>
-		
-		</div>
+		<div class="col-md-1 popup-col-spacer"></div>
+		<div class="col-md-5"><div class="popup-contents popup-col-right">{{letter.emmetContent}}</div></div>
 	</div>
 	
 	<div class="row">
 		<div class="col-md-1"></div>
 		<div class="col-md-4 popup-bordered-element"></div>
-		<div class="col-md-1"></div>
-		<div class="col-md-6">
-			<div class="row">
-				<div class="col-md-12 popup-bordered-element popup-col-right">
-					<span ng-if="letter.uuid" class="popup-link" ng-click="openOriginalDocument(letter.uuid)">view original document »</span>
-				</div>
-			</div>
-		</div>
+		<div class="col-md-1 popup-col-spacer"></div>
+		<div class="col-md-5 popup-bordered-element"><span ng-if="letter.uuid" class="popup-link popup-col-right" ng-click="openOriginalDocument(letter.uuid)">view original document »</span></div>
 	</div>
 	
 </div>

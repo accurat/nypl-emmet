@@ -30,10 +30,8 @@ function(
 		templateUrl: 'app/templates/TimelinePerson.tpl.html',
 		link: function(scope, element, attrs)
 		{
-			d3.selectAll(".view").classed("active", false);
-			d3.selectAll(".view").filter(".who").classed("active", true);
-			
-			
+			d3.selectAll(".menu-item").classed("active", false);
+			d3.selectAll(".menu-item").filter(".person").classed("active", true);
 			
 			// *************************************************************************
 			// CONFIGURATION CONSTANTS 

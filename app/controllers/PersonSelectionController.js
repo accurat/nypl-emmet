@@ -13,14 +13,21 @@ emmetApp.controller('PersonSelectionController', ['$scope', '$filter', '$routePa
 		{
 			if (newValue) 
 			{
+				d3.selectAll(".menu-item").filter(".person").classed("active", true);
+				
 				var peopleCollection;
 				var data = DataService.getData(null, null, null);
 				if ($routeParams.dataType == SymbolsService.dataAccurat) peopleCollection = data.accuratPeople;
 				else peopleCollection = data.emmetPeople;
 				
 				$scope.matchingPeople = $filter('personFilter')(peopleCollection, newValue);
+				
 			}
-			else $scope.matchingPeople = new Array();
+			else
+			{
+				d3.selectAll(".menu-item").filter(".person").classed("active", false);
+				$scope.matchingPeople = new Array();
+			}
 		}, true);
 	
 	
@@ -31,8 +38,10 @@ emmetApp.controller('PersonSelectionController', ['$scope', '$filter', '$routePa
 	
 	$scope.openPersonTimeline = function(personId)
 	{
-		var url = $scope.personUrl + personId;
+		var url = '#' + SymbolsService.urlTokenData + '/' + $routeParams.dataType + '/' + SymbolsService.urlTokenView + '/' + SymbolsService.viewWho + '/' + SymbolsService.urlTokenPerson + '/'+ personId;
+		$scope.personName = null;
 		window.location = url;
+		
 	};
 	
 
