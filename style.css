@@ -24,7 +24,7 @@ a {
 .col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
 	padding-left: 0px;
 	padding-right: 0px;
-	/*border: 1px solid black;*/
+	border: 1px solid black;
 }
 
 .row {
@@ -70,7 +70,7 @@ a {
 }
 
 .person-container {
-	width: 15%;
+	width: 20%;
 	z-index: 1000;
 	position: absolute;
 	top: 6%;
@@ -129,31 +129,6 @@ a {
 	width: 200px;
 }
 
-.person-selection-list {
-	height: 150px;
-	width: 500px;
-	overflow-y: auto;
-	overflow-x: visible;
-	background-color: #F5EEDF;
-	opacity: 0.80;
-	text-align: right;
-	white-space: nowrap;
-}
-
-.person-list {
-	list-style-type: none;
-	padding-right: 10px;
-}
-
-.person-item {
-	color: #716558;
-	font-family: 'Gentium Basic', serif;
-	font-size:14px;
-}
-
-.person-item:hover {
-	color: #000000;
-}
 
 
 /* ====== ELEMENTI MENU ====== */
@@ -268,6 +243,10 @@ a {
 .list-container {
 	background-color: #F5EEDF;
 	padding-top: 5px;
+}
+
+.list-scroller {
+	max-height: 200px;
 }
 
 .list-element {
